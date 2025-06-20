@@ -2,14 +2,16 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Heart, BotMessageSquare, Settings, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Heart, BotMessageSquare, Settings, Sparkles, Wallet } from 'lucide-react'; // Added Sparkles and Wallet
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const tabs = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Smart Deals', href: '/smart-deals', icon: Sparkles }, // New Tab
   { name: 'Wishlist', href: '/wishlist', icon: Heart },
   { name: 'DealBot', href: '/ask-dealbot', icon: BotMessageSquare },
+  { name: 'Wallet', href: '/wallet', icon: Wallet }, // New Tab
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -21,7 +23,7 @@ export default function NavigationTabs() {
       <TooltipProvider delayDuration={300}>
         <div className="flex justify-around">
           {tabs.map((tab) => {
-            const isActive = pathname === tab.href || (pathname.startsWith(tab.href) && tab.href !== '/');
+            const isActive = pathname === tab.href || (pathname.startsWith(tab.href) && tab.href !== '/' && tab.href.length > 1 && pathname.includes(tab.href));
             return (
               <Tooltip key={tab.name}>
                 <TooltipTrigger asChild>
@@ -34,7 +36,7 @@ export default function NavigationTabs() {
                     aria-current={isActive ? 'page' : undefined}
                   >
                     <tab.icon className={cn('h-5 w-5', isActive ? 'text-primary' : '')} />
-                    <span className="text-xs">{tab.name}</span>
+                    <span className="text-xs whitespace-nowrap">{tab.name}</span>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="top">
