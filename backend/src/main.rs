@@ -1,7 +1,6 @@
 use dealpal_backend::app;
-use dotenv::dotenv;
-use sqlx::postgres::PgPoolOptions;
-use std::env;
+use dealpal_backend::db;
+use dotenvy::dotenv;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -11,19 +10,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "backend=debug,tower_http=debug".into()),
+                .unwrap_or_else(|_| "dealpal_backend=debug,tower_http=debug".into()),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let database_url = env::var("DATABASE_URL")?;
+    let pool = db::create_pool().await?;
 
-    let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
-        .await?;
-
-    sqlx::migrate!("./migrations").run(&pool).await?;
+    db::run_migrations(&pool).await?;
 
     let app = app(pool);
 

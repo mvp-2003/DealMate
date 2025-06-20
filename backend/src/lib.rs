@@ -6,6 +6,7 @@ use sqlx::PgPool;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
+pub mod db;
 pub mod error;
 pub mod models;
 pub mod routes;
