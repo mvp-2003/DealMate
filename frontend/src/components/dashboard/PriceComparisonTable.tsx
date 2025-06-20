@@ -1,4 +1,3 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,30 +21,21 @@ export default function PriceComparisonTable({ comparisons = mockComparisons }: 
         <CardTitle className="text-md">Price Comparison</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Platform</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead className="text-right">Link</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {comparisons.map((item) => (
-              <TableRow key={item.platform}>
-                <TableCell className="font-medium">{item.platform}</TableCell>
-                <TableCell>{item.price}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" asChild>
-                    <a href={item.link} target="_blank" rel="noopener noreferrer" aria-label={`View on ${item.platform}`}>
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <div className="divide-y divide-border">
+          {comparisons.map((item) => (
+            <div key={item.platform} className="flex items-center justify-between p-4">
+              <div className="flex flex-col">
+                <span className="font-medium">{item.platform}</span>
+                <span className="text-muted-foreground">{item.price}</span>
+              </div>
+              <Button variant="ghost" size="icon" asChild>
+                <a href={item.link} target="_blank" rel="noopener noreferrer" aria-label={`View on ${item.platform}`}>
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

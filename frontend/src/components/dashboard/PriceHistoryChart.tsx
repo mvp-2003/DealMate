@@ -33,40 +33,37 @@ export default function PriceHistoryChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[200px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={mockChartData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
-              <XAxis 
-                dataKey="date" 
-                tickLine={false} 
-                axisLine={false} 
-                tickMargin={8} 
-                fontSize={10} 
-                stroke="hsl(var(--muted-foreground))"
-              />
-              <YAxis 
-                tickLine={false} 
-                axisLine={false} 
-                tickMargin={8} 
-                fontSize={10} 
-                tickFormatter={(value) => `₹${value}`} 
-                stroke="hsl(var(--muted-foreground))"
-              />
-              <RechartsTooltip
-                cursor={{ stroke: "hsl(var(--accent))", strokeWidth: 1, strokeDasharray: "3 3" }}
-                content={<ChartTooltipContent indicator="line" nameKey="name" labelKey="price" />}
-                wrapperStyle={{ outline: "none", boxShadow: "hsl(var(--shadow-md))", borderRadius: "var(--radius)" }}
-                itemStyle={{ color: "hsl(var(--foreground))" }}
-                labelStyle={{ color: "hsl(var(--foreground))", fontWeight: "bold" }}
-              />
-              <Legend verticalAlign="top" height={36} wrapperStyle={{color: "hsl(var(--muted-foreground))"}} />
-              <Line dataKey="platformA" name="Amazon" type="monotone" stroke="var(--color-platformA)" strokeWidth={2} dot={{ r: 3, fill: "var(--color-platformA)" }} activeDot={{r: 5}} />
-              <Line dataKey="platformB" name="Flipkart" type="monotone" stroke="var(--color-platformB)" strokeWidth={2} dot={{ r: 3, fill: "var(--color-platformB)" }} activeDot={{r: 5}} />
-            </LineChart>
-          </ResponsiveContainer>
+          <LineChart data={mockChartData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              fontSize={10}
+              stroke="hsl(var(--muted-foreground))"
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              fontSize={10}
+              tickFormatter={(value) => `₹${value}`}
+              stroke="hsl(var(--muted-foreground))"
+            />
+            <RechartsTooltip
+              cursor={{ stroke: "hsl(var(--accent))", strokeWidth: 1, strokeDasharray: "3 3" }}
+              content={<ChartTooltipContent indicator="line" nameKey="name" labelKey="price" />}
+              wrapperStyle={{ outline: "none", boxShadow: "hsl(var(--shadow-md))", borderRadius: "var(--radius)" }}
+              itemStyle={{ color: "hsl(var(--foreground))" }}
+              labelStyle={{ color: "hsl(var(--foreground))", fontWeight: "bold" }}
+            />
+            <Legend verticalAlign="top" height={36} wrapperStyle={{color: "hsl(var(--muted-foreground))"}} />
+            <Line dataKey="platformA" name="Amazon" type="monotone" stroke="var(--color-platformA)" strokeWidth={2} dot={{ r: 3, fill: "var(--color-platformA)" }} activeDot={{r: 5}} />
+            <Line dataKey="platformB" name="Flipkart" type="monotone" stroke="var(--color-platformB)" strokeWidth={2} dot={{ r: 3, fill: "var(--color-platformB)" }} activeDot={{r: 5}} />
+          </LineChart>
         </ChartContainer>
       </CardContent>
     </Card>
   );
 }
-

@@ -1,4 +1,4 @@
-use sqlx::{migrate::MigrateDatabase, Connection, PgConnection, PgPool, Postgres};
+use sqlx::{Connection, PgConnection, PgPool};
 use std::env;
 use tracing::info;
 use url::Url;

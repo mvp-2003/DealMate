@@ -33,34 +33,32 @@ export default function MonthlySavingsChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[200px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={mockSavingsData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
-              <XAxis 
-                dataKey="month" 
-                tickLine={false} 
-                axisLine={false} 
-                tickMargin={8} 
-                fontSize={10} 
-                stroke="hsl(var(--muted-foreground))"
-              />
-              <YAxis 
-                tickLine={false} 
-                axisLine={false} 
-                tickMargin={8} 
-                fontSize={10} 
-                tickFormatter={(value) => `₹${value}`} 
-                stroke="hsl(var(--muted-foreground))"
-              />
-              <RechartsTooltip
-                cursor={{ fill: "hsl(var(--muted)/0.3)" }}
-                content={<ChartTooltipContent indicator="bar" />}
-                wrapperStyle={{ outline: "none", boxShadow: "hsl(var(--shadow-md))", borderRadius: "var(--radius)" }}
-              />
-              <Legend verticalAlign="top" height={36} wrapperStyle={{color: "hsl(var(--muted-foreground))"}} />
-              <Bar dataKey="savings" fill="var(--color-savings)" radius={[4, 4, 0, 0]} barSize={20} />
-            </BarChart>
-          </ResponsiveContainer>
+          <BarChart data={mockSavingsData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              fontSize={10}
+              stroke="hsl(var(--muted-foreground))"
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              fontSize={10}
+              tickFormatter={(value) => `₹${value}`}
+              stroke="hsl(var(--muted-foreground))"
+            />
+            <RechartsTooltip
+              cursor={{ fill: "hsl(var(--muted)/0.3)" }}
+                content={<ChartTooltipContent />}
+              wrapperStyle={{ outline: "none", boxShadow: "hsl(var(--shadow-md))", borderRadius: "var(--radius)" }}
+            />
+            <Legend verticalAlign="top" height={36} wrapperStyle={{color: "hsl(var(--muted-foreground))"}} />
+            <Bar dataKey="savings" fill="var(--color-savings)" radius={[4, 4, 0, 0]} barSize={20} />
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>

@@ -26,10 +26,11 @@ export default function ProductInfoCard({
         <Image
           src={imageUrl}
           alt={title}
-          width={375} 
-          height={200} 
+          width={375}
+          height={200}
           className="w-full h-48 object-cover" // Adjusted size
           data-ai-hint="product e-commerce"
+          priority
         />
       </CardHeader>
       <CardContent className="p-4">
@@ -44,4 +45,3 @@ export default function ProductInfoCard({
     </Card>
   );
 }
-

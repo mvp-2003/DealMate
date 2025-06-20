@@ -5,7 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-[375px] h-[600px] flex flex-col bg-background text-foreground shadow-2xl rounded-md overflow-hidden border">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
       <NavigationTabs />
       <ScrollArea className="flex-grow">
