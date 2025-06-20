@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config, { isServer }) => {
+    // Mark 'handlebars' as an external dependency to avoid webpack warnings.
+    // This is because it's used on the server-side and doesn't need to be bundled.
+    if (isServer) {
+      config.externals.push('handlebars');
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
