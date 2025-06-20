@@ -1,5 +1,5 @@
 # Using official Rust image
-FROM rust:1.78.0 as builder
+FROM rust:latest as builder
 
 # Create a new empty shell project
 RUN USER=root cargo new --bin backend
