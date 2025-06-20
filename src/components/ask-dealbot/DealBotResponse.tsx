@@ -1,40 +1,66 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bot, AlertTriangle } from 'lucide-react';
+import { Bot, AlertTriangle, User } from 'lucide-react';
 
 interface DealBotResponseProps {
+  userQuery?: string; // Optional: display the user's query
   response?: string | null;
   error?: string | null;
   isLoading: boolean;
 }
 
-export default function DealBotResponse({ response, error, isLoading }: DealBotResponseProps) {
-  if (!response && !error && !isLoading) {
-    return null; // Nothing to show initially
+export default function DealBotResponse({ userQuery, response, error, isLoading }: DealBotResponseProps) {
+  if (!response && !error && !isLoading && !userQuery) {
+    return null; 
   }
 
   return (
-    <Card className="mt-4">
-      <CardHeader>
-        <CardTitle className="text-md flex items-center gap-2">
-          <Bot className="h-5 w-5 text-primary" />
-          DealBot's Advice
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="min-h-[100px]">
-        {isLoading && <p className="text-sm text-muted-foreground animate-pulse">DealBot is thinking...</p>}
-        {error && !isLoading && (
-          <div className="text-destructive flex items-start gap-2">
-            <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0" />
-            <div>
-              <p className="font-medium">Oops! Something went wrong.</p>
-              <p className="text-sm">{error}</p>
-            </div>
-          </div>
-        )}
-        {response && !isLoading && !error && (
-          <p className="text-sm whitespace-pre-wrap">{response}</p>
-        )}
-      </CardContent>
-    </Card>
+    <div className="mt-6 space-y-4">
+      {userQuery && !isLoading && (
+        <Card className="bg-secondary/50 border-secondary shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md flex items-center gap-2 text-secondary-foreground">
+              <User className="h-5 w-5 text-accent" />
+              Your Query
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary-foreground/90 whitespace-pre-wrap">{userQuery}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {(isLoading || response || error) && (
+        <Card className="bg-card shadow-xl neumorphic-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2 text-primary-foreground">
+              <Bot className="h-6 w-6 text-primary" />
+              DealBot's Advice
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="min-h-[120px] text-base">
+            {isLoading && (
+                <div className="flex items-center space-x-2 text-muted-foreground animate-pulse">
+                    <Bot className="h-5 w-5 text-primary" />
+                    <span>DealBot is crafting your advice...</span>
+                </div>
+            )}
+            {error && !isLoading && (
+              <div className="text-destructive flex items-start gap-3 p-3 bg-destructive/10 rounded-md">
+                <AlertTriangle className="h-6 w-6 mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-semibold text-lg">Oops! Something went wrong.</p>
+                  <p className="text-md">{error}</p>
+                </div>
+              </div>
+            )}
+            {response && !isLoading && !error && (
+              <p className="text-foreground/90 whitespace-pre-wrap leading-relaxed">{response}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
+

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -15,12 +16,14 @@ export default function AskDealBotPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState<AskDealBotOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [submittedQuery, setSubmittedQuery] = useState<string | null>(null);
   const { toast } = useToast();
 
   const onSubmitQuery = async (data: DealBotFormValues) => {
     setIsLoading(true);
     setAiResponse(null);
     setError(null);
+    setSubmittedQuery(data.query); // Store the submitted query
 
     const formData = new FormData();
     formData.append('query', data.query);
@@ -41,15 +44,16 @@ export default function AskDealBotPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-headline font-semibold tracking-tight">Ask DealBot</h2>
-        <p className="text-sm text-muted-foreground">
-          Get personalized deal advice from our AI assistant.
+        <h2 className="text-3xl font-headline font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Ask DealBot AI</h2>
+        <p className="text-md text-muted-foreground mt-1">
+          Get personalized deal advice and product recommendations from our AI assistant.
         </p>
       </div>
       <DealBotForm onSubmitQuery={onSubmitQuery} isLoading={isLoading} />
       <DealBotResponse 
+        userQuery={submittedQuery} // Pass submitted query
         response={aiResponse?.response} 
         error={error} 
         isLoading={isLoading} 
@@ -57,3 +61,4 @@ export default function AskDealBotPage() {
     </div>
   );
 }
+

@@ -2,85 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
+/*
+  Inter and Source Code Pro fonts are already linked in src/app/layout.tsx
+  The body font-family is set in tailwind.config.ts
+*/
+html {
+  scroll-behavior: smooth;
 }
 
 @layer base {
   :root {
-    --background: 210 100% 97%; /* #F0F8FF */
-    --foreground: 210 10% 23%; /* Darker text for better contrast on light blue */
-    --card: 210 100% 100%; /* White cards */
-    --card-foreground: 210 10% 23%;
-    --popover: 210 100% 100%;
-    --popover-foreground: 210 10% 23%;
-    --primary: 207 99% 58%; /* #2E9AFE */
-    --primary-foreground: 0 0% 100%; /* White text on primary blue */
-    --secondary: 210 60% 90%; /* Lighter blue for secondary elements */
-    --secondary-foreground: 207 80% 40%;
-    --muted: 210 60% 94%;
-    --muted-foreground: 210 10% 45%;
-    --accent: 40 100% 67%; /* #FFC857 */
-    --accent-foreground: 0 0% 15%; /* Dark text on accent yellow */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 210 30% 85%;
-    --input: 210 30% 92%;
-    --ring: 207 99% 58%; /* Primary color for rings */
-    --chart-1: 207 90% 55%;
-    --chart-2: 40 90% 60%;
-    --chart-3: 120 50% 55%;
-    --chart-4: 280 60% 65%;
-    --chart-5: 30 70% 60%;
+    --background: 240 10% 3.9%; /* zinc-950 */
+    --foreground: 0 0% 98%; /* zinc-50 */
+
+    --card: 240 5.9% 10%; /* zinc-900 */
+    --card-foreground: 0 0% 98%; /* zinc-50 */
+
+    --popover: 240 10% 3.9%; /* zinc-950 */
+    --popover-foreground: 0 0% 98%; /* zinc-50 */
+
+    --primary: 259 92% 67%; /* violet-500 */
+    --primary-foreground: 255 100% 97%; /* A light violet or white */
+
+    --secondary: 240 3.7% 15.9%; /* zinc-800 */
+    --secondary-foreground: 0 0% 98%; /* zinc-50 */
+
+    --muted: 240 3.7% 15.9%; /* zinc-800 */
+    --muted-foreground: 240 5% 64.9%; /* zinc-400 */
+
+    --accent: 259 92% 77%; /* violet-400 */
+    --accent-foreground: 0 0% 98%; /* zinc-50 */
+    
+    --destructive: 0 72% 51%; /* red-600 */
+    --destructive-foreground: 0 0% 98%; /* zinc-50 */
+
+    --border: 240 3.7% 15.9%; /* zinc-800 */
+    --input: 240 3.7% 15.9%; /* zinc-800 */
+    --ring: 259 92% 77%; /* violet-400 for focus rings */
+
+    --chart-1: 259 92% 67%; /* violet-500 */
+    --chart-2: 220 84% 60%; /* blue-500 */
+    --chart-3: 160 76% 45%; /* green-500 */
+    --chart-4: 40 92% 67%; /* yellow-500 */
+    --chart-5: 0 72% 61%; /* red-500 */
+    
     --radius: 0.5rem;
 
-    /* Sidebar variables (can be adjusted if a separate sidebar theme is needed, for now align with main theme) */
-    --sidebar-background: 210 80% 95%;
-    --sidebar-foreground: 210 10% 23%;
-    --sidebar-primary: 207 99% 58%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 100% 67%;
-    --sidebar-accent-foreground: 0 0% 15%;
-    --sidebar-border: 210 30% 80%;
-    --sidebar-ring: 207 99% 58%;
+    /* Sidebar variables - align with dark theme */
+    --sidebar-background: 240 5.9% 10%; /* zinc-900 */
+    --sidebar-foreground: 0 0% 98%; /* zinc-50 */
+    --sidebar-primary: 259 92% 67%; /* violet-500 */
+    --sidebar-primary-foreground: 255 100% 97%;
+    --sidebar-accent: 259 92% 77%; /* violet-400 */
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%; /* zinc-800 */
+    --sidebar-ring: 259 92% 77%; /* violet-400 */
   }
 
-  .dark {
-    /* Assuming a dark theme might be added later, defining basic contrast adjustments */
-    --background: 210 20% 10%; /* Dark blue */
-    --foreground: 210 100% 97%; /* Light blue text */
-    --card: 210 20% 15%;
-    --card-foreground: 210 100% 97%;
-    --popover: 210 20% 15%;
-    --popover-foreground: 210 100% 97%;
-    --primary: 207 99% 58%; /* #2E9AFE */
-    --primary-foreground: 0 0% 10%; /* Dark text on primary blue for dark mode */
-    --secondary: 210 20% 25%;
-    --secondary-foreground: 210 100% 97%;
-    --muted: 210 20% 20%;
-    --muted-foreground: 210 20% 60%;
-    --accent: 40 100% 67%; /* #FFC857 */
-    --accent-foreground: 0 0% 10%;
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 210 20% 30%;
-    --input: 210 20% 25%;
-    --ring: 207 99% 65%;
-    --chart-1: 207 80% 60%;
-    --chart-2: 40 80% 70%;
-    --chart-3: 120 40% 60%;
-    --chart-4: 280 50% 70%;
-    --chart-5: 30 60% 65%;
-
-    --sidebar-background: 210 20% 12%;
-    --sidebar-foreground: 210 100% 95%;
-    --sidebar-primary: 207 99% 58%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 40 100% 67%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 210 20% 25%;
-    --sidebar-ring: 207 99% 65%;
-  }
+  /* Removed .dark class specific overrides, dark is now default */
 }
 
 @layer base {
@@ -89,5 +68,22 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif; /* Ensure Inter is primary body font */
   }
 }
+
+/* Neumorphic-inspired Card Style */
+.neumorphic-card {
+  @apply rounded-lg bg-card shadow-[5px_5px_10px_#1a1a2e,_-5px_-5px_10px_#24243e] transition-all duration-300 ease-in-out;
+  /* Adjust colors based on final zinc palette for darker/lighter shadows */
+  /* Example using fixed dark shades for neumorphism:
+     zinc-950 (background: hsl(240 10% 3.9%))
+     darker shadow: ~hsl(240 10% 2.5%)
+     lighter shadow: ~hsl(240 10% 5.5%)
+     This might need to be fine-tuned or done with pseudo-elements for more control
+  */
+}
+.neumorphic-card-interactive:hover {
+  @apply shadow-[inset_3px_3px_7px_#1a1a2e,inset_-3px_-3px_7px_#24243e];
+}
+

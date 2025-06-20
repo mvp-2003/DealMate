@@ -1,7 +1,7 @@
 import type {Config} from 'tailwindcss';
 
 export default {
-  darkMode: ['class'],
+  darkMode: 'class', // Keep 'class' strategy if you ever want to toggle
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        headline: ['Inter', 'sans-serif'], // Using Inter for headlines as well for consistency
         code: ['"Source Code Pro"', 'monospace'],
       },
       colors: {
@@ -70,6 +70,11 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        'neumorphic-light': '5px 5px 10px #1e1e2d, -5px -5px 10px #30304a', // Example for extruded
+        'neumorphic-dark': '5px 5px 10px #11111a, -5px -5px 10px #1f1f32', // Example for extruded on darker card
+        'neumorphic-inset-light': 'inset 5px 5px 10px #1e1e2d, inset -5px -5px 10px #30304a',
       },
       keyframes: {
         'accordion-down': {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -9,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Loader2, Send } from 'lucide-react';
 
 const dealBotFormSchema = z.object({
-  query: z.string().min(5, { message: "Query must be at least 5 characters." }).max(200, {message: "Query too long (max 200 chars)."}),
+  query: z.string().min(5, { message: "Query must be at least 5 characters." }).max(300, {message: "Query too long (max 300 chars)."}),
 });
 
 type DealBotFormValues = z.infer<typeof dealBotFormSchema>;
@@ -35,12 +36,12 @@ export default function DealBotForm({ onSubmitQuery, isLoading }: DealBotFormPro
           name="query"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="dealbot-query">Ask DealBot</FormLabel>
+              <FormLabel htmlFor="dealbot-query" className="text-lg font-medium">Your Question for DealBot</FormLabel>
               <FormControl>
                 <Textarea
                   id="dealbot-query"
-                  placeholder="e.g., 'Where is iPhone 15 cheapest with coupons and cashback?'"
-                  className="resize-none min-h-[80px]"
+                  placeholder="e.g., 'Find the best deal on a 65-inch 4K TV with good HDFC card offers.'"
+                  className="resize-none min-h-[100px] bg-card/80 border-border/70 focus:border-primary ring-offset-background placeholder:text-muted-foreground text-base p-3 shadow-inner"
                   {...field}
                   aria-describedby="dealbot-query-message"
                 />
@@ -49,15 +50,16 @@ export default function DealBotForm({ onSubmitQuery, isLoading }: DealBotFormPro
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isLoading} className="w-full">
+        <Button type="submit" disabled={isLoading} className="w-full py-3 text-base font-semibold shadow-lg hover:shadow-primary/40">
           {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
           ) : (
-            <Send className="mr-2 h-4 w-4" />
+            <Send className="mr-2 h-5 w-5" />
           )}
-          Get Deal Advice
+          Ask DealBot
         </Button>
       </form>
     </Form>
   );
 }
+
