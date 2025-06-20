@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ShopSavvy',
+  title: 'DealPal',
   description: 'Your smart shopping assistant for Indian e-commerce.',
 };
 

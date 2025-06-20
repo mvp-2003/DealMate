@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink, Info, Sparkles, MessageCircleQuestion, Tag } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useState, useEffect } from 'react';
 import { handleExplainDealRank, handleGetUserPointsState } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
@@ -32,15 +33,13 @@ export default function RankedOfferCard({ offer }: RankedOfferCardProps) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Fetch user points state once when component mounts, if needed for explanation context
-    // This is optional if all necessary context is already in `offer.rankingExplanation`
     const fetchUserContext = async () => {
         const result = await handleGetUserPointsState();
         if (!result.error && result.data) {
             setCurrentUserPointsState(result.data);
         }
     };
-    // fetchUserContext(); // Uncomment if detailed user context is needed for AI prompt beyond offer itself
+    // fetchUserContext(); 
   }, []);
 
 
@@ -50,7 +49,7 @@ export default function RankedOfferCard({ offer }: RankedOfferCardProps) {
     setAiExplanation(null);
     const formData = new FormData();
     formData.append('offerDetails', JSON.stringify(offer));
-    if (currentUserPointsState) { // Optionally pass current user context
+    if (currentUserPointsState) { 
         formData.append('userContext', JSON.stringify(currentUserPointsState));
     }
 
@@ -74,8 +73,8 @@ export default function RankedOfferCard({ offer }: RankedOfferCardProps) {
             src={offer.productImageUrl}
             alt={offer.productName}
             width={375}
-            height={180} /* Increased height */
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" /* Increased height */
+            height={180} 
+            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" 
             data-ai-hint="product e-commerce"
           />
         )}
@@ -101,7 +100,7 @@ export default function RankedOfferCard({ offer }: RankedOfferCardProps) {
           <p className="text-3xl font-bold text-primary">
             ₹{effectivePrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
-          {offer.basePrice > offer.finalPrice && ( // Show original price if there was any discount
+          {offer.basePrice > offer.finalPrice && ( 
             <p className="text-md text-muted-foreground line-through">₹{offer.basePrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           )}
         </div>
@@ -165,7 +164,7 @@ export default function RankedOfferCard({ offer }: RankedOfferCardProps) {
             <DialogHeader>
               <DialogTitle className="text-xl text-primary">AI Deal Rank Explanation</DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                Here's why ShopSavvy ranked this deal for {offer.productName}:
+                Here's why DealPal ranked this deal for {offer.productName}:
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[60vh] pr-2">
@@ -185,4 +184,3 @@ export default function RankedOfferCard({ offer }: RankedOfferCardProps) {
     </Card>
   );
 }
-

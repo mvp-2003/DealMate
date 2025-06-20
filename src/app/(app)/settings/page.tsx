@@ -6,7 +6,7 @@ export default function SettingsPage() {
       <div>
         <h2 className="text-2xl font-headline font-semibold tracking-tight">Settings</h2>
         <p className="text-sm text-muted-foreground">
-          Customize your ShopSavvy experience.
+          Customize your DealPal experience.
         </p>
       </div>
       <SettingsForm />

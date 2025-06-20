@@ -64,8 +64,8 @@ const ZodRankedOfferSchema = z.object({
   productName: z.string(),
   platform: z.string(),
   basePrice: z.number(),
-  finalPrice: z.number(), // Price after direct coupon
-  effectivePrice: z.number(), // Price after all discounts, cashback, card bonus
+  finalPrice: z.number(), 
+  effectivePrice: z.number(), 
   totalDiscountValue: z.number(),
   totalCashbackValue: z.number(),
   cardBonusValue: z.number(),
@@ -78,7 +78,7 @@ const ZodRankedOfferSchema = z.object({
   couponValue: z.number().optional(),
   cashbackPercentage: z.number().optional(),
   cashbackFlat: z.number().optional(),
-  tags: z.array(z.string()).optional(), // Using general string array for tags
+  tags: z.array(z.string()).optional(),
 });
 
 
@@ -97,7 +97,6 @@ export async function explainDealRank(input: ExplainDealRankInput): Promise<Expl
   return explainDealRankFlow(input);
 }
 
-// Define custom Handlebars helpers
 Handlebars.registerHelper('subtract', function(a: number, b: number) {
   return (a - b).toFixed(2);
 });
@@ -113,7 +112,7 @@ const prompt = ai.definePrompt({
   name: 'explainDealRankPrompt',
   input: { schema: ExplainDealRankInputSchema },
   output: { schema: ExplainDealRankOutputSchema },
-  prompt: `You are ShopSavvy's AI Deal Explainer. A user wants a clear, concise, and friendly explanation for why a specific deal for "{{offer.productName}}" is ranked highly.
+  prompt: `You are DealPal's AI Deal Explainer. A user wants a clear, concise, and friendly explanation for why a specific deal for "{{offer.productName}}" is ranked highly.
 The deal's attractiveness is based on its "Composite Score" ({{{offer.compositeScore}}}), which considers direct savings, cashback, card bonuses, any future perks unlocked, and alignment with user's financial goals.
 The user is NOT asking for general deal advice, but specifically about THIS deal.
 
@@ -153,7 +152,7 @@ Focus on:
 3. If and how this deal aligns with the user's active reward goals (if provided and relevant from rankingExplanation).
 4. Why the overall "Composite Score" ({{{offer.compositeScore}}}) is good.
 
-Be positive and reinforce the value ShopSavvy provides. Do not invent new reasons not present in rankingExplanation.
+Be positive and reinforce the value DealPal provides. Do not invent new reasons not present in rankingExplanation.
 If there are many small factors, summarize them generally (e.g., "multiple small discounts add up").
 `,
 });
