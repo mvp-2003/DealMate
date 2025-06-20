@@ -1,4 +1,4 @@
-use backend::app;
+use dealpal_backend::app;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use std::env;

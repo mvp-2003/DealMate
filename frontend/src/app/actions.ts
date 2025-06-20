@@ -2,7 +2,8 @@
 'use server';
 
 import { askDealBot, type AskDealBotInput, type AskDealBotOutput } from '@/ai/flows/ask-deal-bot';
-import { explainDealRank, type ExplainDealRankInput, type ExplainDealRankOutput } from '@/ai/flows/explain-deal-rank-flow';
+import { explainDealRank } from '@/ai/flows/explain-deal-rank-flow';
+import { ExplainDealRankInputSchema, type ExplainDealRankInput, type ExplainDealRankOutput } from '@/ai/flows/explain-deal-rank-flow.schemas';
 import { z } from 'zod';
 import type { Offer, RankedOffer, UserCard, UserPointsState, LoyaltyProgram, UserRewardGoal } from '@/lib/types';
 import { calculateRankedOffers } from '@/lib/offer-ranking';
@@ -165,24 +166,7 @@ export async function handleRemoveUserCard(formData: FormData): Promise<{ succes
   }
 }
 
-const ExplainDealRankActionInputSchema = z.object({
-  offerDetails: z.string().transform((str, ctx) => {
-    try {
-      return JSON.parse(str) as RankedOffer;
-    } catch (e) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid JSON for offerDetails" });
-      return z.NEVER;
-    }
-  }),
-   userContext: z.string().transform((str, ctx) => { // Sending full user context as stringified JSON
-    try {
-      return JSON.parse(str) as UserPointsState;
-    } catch (e) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid JSON for userContext" });
-      return z.NEVER;
-    }
-  }).optional(),
-});
+const ExplainDealRankActionInputSchema = ExplainDealRankInputSchema;
 
 export async function handleExplainDealRank(formData: FormData): Promise<{ data: ExplainDealRankOutput | null; error: string | null }> {
   const rawInput = {
@@ -197,7 +181,7 @@ export async function handleExplainDealRank(formData: FormData): Promise<{ data:
   }
   
   const input: ExplainDealRankInput = {
-    offer: validationResult.data.offerDetails,
+    offer: validationResult.data.offer,
     userContext: validationResult.data.userContext,
   };
 
@@ -231,7 +215,7 @@ export async function handleAddUserRewardGoal(formData: FormData): Promise<{ dat
     const parsedData = {
         ...rawData,
         userId: 'mockUserId', // Replace with actual authenticated user ID
-        isActive: rawData.isActive === 'on' || rawData.isActive === 'true' || rawData.isActive === true,
+        isActive: rawData.isActive === 'on' || rawData.isActive === 'true',
         targetValue: Number(rawData.targetValue)
     };
 

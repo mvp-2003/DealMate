@@ -1,22 +1,37 @@
 -- Create users table
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username VARCHAR(255) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id UUID PRIMARY KEY,
+    email TEXT UNIQUE,
+    created_at TIMESTAMP
 );
 
--- Create deals table
-CREATE TABLE deals (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    url VARCHAR(2048) NOT NULL,
-    price NUMERIC(10, 2),
-    currency VARCHAR(3),
-    posted_by UUID NOT NULL REFERENCES users(id),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- Create wallets table
+CREATE TABLE wallets (
+    id UUID,
+    user_id UUID,
+    bank TEXT,
+    card_type TEXT,
+    reward_rate FLOAT,
+    current_points INT,
+    threshold INT,
+    reward_value FLOAT
+);
+
+-- Create purchases table
+CREATE TABLE purchases (
+    id UUID,
+    user_id UUID,
+    product_id TEXT,
+    price FLOAT,
+    saved FLOAT,
+    timestamp TIMESTAMP
+);
+
+-- Create rewards table
+CREATE TABLE rewards (
+    user_id UUID,
+    goal TEXT,
+    target_points INT,
+    reward_value FLOAT,
+    unlocked BOOLEAN
 );

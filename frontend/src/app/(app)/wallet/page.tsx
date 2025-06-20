@@ -256,9 +256,8 @@ export default function WalletPage() {
       </Tabs>
       
       <p className="text-xs text-center text-muted-foreground pt-2">
-        ShopSavvy securely stores only card metadata (like bank and type) to personalize deals. Full card numbers are never stored.
+        DealPal securely stores only card metadata (like bank and type) to personalize deals. Full card numbers are never stored.
       </p>
     </div>
   );
 }
-
