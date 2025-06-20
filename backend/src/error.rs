@@ -25,21 +25,21 @@ impl IntoResponse for AppError {
                 eprintln!("SQLx error: {:?}", e);
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    "Database error".to_string(),
+                    format!("Database error: {}", e),
                 )
             }
             AppError::EnvVar(e) => {
                 eprintln!("Environment variable error: {:?}", e);
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    "Configuration error".to_string(),
+                    format!("Configuration error: {}", e),
                 )
             }
             AppError::Io(e) => {
                 eprintln!("IO error: {:?}", e);
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    "Internal server error".to_string(),
+                    format!("Internal server error: {}", e),
                 )
             }
         };

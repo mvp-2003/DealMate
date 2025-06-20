@@ -14,8 +14,9 @@ pub mod routes;
 use crate::routes::{health_check, wallet};
 
 pub fn app(pool: PgPool) -> Router {
+    // Add comments to clarify middleware setup
     let cors = CorsLayer::new()
-        .allow_origin(Any)
+        .allow_origin(Any) // Allow all origins for now; consider restricting in production
         .allow_methods(Any)
         .allow_headers(Any);
 

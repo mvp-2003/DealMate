@@ -12,11 +12,12 @@ pub async fn create_pool() -> Result<PgPool, sqlx::Error> {
     url.set_path("/postgres");
     let mut conn = PgConnection::connect(url.as_str()).await?;
 
-    let db_exists = sqlx::query("SELECT 1 FROM pg_database WHERE datname = $1")
+    // Optimize database existence check by using a single query
+    let db_exists = sqlx::query_scalar::<_, bool>("SELECT EXISTS (SELECT 1 FROM pg_database WHERE datname = $1)")
         .bind(&db_name)
         .fetch_one(&mut conn)
         .await
-        .is_ok();
+        .unwrap_or(false);
 
     if !db_exists {
         info!("Creating database {}", db_name);

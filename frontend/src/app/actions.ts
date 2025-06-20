@@ -1,4 +1,3 @@
-
 'use server';
 
 import { askDealBot, type AskDealBotInput, type AskDealBotOutput } from '@/ai/flows/ask-deal-bot';
@@ -7,6 +6,7 @@ import { ExplainDealRankInputSchema, type ExplainDealRankInput, type ExplainDeal
 import { z } from 'zod';
 import type { Offer, RankedOffer, UserCard, UserPointsState, LoyaltyProgram, UserRewardGoal } from '@/lib/types';
 import { calculateRankedOffers } from '@/lib/offer-ranking';
+import { fetchUserCards, fetchLoyaltyPrograms, fetchUserRewardGoals } from '@/lib/api';
 
 // Mock database - in a real app, this would be Firestore or another DB
 let mockUserCards: UserCard[] = [
@@ -38,7 +38,7 @@ export async function handleAskDealBot(formData: FormData): Promise<{ data: AskD
   if (!validationResult.success) {
     return { data: null, error: validationResult.error.errors.map(e => e.message).join(', ') };
   }
-  
+
   const input: AskDealBotInput = validationResult.data;
 
   try {
@@ -46,7 +46,7 @@ export async function handleAskDealBot(formData: FormData): Promise<{ data: AskD
     return { data: result, error: null };
   } catch (e) {
     console.error("Error calling askDealBot:", e);
-    const errorMessage = e instanceof Error ? e.message : "An unknown error occurred with the AI assistant.";
+    const errorMessage = e instanceof Error ? `AI Assistant Error: ${e.message}` : "An unknown error occurred with the AI assistant.";
     return { data: null, error: errorMessage };
   }
 }
@@ -260,4 +260,17 @@ export async function handleRemoveUserRewardGoal(goalId: string): Promise<{ succ
         const errorMessage = e instanceof Error ? e.message : "Failed to remove goal.";
         return { success: false, error: errorMessage };
     }
+}
+
+// Replace mock data with dynamic data fetching
+export async function getUserCards(): Promise<UserCard[]> {
+  return await fetchUserCards();
+}
+
+export async function getLoyaltyPrograms(): Promise<LoyaltyProgram[]> {
+  return await fetchLoyaltyPrograms();
+}
+
+export async function getUserRewardGoals(): Promise<UserRewardGoal[]> {
+  return await fetchUserRewardGoals();
 }

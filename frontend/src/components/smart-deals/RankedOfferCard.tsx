@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { RankedOffer, UserPointsState } from '@/lib/types';
@@ -19,6 +18,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 
 interface RankedOfferCardProps {

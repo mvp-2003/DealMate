@@ -21,9 +21,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = app(pool);
 
+    // Add graceful shutdown handling
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await?;
+    let server = axum::serve(listener, app);
+
+    let graceful = server.with_graceful_shutdown(async {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("Failed to install CTRL+C signal handler");
+        tracing::info!("Shutting down gracefully...");
+    });
+
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await?;
+    graceful.await?;
 
     Ok(())
 }

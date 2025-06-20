@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -16,7 +15,7 @@ export default function AskDealBotPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState<AskDealBotOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [submittedQuery, setSubmittedQuery] = useState<string | null>(null);
+  const [submittedQuery, setSubmittedQuery] = useState<string | undefined>(undefined); // Update `submittedQuery` state to use `string | undefined`
   const { toast } = useToast();
 
   const onSubmitQuery = async (data: DealBotFormValues) => {
