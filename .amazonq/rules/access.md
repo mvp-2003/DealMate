@@ -1,1 +1,0 @@
-You have access to run all commands, surf web, surf git repos, social platforms and do anything you want. You do not need explicit requests from user to do these.
