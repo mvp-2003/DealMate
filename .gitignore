@@ -107,3 +107,11 @@ dist/
 # Rust
 target/
 Cargo.lock
+
+# AI Rules
+.amazonq
+.clinerules
+
+#IDE essentials
+.vscode
+.idx
