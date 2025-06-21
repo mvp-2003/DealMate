@@ -35,7 +35,20 @@ pub async fn create_pool() -> Result<PgPool, sqlx::Error> {
     Ok(pool)
 }
 
+use sqlx::migrate::Migrator;
+use tracing::error;
+
 pub async fn run_migrations(pool: &PgPool) -> Result<(), sqlx::Error> {
-    sqlx::migrate!("./migrations").run(pool).await?;
+    info!("Running migrations");
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let migrations_path = format!("{}/migrations", manifest_dir);
+    info!("Migrations path: {}", migrations_path);
+
+    let mut migrator = Migrator::new(std::path::Path::new(&migrations_path)).await.unwrap();
+    migrator.run(pool).await.map_err(|e| {
+        error!("Failed to run migrations: {}", e);
+        sqlx::Error::Protocol(e.to_string())
+    })?;
+
     Ok(())
 }
