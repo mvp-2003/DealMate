@@ -2,15 +2,273 @@
 <html>
 <head>
   <title>DealPal Extension</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      width: 200px;
-      font-family: sans-serif;
+      width: 320px;
+      min-height: 400px;
+      background: linear-gradient(135deg, #1e1b4b, #312e81, #1e1b4b);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #f8fafc;
+      overflow: hidden;
+    }
+    
+    .container {
+      padding: 20px;
+      position: relative;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(45deg, #8b5cf6, #3b82f6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    
+    .tagline {
+      font-size: 12px;
+      color: #cbd5e1;
+      opacity: 0.8;
+    }
+    
+    .status-card {
+      background: rgba(15, 15, 35, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+    
+    .status-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #8b5cf6;
+    }
+    
+    .status-text {
+      font-size: 12px;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+    
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(45deg, #8b5cf6, #3b82f6);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .floating-shapes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+    
+    .shape {
+      position: absolute;
+      background: rgba(139, 92, 246, 0.1);
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .shape:nth-child(1) {
+      width: 60px;
+      height: 60px;
+      top: -30px;
+      right: -30px;
+      animation-delay: 0s;
+    }
+    
+    .shape:nth-child(2) {
+      width: 40px;
+      height: 40px;
+      bottom: -20px;
+      left: -20px;
+      animation-delay: 2s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(180deg); }
     }
   </style>
 </head>
 <body>
-  <h1>DealPal</h1>
-  <p>Your deals, right here.</p>
+  <div class="floating-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
+  
+  <div class="container">
+    <div class="header">
+      <h1 class="logo">DealPal</h1>
+      <p class="tagline">Smart Shopping Assistant</p>
+    </div>
+    
+    <div class="status-card">
+      <div class="status-title">🔍 Product Detection</div>
+      <div class="status-text" id="detection-status">
+        Scanning current page for deals...
+      </div>
+      <div id="deals-found" style="margin-top: 8px; display: none;"></div>
+    </div>
+    
+    <div class="action-buttons">
+      <a href="http://localhost:9002/dashboard" target="_blank" class="btn btn-primary">
+        📊 Open Dashboard
+      </a>
+      <a href="http://localhost:9002/smart-deals" target="_blank" class="btn btn-primary">
+        🎯 Smart Deals
+      </a>
+      <button class="btn btn-secondary" id="refresh-scan">
+        � Refresh Scan
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // Enhanced popup functionality
+    let currentProduct = null;
+    let detectedDeals = null;
+    
+    function updateStatus(message, type = 'info') {
+      const statusElement = document.getElementById('detection-status');
+      statusElement.textContent = message;
+      statusElement.style.color = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#e2e8f0';
+    }
+    
+    function showDeals(deals) {
+      const dealsElement = document.getElementById('deals-found');
+      if (!deals || (!deals.coupons?.length && !deals.offers?.length)) {
+        dealsElement.style.display = 'none';
+        return;
+      }
+      
+      let html = '';
+      if (deals.coupons?.length > 0) {
+        html += `<div style="font-size: 11px; color: #c084fc; margin-bottom: 4px;">💰 ${deals.coupons.length} Coupon(s)</div>`;
+      }
+      if (deals.offers?.length > 0) {
+        html += `<div style="font-size: 11px; color: #60a5fa;">🎁 ${deals.offers.length} Offer(s)</div>`;
+      }
+      
+      dealsElement.innerHTML = html;
+      dealsElement.style.display = 'block';
+    }
+    
+    function loadCurrentProduct() {
+      chrome.storage.local.get(['currentProduct', 'lastUpdate'], (result) => {
+        if (result.currentProduct) {
+          currentProduct = result.currentProduct;
+          const timeDiff = Date.now() - (result.lastUpdate || 0);
+          
+          if (timeDiff < 30000) { // Within last 30 seconds
+            updateStatus(`Found: ${currentProduct.productName.substring(0, 30)}...`, 'success');
+            showDeals(currentProduct.deals);
+          } else {
+            updateStatus('Product detected (scan may be outdated)');
+          }
+        } else {
+          updateStatus('No product detected on current page');
+        }
+      });
+    }
+    
+    function refreshScan() {
+      updateStatus('Refreshing scan...');
+      
+      // Send message to content script to re-scan
+      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        if (tabs[0]) {
+          chrome.tabs.sendMessage(tabs[0].id, {action: 'rescan'}, (response) => {
+            if (chrome.runtime.lastError) {
+              updateStatus('Unable to scan this page', 'error');
+            } else {
+              setTimeout(loadCurrentProduct, 2000);
+            }
+          });
+        }
+      });
+    }
+    
+    // Event listeners
+    document.getElementById('refresh-scan').addEventListener('click', refreshScan);
+    
+    // Listen for real-time updates
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (namespace === 'local' && changes.currentProduct) {
+        currentProduct = changes.currentProduct.newValue;
+        if (currentProduct) {
+          updateStatus(`New: ${currentProduct.productName.substring(0, 30)}...`, 'success');
+          showDeals(currentProduct.deals);
+        }
+      }
+    });
+    
+    // Auto-load on popup open
+    loadCurrentProduct();
+    
+    // Auto-refresh status
+    setTimeout(() => {
+      if (!currentProduct) {
+        updateStatus('DealPal is ready! Visit any e-commerce site.');
+      }
+    }, 3000);
+  </script>
 </body>
 </html>

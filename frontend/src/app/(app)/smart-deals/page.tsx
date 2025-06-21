@@ -58,62 +58,77 @@ export default function SmartDealsPage() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-headline font-semibold tracking-tight">Smart Deals</h2>
-          <p className="text-sm text-muted-foreground">
-            Top offers ranked by overall value, including your card perks.
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="flex justify-between items-center">
+          <div className="glass-card p-6 flex-1 mr-4">
+            <h2 className="text-3xl font-headline font-bold tracking-tight bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              🎯 Smart Deals
+            </h2>
+            <p className="text-sm text-muted-foreground/80 mt-2">
+              AI-powered deals ranked by your cards, spending patterns, and maximum savings potential.
+            </p>
+          </div>
+          <div className="glass-card p-4">
+            <Button onClick={fetchRankedDeals} variant="outline" size="sm" disabled={isLoading} 
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-none hover:from-purple-600 hover:to-blue-600">
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+              Refresh Deals
+            </Button>
+          </div>
+        </div>
+
+        {isLoading && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="glass-card p-6 animate-pulse">
+                <div className="h-32 bg-muted/20 rounded-md mb-4"></div>
+                <div className="h-6 bg-muted/20 rounded w-3/4 mb-3"></div>
+                <div className="h-4 bg-muted/20 rounded w-1/2 mb-2"></div>
+                <div className="h-4 bg-muted/20 rounded w-1/3"></div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {error && !isLoading && (
+          <div className="glass-card p-6">
+            <Alert variant="destructive" className="bg-red-950/50 border-red-500/50">
+              <Info className="h-4 w-4" />
+              <AlertTitle>Error Loading Deals</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </div>
+        )}
+
+        {!isLoading && !error && rankedOffers.length === 0 && (
+          <div className="glass-card p-8 text-center">
+            <Alert className="bg-blue-950/50 border-blue-500/50">
+              <Info className="h-4 w-4" />
+              <AlertTitle>🔍 No Smart Deals Available</AlertTitle>
+              <AlertDescription>
+                Add some cards to your wallet and browse e-commerce sites with our extension for personalized deal recommendations.
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+
+        {!isLoading && !error && rankedOffers.length > 0 && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rankedOffers.map((offer, index) => (
+              <div key={offer.id} className="floating-card" style={{animationDelay: `${index * 0.1}s`}}>
+                <RankedOfferCard offer={offer} />
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="glass-card p-4">
+          <p className="text-xs text-center text-muted-foreground/60">
+            🤖 AI analyzes coupons, cashback, card bonuses, and spending patterns. Data refreshed in real-time from extension browsing.
           </p>
         </div>
-        <Button onClick={fetchRankedDeals} variant="outline" size="sm" disabled={isLoading}>
-          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-          Refresh
-        </Button>
       </div>
-
-      {isLoading && (
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="p-4 border rounded-lg shadow animate-pulse">
-              <div className="h-24 bg-muted rounded-md mb-3"></div>
-              <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-muted rounded w-1/2 mb-1"></div>
-              <div className="h-4 bg-muted rounded w-1/3"></div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {error && !isLoading && (
-         <Alert variant="destructive">
-          <Info className="h-4 w-4" />
-          <AlertTitle>Error Loading Deals</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {!isLoading && !error && rankedOffers.length === 0 && (
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertTitle>No Smart Deals Available</AlertTitle>
-          <AlertDescription>
-            We couldn't find any special deals matching your profile right now, or there might be no offers to rank. 
-            Try adding some cards to your wallet for personalized recommendations.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {!isLoading && !error && rankedOffers.length > 0 && (
-        <div className="space-y-4">
-          {rankedOffers.map((offer) => (
-            <RankedOfferCard key={offer.id} offer={offer} />
-          ))}
-        </div>
-      )}
-       <p className="text-xs text-center text-muted-foreground pt-2">
-        Ranking considers coupons, cashback, card bonuses, and potential perk unlocks. All data is illustrative.
-      </p>
     </div>
   );
 }

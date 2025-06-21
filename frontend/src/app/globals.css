@@ -72,18 +72,93 @@ html {
   }
 }
 
-/* Neumorphic-inspired Card Style */
+/* Enhanced 3D Card Styles */
 .neumorphic-card {
-  @apply rounded-lg bg-card shadow-[5px_5px_10px_#1a1a2e,_-5px_-5px_10px_#24243e] transition-all duration-300 ease-in-out;
-  /* Adjust colors based on final zinc palette for darker/lighter shadows */
-  /* Example using fixed dark shades for neumorphism:
-     zinc-950 (background: hsl(240 10% 3.9%))
-     darker shadow: ~hsl(240 10% 2.5%)
-     lighter shadow: ~hsl(240 10% 5.5%)
-     This might need to be fine-tuned or done with pseudo-elements for more control
-  */
+  @apply rounded-xl bg-card transition-all duration-300 ease-in-out;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
 }
-.neumorphic-card-interactive:hover {
-  @apply shadow-[inset_3px_3px_7px_#1a1a2e,inset_-3px_-3px_7px_#24243e];
+
+.neumorphic-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+.glass-card {
+  @apply rounded-xl transition-all duration-300 ease-in-out;
+  background: rgba(15, 15, 35, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  background: rgba(15, 15, 35, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.floating-card {
+  @apply transition-all duration-500 ease-out;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotateX(0deg); }
+  50% { transform: translateY(-10px) rotateX(5deg); }
+}
+
+.gradient-border {
+  position: relative;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border-radius: 12px;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(145deg, #8b5cf6, #3b82f6, #10b981);
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+}
+
+/* Additional utility classes */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
 }
 

@@ -36,7 +36,7 @@ pub fn app(pool: PgPool) -> Router {
     Router::new()
         .route("/", get(|| async { "Hello, World!" }))
         .route("/health_check", get(health_check::health_check))
-        .route("/api/deals", get(deals::get_deals))
+        .route("/api/deals", get(deals::get_deals).post(deals::handle_product_detection))
         .merge(wallet_routes(pool.clone()))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
