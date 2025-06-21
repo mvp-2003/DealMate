@@ -1,10 +1,9 @@
-use axum::Server;
 use dealpal_backend::app;
 use dealpal_backend::db;
 use dotenvy::dotenv;
 use std::net::SocketAddr;
+use tokio::net::TcpListener;
 use tokio::signal;
-use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -25,12 +24,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = app(pool);
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
+    let listener = TcpListener::bind(addr).await?;
 
     tracing::debug!("listening on {}", addr);
 
     // Run the server with graceful shutdown
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
         .await?;
 
     Ok(())

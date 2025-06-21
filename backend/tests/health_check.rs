@@ -2,8 +2,8 @@ use axum::{
     body::Body,
     http::{Request, StatusCode},
 };
-use backend::app;
-use dotenv::dotenv;
+use dealpal_backend::app;
+use dotenvy::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 use tower::ServiceExt;

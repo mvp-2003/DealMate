@@ -5,7 +5,6 @@ use axum::{
 use sqlx::PgPool;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
-use uuid::Uuid;
 
 pub mod db;
 pub mod error;

@@ -7,7 +7,6 @@ use axum::{
 use bigdecimal::BigDecimal;
 use serde_json::json;
 use sqlx::PgPool;
-use time::OffsetDateTime;
 use uuid::Uuid;
 
 use crate::models::wallet::{NewWallet, UpdateWallet, Wallet};
