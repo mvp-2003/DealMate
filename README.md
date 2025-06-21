@@ -53,3 +53,32 @@ The frontend is a Next.js application. See the `frontend/README.md` for more det
 ## Browser Extension
 
 The browser extension is a simple JavaScript-based extension. See the `browser-extension/README.md` for more details.
+
+## Podman Support
+
+This project supports running the application using Podman as an alternative to Docker.
+
+### Prerequisites
+
+1.  Install Podman: Follow the instructions for your operating system from the [Podman installation guide](https://podman.io/getting-started/installation).
+2.  Install `podman-compose`:
+
+    ```bash
+    pip install podman-compose
+    ```
+
+### Running the Application with Podman
+
+1.  Build the images:
+
+    ```bash
+    ./podman-build.sh
+    ```
+
+2.  Bring up the application:
+
+    ```bash
+    ./podman-up.sh
+    ```
+
+This will build the Docker images using Podman and then bring up the application using `podman-compose`.
