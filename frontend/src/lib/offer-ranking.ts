@@ -4,7 +4,7 @@ import type { Offer, UserCard, RankedOffer, UserPointsState, LoyaltyProgram, Use
 const MIN_SPEND_FOR_PERK_CONSIDERATION = 100; // Don't consider tiny purchases for big perks
 
 export function calculateRankedOffers(offers: Offer[], userPointsState: UserPointsState): RankedOffer[] {
-  const rankedOffers: RankedOffer[] = offers.map(offer => {
+  const rankedOffers: RankedOffer[] = offers.map((offer, index) => {
     let priceAfterDirectDiscounts = offer.basePrice;
     let totalDiscountValue = 0; // Coupons, direct offer discounts
     let totalCashbackValue = 0; // Cashback expected post-purchase
@@ -154,6 +154,7 @@ export function calculateRankedOffers(offers: Offer[], userPointsState: UserPoin
 
     return {
       ...offer,
+      rank: 0, // Placeholder, will be updated after sorting
       finalPrice: priceBeforeCardAndCashback, // Price after direct coupon, before cashback/card bonuses considered for effective price calculation
       effectivePrice,
       totalDiscountValue,
@@ -169,6 +170,11 @@ export function calculateRankedOffers(offers: Offer[], userPointsState: UserPoin
   });
 
   // Sort by composite score (higher is better)
-  return rankedOffers.sort((a, b) => b.compositeScore - a.compositeScore);
-}
+  const sortedOffers = rankedOffers.sort((a, b) => b.compositeScore - a.compositeScore);
 
+  // Add rank
+  return sortedOffers.map((offer, index) => ({
+    ...offer,
+    rank: index + 1,
+  }));
+}

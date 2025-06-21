@@ -1,10 +1,11 @@
 use axum::{
-    routing::get,
+    routing::{delete, get, post, put},
     Router,
 };
 use sqlx::PgPool;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
+use uuid::Uuid;
 
 pub mod db;
 pub mod error;
@@ -12,6 +13,19 @@ pub mod models;
 pub mod routes;
 
 use crate::routes::{health_check, wallet};
+
+// Create a new function for wallet routes to improve modularity
+fn wallet_routes(pool: PgPool) -> Router {
+    Router::new()
+        .route("/wallet", post(wallet::create_wallet))
+        .route(
+            "/wallet/:wallet_id",
+            get(wallet::get_wallet)
+                .put(wallet::update_wallet)
+                .delete(wallet::delete_wallet),
+        )
+        .with_state(pool)
+}
 
 pub fn app(pool: PgPool) -> Router {
     // Add comments to clarify middleware setup
@@ -23,14 +37,7 @@ pub fn app(pool: PgPool) -> Router {
     Router::new()
         .route("/", get(|| async { "Hello, World!" }))
         .route("/health_check", get(health_check::health_check))
-        .route(
-            "/wallet",
-            get(wallet::get_wallet)
-                .post(wallet::create_wallet)
-                .put(wallet::update_wallet)
-                .delete(wallet::delete_wallet),
-        )
-        .with_state(pool)
+        .merge(wallet_routes(pool.clone())) // Merge wallet routes
         .layer(TraceLayer::new_for_http())
         .layer(cors)
 }

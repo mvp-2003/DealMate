@@ -1,26 +1,35 @@
-import type { UserCard, LoyaltyProgram, UserRewardGoal } from './types';
+import { Wallet, UserCard, LoyaltyProgram, UserRewardGoal } from './types';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+
+export async function getWallet(walletId: string): Promise<Wallet> {
+  const response = await fetch(`${API_BASE_URL}/wallet/${walletId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch wallet');
+  }
+  return response.json();
+}
 
 export async function fetchUserCards(): Promise<UserCard[]> {
-  // Replace with actual API call
+  // Mock data for now
   return [
-    { id: 'card1', userId: 'mockUserId', bank: 'HDFC', cardType: 'Infinia', last4Digits: '1234', rewards_per_rupee: 0.165, reward_value_inr: 1, current_points: 25000, next_reward_threshold: 30000, next_reward_value: 2500 },
-    { id: 'card2', userId: 'mockUserId', bank: 'Axis', cardType: 'Magnus', last4Digits: '5678', rewards_per_rupee: 0.048 , reward_value_inr: 1, current_points: 120000, next_reward_threshold: 100000, next_reward_value: 10000 },
-    { id: 'card3', userId: 'mockUserId', bank: 'SBI', cardType: 'Cashback', last4Digits: '9012', rewards_per_rupee: 0.05, reward_value_inr: 1 },
+    { id: '1', userId: '1', name: 'ICICI Amazon Pay', bank: 'ICICI', cardType: 'Credit' },
+    { id: '2', userId: '1', name: 'HDFC Millennia', bank: 'HDFC', cardType: 'Credit' },
   ];
 }
 
 export async function fetchLoyaltyPrograms(): Promise<LoyaltyProgram[]> {
-  // Replace with actual API call
+  // Mock data for now
   return [
-    { id: 'lp1', userId: 'mockUserId', programName: 'Flipkart SuperCoins', currentPoints: 350, pointValueInRupees: 1},
-    { id: 'lp2', userId: 'mockUserId', programName: 'Amazon Pay Rewards', currentPoints: 150, pointValueInRupees: 1},
+    { id: '1', userId: '1', programName: 'Taj InnerCircle', currentPoints: 500, pointValueInRupees: 1 },
+    { id: '2', userId: '1', programName: 'Marriott Bonvoy', currentPoints: 2500, pointValueInRupees: 0.5 },
   ];
 }
 
 export async function fetchUserRewardGoals(): Promise<UserRewardGoal[]> {
-  // Replace with actual API call
+  // Mock data for now
   return [
-    { id: 'goal1', userId: 'mockUserId', description: 'Maximize HDFC Infinia Flight Vouchers', targetType: 'points_milestone_card', targetValue: 30000, cardIdRef: 'card1', isActive: true },
-    { id: 'goal2', userId: 'mockUserId', description: 'Save ₹2000 this month on electronics', targetType: 'monetary_savings_monthly', targetValue: 2000, isActive: true },
+    { id: '1', userId: '1', description: 'Free Flight Ticket', targetType: 'points_milestone_card', targetValue: 5000, cardIdRef: '1', isActive: true },
+    { id: '2', userId: '1', description: 'Hotel Stay', targetType: 'points_milestone_program', targetValue: 7500, loyaltyProgramIdRef: '2', isActive: false },
   ];
 }

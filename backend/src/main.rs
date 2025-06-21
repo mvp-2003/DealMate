@@ -1,6 +1,9 @@
+use axum_server::Handle;
 use dealpal_backend::app;
 use dealpal_backend::db;
 use dotenvy::dotenv;
+use std::net::SocketAddr;
+use tokio::signal;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -20,20 +23,46 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     db::run_migrations(&pool).await?;
 
     let app = app(pool);
+    let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
+    let handle = Handle::new();
 
-    // Add graceful shutdown handling
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await?;
-    let server = axum::serve(listener, app);
+    // Spawn a task to gracefully shutdown the server.
+    tokio::spawn(shutdown_signal(handle.clone()));
 
-    let graceful = server.with_graceful_shutdown(async {
-        tokio::signal::ctrl_c()
-            .await
-            .expect("Failed to install CTRL+C signal handler");
-        tracing::info!("Shutting down gracefully...");
-    });
+    tracing::debug!("listening on {}", addr);
 
-    tracing::debug!("listening on {}", listener.local_addr().unwrap());
-    graceful.await?;
+    // Run the server with graceful shutdown
+    axum_server::bind(addr)
+        .handle(handle)
+        .serve(app)
+        .await?;
 
     Ok(())
+}
+
+async fn shutdown_signal(handle: Handle) {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+
+    tracing::info!("signal received, starting graceful shutdown");
+    handle.graceful_shutdown(None);
 }

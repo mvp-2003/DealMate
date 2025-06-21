@@ -6,6 +6,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // In a real extension, you would make an API call to your backend here.
     // For now, we'll just log the metadata to the console.
     console.log("Product metadata:", request.data);
-    sendResponse({ status: "success" });
+    // To make the sendResponse function asynchronous, you need to return true.
+    (async () => {
+      // Simulate an async operation, e.g., fetching from a backend
+      await new Promise(resolve => setTimeout(resolve, 100));
+      sendResponse({ status: "success" });
+    })();
+    return true; // Keep the message channel open for the async response
   }
 });

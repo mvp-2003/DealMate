@@ -64,6 +64,7 @@ export default function CreditCardForm({ onSubmit, initialData, isLoading, onCan
   const processSubmit = async (values: z.infer<typeof cardFormSchema>) => {
     const submitValues: CardFormValues = {
         ...values,
+        name: `${values.bank} ${values.cardType}`,
         last4Digits: values.last4Digits || undefined, // Ensure empty string becomes undefined
     };
     await onSubmit(submitValues);
@@ -201,4 +202,3 @@ export default function CreditCardForm({ onSubmit, initialData, isLoading, onCan
     </Form>
   );
 }
-

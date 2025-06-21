@@ -10,9 +10,9 @@ import { fetchUserCards, fetchLoyaltyPrograms, fetchUserRewardGoals } from '@/li
 
 // Mock database - in a real app, this would be Firestore or another DB
 let mockUserCards: UserCard[] = [
-  { id: 'card1', userId: 'mockUserId', bank: 'HDFC', cardType: 'Infinia', last4Digits: '1234', rewards_per_rupee: 0.165, reward_value_inr: 1, current_points: 25000, next_reward_threshold: 30000, next_reward_value: 2500 }, // Approx 3.3% * 5 RP/100Rs, 1RP=1Rs on smartbuy for some cats
-  { id: 'card2', userId: 'mockUserId', bank: 'Axis', cardType: 'Magnus', last4Digits: '5678', rewards_per_rupee: 0.048 , reward_value_inr: 1, current_points: 120000, next_reward_threshold: 100000, next_reward_value: 10000 }, // Approx 12 points per 200, 1 point = 0.2 INR (simplified to 4.8% value)
-  { id: 'card3', userId: 'mockUserId', bank: 'SBI', cardType: 'Cashback', last4Digits: '9012', rewards_per_rupee: 0.05, reward_value_inr: 1 }, // Direct 5% cashback
+  { id: 'card1', userId: 'mockUserId', name: 'HDFC Infinia', bank: 'HDFC', cardType: 'Infinia', last4Digits: '1234', rewards_per_rupee: 0.165, reward_value_inr: 1, current_points: 25000, next_reward_threshold: 30000, next_reward_value: 2500 }, // Approx 3.3% * 5 RP/100Rs, 1RP=1Rs on smartbuy for some cats
+  { id: 'card2', userId: 'mockUserId', name: 'Axis Magnus', bank: 'Axis', cardType: 'Magnus', last4Digits: '5678', rewards_per_rupee: 0.048 , reward_value_inr: 1, current_points: 120000, next_reward_threshold: 100000, next_reward_value: 10000 }, // Approx 12 points per 200, 1 point = 0.2 INR (simplified to 4.8% value)
+  { id: 'card3', userId: 'mockUserId', name: 'SBI Cashback', bank: 'SBI', cardType: 'Cashback', last4Digits: '9012', rewards_per_rupee: 0.05, reward_value_inr: 1 }, // Direct 5% cashback
 ];
 let mockLoyaltyPrograms: LoyaltyProgram[] = [
     { id: 'lp1', userId: 'mockUserId', programName: 'Flipkart SuperCoins', currentPoints: 350, pointValueInRupees: 1},
@@ -136,9 +136,10 @@ export async function handleAddUserCard(formData: FormData): Promise<{ data: Use
     return { data: null, error: validation.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ') };
   }
   try {
-    const newCard: UserCard = { 
-        ...validation.data, 
+    const newCard: UserCard = {
+        ...validation.data,
         id: `card${Date.now()}`,
+        name: validation.data.cardType,
         last4Digits: validation.data.last4Digits || undefined, // ensure empty string becomes undefined
     };
     mockUserCards.push(newCard);

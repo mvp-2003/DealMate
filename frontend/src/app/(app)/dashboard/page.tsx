@@ -5,8 +5,7 @@ import OffersList from '@/components/dashboard/OffersList';
 import SavingsScore from '@/components/dashboard/SavingsScore';
 import PriceHistoryChart from '@/components/dashboard/PriceHistoryChart';
 import MonthlySavingsChart from '@/components/dashboard/MonthlySavingsChart'; // New Chart
-import { Separator } from '@/components/ui/separator';
-import { TicketPercent, CreditCard, BarChart3 } from 'lucide-react';
+import { TicketPercent, CreditCard } from 'lucide-react';
 
 export default function DashboardPage() {
   return (
@@ -50,4 +49,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

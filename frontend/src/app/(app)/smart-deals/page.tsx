@@ -12,11 +12,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Mock initial offers
 const mockOffersData: Offer[] = [
-  { id: 'offer1', productName: 'High-End Laptop X1', basePrice: 120000, platform: 'Amazon.in', productUrl: '#', couponValue: 5000, cashbackPercentage: 5, cardSpecificBonusPercentage: 10, requiredCardType: 'HDFC Infinia', productImageUrl: 'https://placehold.co/300x200.png?text=LaptopX1' },
-  { id: 'offer2', productName: 'Premium Smartphone Z', basePrice: 75000, platform: 'Flipkart', productUrl: '#', cashbackFlat: 2000, cardSpecificBonusFlat: 1500, requiredCardType: 'Axis Magnus', productImageUrl: 'https://placehold.co/300x200.png?text=PhoneZ' },
-  { id: 'offer3', productName: 'Noise Cancelling Headphones', basePrice: 20000, platform: 'Myntra', productUrl: '#', couponValue: 1000, cashbackPercentage: 3, productImageUrl: 'https://placehold.co/300x200.png?text=Headphones' },
-  { id: 'offer4', productName: 'Smart TV 55 inch', basePrice: 55000, platform: 'Amazon.in', productUrl: '#', productImageUrl: 'https://placehold.co/300x200.png?text=SmartTV', cardSpecificBonusPercentage: 5, requiredCardType: 'SBI Cashback' },
-  { id: 'offer5', productName: 'Gaming Console NextGen', basePrice: 45000, platform: 'Flipkart', productUrl: '#', couponValue: 2000, productImageUrl: 'https://placehold.co/300x200.png?text=Console' },
+  { id: 'offer1', description: 'Offer 1', value: 'Value 1', type: 'coupon', productName: 'High-End Laptop X1', basePrice: 120000, platform: 'Amazon.in', productUrl: '#', couponValue: 5000, cashbackPercentage: 5, cardSpecificBonusPercentage: 10, requiredCardType: 'HDFC Infinia', productImageUrl: 'https://placehold.co/300x200.png?text=LaptopX1' },
+  { id: 'offer2', description: 'Offer 2', value: 'Value 2', type: 'cashback', productName: 'Premium Smartphone Z', basePrice: 75000, platform: 'Flipkart', productUrl: '#', cashbackFlat: 2000, cardSpecificBonusFlat: 1500, requiredCardType: 'Axis Magnus', productImageUrl: 'https://placehold.co/300x200.png?text=PhoneZ' },
+  { id: 'offer3', description: 'Offer 3', value: 'Value 3', type: 'coupon', productName: 'Noise Cancelling Headphones', basePrice: 20000, platform: 'Myntra', productUrl: '#', couponValue: 1000, cashbackPercentage: 3, productImageUrl: 'https://placehold.co/300x200.png?text=Headphones' },
+  { id: 'offer4', description: 'Offer 4', value: 'Value 4', type: 'reward', productName: 'Smart TV 55 inch', basePrice: 55000, platform: 'Amazon.in', productUrl: '#', productImageUrl: 'https://placehold.co/300x200.png?text=SmartTV', cardSpecificBonusPercentage: 5, requiredCardType: 'SBI Cashback' },
+  { id: 'offer5', description: 'Offer 5', value: 'Value 5', type: 'coupon', productName: 'Gaming Console NextGen', basePrice: 45000, platform: 'Flipkart', productUrl: '#', couponValue: 2000, productImageUrl: 'https://placehold.co/300x200.png?text=Console' },
 ];
 
 

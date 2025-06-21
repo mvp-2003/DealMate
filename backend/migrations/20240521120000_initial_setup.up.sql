@@ -2,24 +2,21 @@
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     email TEXT UNIQUE,
-    created_at TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Create wallets table
 CREATE TABLE wallets (
-    id UUID,
-    user_id UUID,
-    bank TEXT,
-    card_type TEXT,
-    reward_rate FLOAT,
-    current_points INT,
-    threshold INT,
-    reward_value FLOAT
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Create purchases table
 CREATE TABLE purchases (
-    id UUID,
+    id UUID PRIMARY KEY,
     user_id UUID,
     product_id TEXT,
     price FLOAT,
