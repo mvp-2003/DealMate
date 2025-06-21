@@ -1,8 +1,8 @@
-use axum_server::Handle;
 use dealpal_backend::app;
 use dealpal_backend::db;
 use dotenvy::dotenv;
 use std::net::SocketAddr;
+use tokio::net::TcpListener;
 use tokio::signal;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -24,23 +24,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = app(pool);
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
-    let handle = Handle::new();
-
-    // Spawn a task to gracefully shutdown the server.
-    tokio::spawn(shutdown_signal(handle.clone()));
+    let listener = TcpListener::bind(addr).await?;
 
     tracing::debug!("listening on {}", addr);
 
     // Run the server with graceful shutdown
-    axum_server::bind(addr)
-        .handle(handle)
-        .serve(app)
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
         .await?;
 
     Ok(())
 }
 
-async fn shutdown_signal(handle: Handle) {
+async fn shutdown_signal() {
     let ctrl_c = async {
         signal::ctrl_c()
             .await
@@ -64,5 +60,4 @@ async fn shutdown_signal(handle: Handle) {
     }
 
     tracing::info!("signal received, starting graceful shutdown");
-    handle.graceful_shutdown(None);
 }

@@ -35,7 +35,39 @@ pub async fn create_pool() -> Result<PgPool, sqlx::Error> {
     Ok(pool)
 }
 
+use sqlx::migrate::Migrator;
+use tracing::error;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use dotenvy::dotenv;
+
+    #[tokio::test]
+    async fn test_database_connection() {
+        dotenv().ok();
+        let pool = create_pool().await.expect("Failed to create database pool");
+        
+        // Simple query to test connection
+        let result = sqlx::query("SELECT 1 as test")
+            .fetch_one(&pool)
+            .await;
+            
+        assert!(result.is_ok(), "Database connection failed");
+    }
+}
+
 pub async fn run_migrations(pool: &PgPool) -> Result<(), sqlx::Error> {
-    sqlx::migrate!("./migrations").run(pool).await?;
+    info!("Running migrations");
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let migrations_path = format!("{}/migrations", manifest_dir);
+    info!("Migrations path: {}", migrations_path);
+
+    let migrator = Migrator::new(std::path::Path::new(&migrations_path)).await.unwrap();
+    migrator.run(pool).await.map_err(|e| {
+        error!("Failed to run migrations: {}", e);
+        sqlx::Error::Protocol(e.to_string())
+    })?;
+
     Ok(())
 }

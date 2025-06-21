@@ -1,17 +1,30 @@
 // This is the service worker for the extension.
 // It will handle background tasks, such as listening for messages from content scripts.
 
+const API_BASE_URL = 'http://localhost:8000';
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getProductMetadata") {
-    // In a real extension, you would make an API call to your backend here.
-    // For now, we'll just log the metadata to the console.
     console.log("Product metadata:", request.data);
-    // To make the sendResponse function asynchronous, you need to return true.
+    
     (async () => {
-      // Simulate an async operation, e.g., fetching from a backend
-      await new Promise(resolve => setTimeout(resolve, 100));
-      sendResponse({ status: "success" });
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/deals?product_url=${encodeURIComponent(request.data.url)}`);
+        const deals = await response.json();
+        
+        // Store deals in extension storage
+        chrome.storage.local.set({
+          currentProduct: request.data,
+          deals: deals
+        });
+        
+        sendResponse({ status: "success", deals });
+      } catch (error) {
+        console.error('Failed to fetch deals:', error);
+        sendResponse({ status: "error", error: error.message });
+      }
     })();
-    return true; // Keep the message channel open for the async response
+    
+    return true;
   }
 });
