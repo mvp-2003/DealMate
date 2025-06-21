@@ -33,3 +33,11 @@ export async function fetchUserRewardGoals(): Promise<UserRewardGoal[]> {
     { id: '2', userId: '1', description: 'Hotel Stay', targetType: 'points_milestone_program', targetValue: 7500, loyaltyProgramIdRef: '2', isActive: false },
   ];
 }
+
+export async function fetchDeals(productUrl: string) {
+  const response = await fetch(`${API_BASE_URL}/api/deals?product_url=${encodeURIComponent(productUrl)}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch deals');
+  }
+  return response.json();
+}

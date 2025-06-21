@@ -4,9 +4,9 @@ use uuid::Uuid;
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
 pub struct Reward {
-    pub user_id: Uuid,
-    pub goal: String,
-    pub target_points: i32,
-    pub reward_value: f64,
-    pub unlocked: bool,
+    pub user_id: Option<Uuid>,
+    pub goal: Option<String>,
+    pub target_points: Option<i32>,
+    pub reward_value: Option<f64>,
+    pub unlocked: Option<bool>,
 }

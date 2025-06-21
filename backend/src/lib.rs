@@ -11,7 +11,7 @@ pub mod error;
 pub mod models;
 pub mod routes;
 
-use crate::routes::{health_check, wallet};
+use crate::routes::{health_check, wallet, deals};
 
 // Create a new function for wallet routes to improve modularity
 fn wallet_routes(pool: PgPool) -> Router {
@@ -36,7 +36,8 @@ pub fn app(pool: PgPool) -> Router {
     Router::new()
         .route("/", get(|| async { "Hello, World!" }))
         .route("/health_check", get(health_check::health_check))
-        .merge(wallet_routes(pool.clone())) // Merge wallet routes
+        .route("/api/deals", get(deals::get_deals))
+        .merge(wallet_routes(pool.clone()))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
 }
