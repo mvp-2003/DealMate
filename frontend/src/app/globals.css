@@ -135,30 +135,105 @@ html {
   mask-composite: xor;
 }
 
-/* Additional utility classes */
-.line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+/* Hide scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.perspective-1000 {
-  perspective: 1000px;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
-.transform-gpu {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
+/* Safe area padding for mobile devices */
+@supports (padding: max(0px)) {
+  .safe-area-inset-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 }
 
-.card-3d {
-  transform-style: preserve-3d;
-  transition: transform 0.3s ease;
+/* Mobile-first responsive utilities */
+@media (max-width: 640px) {
+  .neumorphic-card {
+    transform: none !important;
+    animation: none !important;
+  }
+  
+  .floating-card {
+    animation: none !important;
+  }
+  
+  .glass-card {
+    backdrop-filter: blur(8px);
+  }
 }
 
-.card-3d:hover {
-  transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Improved touch targets for mobile */
+@media (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  button {
+    min-height: 40px;
+  }
+}
+
+/* Better text scaling */
+@media (max-width: 480px) {
+  .text-3xl {
+    font-size: 1.75rem;
+  }
+  
+  .text-2xl {
+    font-size: 1.5rem;
+  }
+}
+
+/* Checkbox improvements for mobile and desktop */
+[data-radix-checkbox-root] {
+  aspect-ratio: 1 / 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure checkboxes stay square and properly sized */
+.checkbox-square {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  min-width: 1.25rem !important;
+  min-height: 1.25rem !important;
+  flex-shrink: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+}
+
+/* Mobile checkbox adjustments */
+@media (max-width: 640px) {
+  .checkbox-square {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    min-width: 1.5rem !important;
+    min-height: 1.5rem !important;
+  }
+}
+
+/* Force checkbox indicator to center properly */
+[data-radix-checkbox-indicator] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 

@@ -1,5 +1,5 @@
 use axum::{
-    routing::{delete, get, post, put},
+    routing::{get, post},
     Router,
 };
 use sqlx::PgPool;
@@ -19,9 +19,7 @@ fn wallet_routes(pool: PgPool) -> Router {
         .route("/wallet", post(wallet::create_wallet))
         .route(
             "/wallet/:wallet_id",
-            get(wallet::get_wallet)
-                .put(wallet::update_wallet)
-                .delete(wallet::delete_wallet),
+            get(wallet::get_wallet).delete(wallet::delete_wallet),
         )
         .with_state(pool)
 }

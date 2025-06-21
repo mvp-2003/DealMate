@@ -1,0 +1,30 @@
+Icon Placeholder Guide for DealPal Extension
+==============================================
+
+To add proper icons to your DealPal browser extension, create the following files:
+
+1. icon16.png (16x16 pixels)
+   - Small icon for browser toolbar
+   - Simple, recognizable design
+   - High contrast colors
+
+2. icon48.png (48x48 pixels)  
+   - Medium icon for extension management page
+   - Can include more detail than 16px version
+   - Clear brand representation
+
+3. icon128.png (128x128 pixels)
+   - Large icon for Chrome Web Store
+   - Full detail, professional appearance
+   - Brand colors: Purple gradient (#8b5cf6 to #3b82f6)
+
+Icon Design Suggestions:
+- Use DealPal's purple-blue gradient theme
+- Include a shopping/deal symbol (💎, 🎯, 💰)
+- Keep design minimal and clean
+- Ensure good visibility on light/dark backgrounds
+
+Quick Solution:
+You can temporarily use any PNG files renamed to these names, or create simple colored squares as placeholders until proper icons are designed.
+
+Place all icon files in: /browser-extension/images/

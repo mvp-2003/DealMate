@@ -43,20 +43,32 @@ export default function AskDealBotPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-headline font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Ask DealBot AI</h2>
-        <p className="text-md text-muted-foreground mt-1">
-          Get personalized deal advice and product recommendations from our AI assistant.
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
+          <div className="glass-card p-4 sm:p-6 text-center">
+            <h2 className="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+              🤖 Ask DealBot AI
+            </h2>
+            <p className="text-sm sm:text-md text-muted-foreground/80 mt-2">
+              Get personalized deal advice and product recommendations from our AI assistant.
+            </p>
+          </div>
+          
+          <div className="max-w-3xl mx-auto">
+            <DealBotForm onSubmitQuery={onSubmitQuery} isLoading={isLoading} />
+          </div>
+          
+          <div className="max-w-4xl mx-auto">
+            <DealBotResponse 
+              userQuery={submittedQuery} // Pass submitted query
+              response={aiResponse?.response} 
+              error={error} 
+              isLoading={isLoading} 
+            />
+          </div>
+        </div>
       </div>
-      <DealBotForm onSubmitQuery={onSubmitQuery} isLoading={isLoading} />
-      <DealBotResponse 
-        userQuery={submittedQuery} // Pass submitted query
-        response={aiResponse?.response} 
-        error={error} 
-        isLoading={isLoading} 
-      />
     </div>
   );
 }

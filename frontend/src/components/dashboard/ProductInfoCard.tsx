@@ -21,14 +21,14 @@ export default function ProductInfoCard({
   platform
 }: ProductInfoCardProps) {
   return (
-    <Card className="overflow-hidden neumorphic-card floating-card max-w-sm mx-auto">
+    <Card className="overflow-hidden neumorphic-card floating-card w-full">
       <CardHeader className="p-0 relative">
         <Image
           src={imageUrl}
           alt={title}
           width={300}
           height={180}
-          className="w-full h-36 object-cover" // Much smaller height
+          className="w-full h-32 sm:h-36 md:h-40 object-cover" // Responsive height
           data-ai-hint="product e-commerce"
           priority
         />
@@ -36,11 +36,11 @@ export default function ProductInfoCard({
           <Badge variant="secondary" className="glass-card text-xs px-2 py-1">{platform}</Badge>
         </div>
       </CardHeader>
-      <CardContent className="p-4 space-y-3">
-        <CardTitle className="text-lg font-semibold leading-tight text-foreground line-clamp-2">{title}</CardTitle>
-        <div className="flex items-baseline gap-2">
-          <p className="text-xl font-bold text-primary">{currentPrice}</p>
-          {originalPrice && <p className="text-sm text-muted-foreground line-through">{originalPrice}</p>}
+      <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+        <CardTitle className="text-sm sm:text-lg font-semibold leading-tight text-foreground line-clamp-2">{title}</CardTitle>
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <p className="text-lg sm:text-xl font-bold text-primary">{currentPrice}</p>
+          {originalPrice && <p className="text-xs sm:text-sm text-muted-foreground line-through">{originalPrice}</p>}
         </div>
         {discount && (
           <Badge variant="destructive" className="gradient-border text-xs px-2 py-1 shadow-lg">

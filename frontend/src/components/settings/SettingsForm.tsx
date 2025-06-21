@@ -57,11 +57,11 @@ export default function SettingsForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-md">Preferred Platforms</CardTitle>
-            <FormDescription>Select the e-commerce sites you shop on most.</FormDescription>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+        <Card className="neumorphic-card">
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="text-md sm:text-lg">Preferred Platforms</CardTitle>
+            <FormDescription className="text-sm">Select the e-commerce sites you shop on most.</FormDescription>
           </CardHeader>
           <CardContent>
             <FormField
@@ -69,39 +69,41 @@ export default function SettingsForm() {
               name="preferredPlatforms"
               render={() => (
                 <FormItem>
-                  {platforms.map((platform) => (
-                    <FormField
-                      key={platform.id}
-                      control={form.control}
-                      name="preferredPlatforms"
-                      render={({ field }) => {
-                        return (
-                          <FormItem
-                            key={platform.id}
-                            className="flex flex-row items-start space-x-3 space-y-0"
-                          >
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(platform.id)}
-                                onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([...(field.value || []), platform.id])
-                                    : field.onChange(
-                                        (field.value || []).filter(
-                                          (value) => value !== platform.id
-                                        )
-                                      );
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {platform.label}
-                            </FormLabel>
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  ))}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    {platforms.map((platform) => (
+                      <FormField
+                        key={platform.id}
+                        control={form.control}
+                        name="preferredPlatforms"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={platform.id}
+                              className="flex flex-row items-center space-x-3 space-y-0 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(platform.id)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...(field.value || []), platform.id])
+                                      : field.onChange(
+                                          (field.value || []).filter(
+                                            (value) => value !== platform.id
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal text-sm cursor-pointer flex-1">
+                                {platform.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

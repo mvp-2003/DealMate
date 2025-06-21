@@ -312,9 +312,26 @@ function initDealPal() {
   }, 1000);
 }
 
+// Message listener for popup communication
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'rescan') {
+    console.log('🎯 DealPal: Popup requested rescan');
+    detectProductPage();
+    sendResponse({ success: true });
+  }
+  return true;
+});
+
+// Enhanced error handling for extension messaging
+window.addEventListener('error', (e) => {
+  console.error('🎯 DealPal Content Script Error:', e.error);
+});
+
 // Initialize when ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initDealPal);
 } else {
   initDealPal();
 }
+
+console.log('🎯 DealPal: Content script fully loaded and ready');

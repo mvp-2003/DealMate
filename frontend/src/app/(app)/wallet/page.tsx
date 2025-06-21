@@ -151,19 +151,32 @@ export default function WalletPage() {
 
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-headline font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">My Wallet & Rewards</h2>
-        <p className="text-md text-muted-foreground">
-          Manage cards, track loyalty points, and set reward goals.
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl">
+        <div className="space-y-6">
+          <div className="glass-card p-4 sm:p-6">
+            <h2 className="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+              💳 My Wallet & Rewards
+            </h2>
+            <p className="text-sm sm:text-md text-muted-foreground/80 mt-2">
+              Manage cards, track loyalty points, and set reward goals.
+            </p>
+          </div>
 
       <Tabs defaultValue="cards" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="cards" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px data-[state=active]:shadow-md data-[state=active]:shadow-primary/30">My Cards</TabsTrigger>
-          <TabsTrigger value="goals" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px data-[state=active]:shadow-md data-[state=active]:shadow-primary/30">Reward Goals</TabsTrigger>
-          <TabsTrigger value="loyalty" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px data-[state=active]:shadow-md data-[state=active]:shadow-primary/30">Loyalty Programs</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 h-auto">
+          <TabsTrigger value="cards" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px data-[state=active]:shadow-md data-[state=active]:shadow-primary/30 text-xs sm:text-sm px-2 py-2">
+            <span className="hidden sm:inline">My Cards</span>
+            <span className="sm:hidden">Cards</span>
+          </TabsTrigger>
+          <TabsTrigger value="goals" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px data-[state=active]:shadow-md data-[state=active]:shadow-primary/30 text-xs sm:text-sm px-2 py-2">
+            <span className="hidden sm:inline">Reward Goals</span>
+            <span className="sm:hidden">Goals</span>
+          </TabsTrigger>
+          <TabsTrigger value="loyalty" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px data-[state=active]:shadow-md data-[state=active]:shadow-primary/30 text-xs sm:text-sm px-2 py-2">
+            <span className="hidden sm:inline">Loyalty Programs</span>
+            <span className="sm:hidden">Loyalty</span>
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="cards" className="mt-4">
@@ -255,9 +268,11 @@ export default function WalletPage() {
         </TabsContent>
       </Tabs>
       
-      <p className="text-xs text-center text-muted-foreground pt-2">
+      <p className="text-xs text-center text-muted-foreground/60 pt-4">
         DealPal securely stores only card metadata (like bank and type) to personalize deals. Full card numbers are never stored.
       </p>
+        </div>
+      </div>
     </div>
   );
 }
