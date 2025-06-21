@@ -50,19 +50,47 @@ async function handleProductDetection(data, sender, sendResponse) {
       lastUpdate: timestamp
     });
     
-    // Try to send data to backend API
+    // Try to send data to backend API with proper error handling
     try {
+      console.log('🎯 DealPal: Sending data to backend API...');
+      
+      const requestBody = {
+        product: {
+          productName: product.productName,
+          price: product.price,
+          originalPrice: product.originalPrice || '',
+          discount: product.discount || '',
+          image: product.image || '',
+          platform: product.platform,
+          url: product.url
+        },
+        deals: {
+          coupons: deals.coupons.map(coupon => ({
+            text: coupon.text,
+            type: coupon.type || 'general',
+            value: coupon.value || coupon.text
+          })),
+          offers: deals.offers.map(offer => ({
+            text: offer.text,
+            type: offer.type || 'general', 
+            value: offer.value || offer.text
+          }))
+        },
+        timestamp: timestamp
+      };
+      
+      console.log('🎯 DealPal: Request body:', JSON.stringify(requestBody, null, 2));
+      
       const response = await fetch(`${API_BASE_URL}/api/deals`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          product: product,
-          deals: deals,
-          timestamp: timestamp
-        })
+        body: JSON.stringify(requestBody)
       });
+      
+      console.log('🎯 DealPal: API response status:', response.status);
       
       if (response.ok) {
         const apiResponse = await response.json();
@@ -74,30 +102,36 @@ async function handleProductDetection(data, sender, sendResponse) {
           data: apiResponse 
         });
       } else {
-        throw new Error(`API response: ${response.status}`);
+        const errorText = await response.text();
+        console.error('🎯 DealPal: API error response:', errorText);
+        throw new Error(`API response: ${response.status} - ${errorText}`);
       }
     } catch (apiError) {
-      console.warn('🎯 DealPal: Backend API not available, storing locally', apiError);
+      console.warn('🎯 DealPal: Backend API error:', apiError.message);
       
       // Even if API fails, we still detected deals successfully
       sendResponse({ 
         status: "success", 
         message: "Deals detected and stored locally",
-        warning: "Backend API unavailable"
+        warning: `Backend API unavailable: ${apiError.message}`
       });
     }
     
     // Update badge with deal count
     const dealCount = (deals.coupons?.length || 0) + (deals.offers?.length || 0);
-    if (dealCount > 0) {
-      chrome.action.setBadgeText({
-        text: dealCount.toString(),
-        tabId: sender.tab?.id
-      });
-      chrome.action.setBadgeBackgroundColor({
-        color: '#8b5cf6',
-        tabId: sender.tab?.id
-      });
+    if (dealCount > 0 && sender.tab?.id) {
+      try {
+        chrome.action.setBadgeText({
+          text: dealCount.toString(),
+          tabId: sender.tab.id
+        });
+        chrome.action.setBadgeBackgroundColor({
+          color: '#8b5cf6',
+          tabId: sender.tab.id
+        });
+      } catch (badgeError) {
+        console.warn('🎯 DealPal: Badge update failed:', badgeError);
+      }
     }
     
   } catch (error) {

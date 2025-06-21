@@ -1,0 +1,143 @@
+// DealPal Popup Script - Enhanced functionality
+console.log('🎯 DealPal Popup: Script loaded');
+
+let currentProduct = null;
+let detectedDeals = null;
+
+function updateStatus(message, type = 'info') {
+  const statusElement = document.getElementById('detection-status');
+  if (statusElement) {
+    statusElement.textContent = message;
+    statusElement.style.color = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#e2e8f0';
+  }
+}
+
+function showDeals(deals) {
+  const dealsElement = document.getElementById('deals-found');
+  if (!dealsElement) return;
+  
+  if (!deals || (!deals.coupons?.length && !deals.offers?.length)) {
+    dealsElement.style.display = 'none';
+    return;
+  }
+  
+  let html = '';
+  if (deals.coupons?.length > 0) {
+    html += `<div style="font-size: 11px; color: #c084fc; margin-bottom: 4px;">💰 ${deals.coupons.length} Coupon(s)</div>`;
+  }
+  if (deals.offers?.length > 0) {
+    html += `<div style="font-size: 11px; color: #60a5fa;">🎁 ${deals.offers.length} Offer(s)</div>`;
+  }
+  
+  dealsElement.innerHTML = html;
+  dealsElement.style.display = 'block';
+}
+
+function loadCurrentProduct() {
+  chrome.storage.local.get(['currentProduct', 'lastUpdate'], (result) => {
+    if (chrome.runtime.lastError) {
+      console.error('🎯 DealPal Popup: Storage error:', chrome.runtime.lastError);
+      updateStatus('Error loading data', 'error');
+      return;
+    }
+    
+    if (result.currentProduct) {
+      currentProduct = result.currentProduct;
+      const timeDiff = Date.now() - (result.lastUpdate || 0);
+      
+      if (timeDiff < 30000) { // Within last 30 seconds
+        updateStatus(`Found: ${currentProduct.productName.substring(0, 30)}...`, 'success');
+        showDeals(currentProduct.deals);
+      } else {
+        updateStatus('Product detected (scan may be outdated)');
+        showDeals(currentProduct.deals);
+      }
+    } else {
+      // Check if we're on a supported site
+      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        if (tabs[0]) {
+          const hostname = new URL(tabs[0].url).hostname.toLowerCase();
+          const supportedSites = [
+            'amazon.com', 'amazon.in', 'flipkart.com', 'myntra.com', 
+            'ajio.com', 'nykaa.com', 'ebay.com', 'walmart.com', 'target.com'
+          ];
+          
+          const isSupported = supportedSites.some(site => hostname.includes(site));
+          
+          if (isSupported) {
+            updateStatus('Supported site - click refresh to scan');
+          } else {
+            updateStatus('Visit any e-commerce site to start');
+          }
+        } else {
+          updateStatus('No product detected on current page');
+        }
+      });
+    }
+  });
+}
+
+function refreshScan() {
+  updateStatus('Refreshing scan...');
+  
+  // Send message to content script to re-scan
+  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    if (chrome.runtime.lastError) {
+      console.error('🎯 DealPal Popup: Tab query error:', chrome.runtime.lastError);
+      updateStatus('Unable to access current tab', 'error');
+      return;
+    }
+    
+    if (tabs[0]) {
+      chrome.tabs.sendMessage(tabs[0].id, {action: 'rescan'}, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('🎯 DealPal Popup: Message error:', chrome.runtime.lastError);
+          updateStatus('Unable to scan this page', 'error');
+        } else {
+          console.log('🎯 DealPal Popup: Rescan requested successfully');
+          setTimeout(loadCurrentProduct, 2000);
+        }
+      });
+    }
+  });
+}
+
+// Initialize popup when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🎯 DealPal Popup: DOM loaded');
+  
+  // Event listeners
+  const refreshButton = document.getElementById('refresh-scan');
+  if (refreshButton) {
+    refreshButton.addEventListener('click', refreshScan);
+  }
+  
+  // Listen for real-time updates
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'local' && changes.currentProduct) {
+      currentProduct = changes.currentProduct.newValue;
+      if (currentProduct) {
+        updateStatus(`New: ${currentProduct.productName.substring(0, 30)}...`, 'success');
+        showDeals(currentProduct.deals);
+      }
+    }
+  });
+  
+  // Auto-load on popup open
+  loadCurrentProduct();
+  
+  // Auto-refresh status
+  setTimeout(() => {
+    if (!currentProduct) {
+      updateStatus('DealPal is ready! Visit any e-commerce site.');
+    }
+  }, 3000);
+});
+
+// Handle popup errors
+window.addEventListener('error', (e) => {
+  console.error('🎯 DealPal Popup Error:', e.error);
+  updateStatus('Popup error occurred', 'error');
+});
+
+console.log('🎯 DealPal Popup: Script ready');

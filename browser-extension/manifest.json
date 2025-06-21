@@ -6,11 +6,36 @@
   "permissions": [
     "scripting",
     "storage",
-    "activeTab"
+    "activeTab",
+    "tabs"
   ],
   "host_permissions": [
     "http://localhost:8000/*",
-    "https://*/*"
+    "http://localhost:9002/*",
+    "https://*/*",
+    "http://*/*",
+    "*://*.amazon.com/*",
+    "*://*.amazon.in/*",
+    "*://*.amazon.co.uk/*",
+    "*://*.amazon.ca/*",
+    "*://*.amazon.de/*",
+    "*://*.flipkart.com/*",
+    "*://*.myntra.com/*",
+    "*://*.ajio.com/*",
+    "*://*.nykaa.com/*",
+    "*://*.meesho.com/*",
+    "*://*.shopify.com/*",
+    "*://*.ebay.com/*",
+    "*://*.ebay.in/*",
+    "*://*.walmart.com/*",
+    "*://*.target.com/*",
+    "*://*.bestbuy.com/*",
+    "*://*.paytmmall.com/*",
+    "*://*.snapdeal.com/*",
+    "*://*.tatacliq.com/*",
+    "*://*.reliancedigital.in/*",
+    "*://*.croma.com/*",
+    "*://*.vijaysales.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -27,13 +52,30 @@
     {
       "matches": [
         "*://*.amazon.com/*",
-        "*://*.ebay.com/*",
-        "*://*.walmart.com/*",
+        "*://*.amazon.in/*",
+        "*://*.amazon.co.uk/*",
+        "*://*.amazon.ca/*",
+        "*://*.amazon.de/*",
         "*://*.flipkart.com/*",
         "*://*.myntra.com/*",
-        "*://*.shopify.com/*"
+        "*://*.ajio.com/*",
+        "*://*.nykaa.com/*",
+        "*://*.meesho.com/*",
+        "*://*.shopify.com/*",
+        "*://*.ebay.com/*",
+        "*://*.ebay.in/*",
+        "*://*.walmart.com/*",
+        "*://*.target.com/*",
+        "*://*.bestbuy.com/*",
+        "*://*.paytmmall.com/*",
+        "*://*.snapdeal.com/*",
+        "*://*.tatacliq.com/*",
+        "*://*.reliancedigital.in/*",
+        "*://*.croma.com/*",
+        "*://*.vijaysales.com/*"
       ],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
   ],
   "icons": {
