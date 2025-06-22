@@ -8,6 +8,27 @@ services:
       - DATABASE_URL=${DATABASE_URL}
     env_file:
       - ./backend/.env
+    depends_on:
+      - db
+  
+  # Python AI Service
+  ai-service:
+    build: ./backend/ai-service
+    ports:
+      - "8001:8001"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - POSTGRES_URL=${DATABASE_URL}
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=INFO
+    env_file:
+      - ./backend/ai-service/.env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ai-models-cache:/tmp/huggingface_cache
+      - torch-cache:/tmp/torch_cache
   
   frontend:
     build: ./frontend
@@ -15,5 +36,34 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+      - ai-service
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_AI_API_URL=http://localhost:8001
+  
+  # Database
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=dealpal
+      - POSTGRES_USER=dealpal
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  postgres_data:
+  redis_data:
+  ai-models-cache:
+  torch-cache:

@@ -1,5 +1,37 @@
-// DealPal Content Script - Enhanced Product & Coupon Detection
+// DealPal Content Script - AI-Powered Product & Coupon Detection
 console.log('🎯 DealPal: Content script loaded on', window.location.hostname);
+
+// Initialize AI services
+let aiService = null;
+let pythonAIService = null;
+let isAIEnabled = true;
+
+// Load AI service modules when DOM is ready
+(async function initializeAIServices() {
+  try {
+    // Initialize local AI service
+    aiService = new AIProductDetectionService();
+    console.log('🤖 DealPal: Local AI service initialized');
+    
+    // Initialize Python AI service
+    pythonAIService = new PythonAIService();
+    console.log('🐍 DealPal: Python AI service initialized');
+    
+    // Health check for Python AI service
+    const health = await pythonAIService.healthCheck();
+    if (health) {
+      console.log('🐍 Python AI service is available');
+    } else {
+      console.log('🐍 Python AI service not available - using local AI only');
+      pythonAIService.setEnabled(false);
+    }
+    
+    console.log('🎯 DealPal: AI-powered detection enabled');
+  } catch (error) {
+    console.warn('🎯 DealPal: AI service unavailable, falling back to rule-based detection');
+    isAIEnabled = false;
+  }
+})();
 
 const ECOMMERCE_DOMAINS = [
   'amazon.com', 'amazon.in', 'amazon.co.uk', 'amazon.ca', 'amazon.de',
@@ -350,13 +382,17 @@ function extractValue(text) {
   return text.substring(0, 50); // First 50 chars if no specific value found
 }
 
-function injectDealNotification(productData, deals) {
+function injectDealNotification(productData, deals, metadata) {
   // Remove existing notification
   const existing = document.getElementById('dealpal-notification');
   if (existing) existing.remove();
   
   // Only show if we found actual deals
   if (deals.coupons.length === 0 && deals.offers.length === 0) return;
+  
+  const detectionBadge = metadata?.source === 'local-ai' || metadata?.source === 'cloud-ai-enhanced' ? 
+    '🤖 AI' : '📋 Rules';
+  const confidence = metadata?.confidence ? `${Math.round(metadata.confidence * 100)}%` : '';
   
   const notification = document.createElement('div');
   notification.id = 'dealpal-notification';
@@ -388,7 +424,12 @@ function injectDealNotification(productData, deals) {
           justify-content: center;
           font-size: 12px;
         ">🎯</div>
-        <strong style="font-size: 14px;">DealPal Found Deals!</strong>
+        <div style="flex: 1;">
+          <strong style="font-size: 14px;">DealPal Found Deals!</strong>
+          <div style="font-size: 10px; color: #c084fc; margin-top: 2px;">
+            ${detectionBadge} Detection ${confidence}
+          </div>
+        </div>
         <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
           margin-left: auto;
           background: none;
@@ -451,71 +492,152 @@ function detectProductPage() {
     return;
   }
   
-  console.log('🎯 DealPal: E-commerce site detected, scanning for products and deals...');
+  console.log('🎯 DealPal: E-commerce site detected, starting AI-powered analysis...');
   
   try {
-    const productData = extractProductInfo();
-    const deals = detectCouponsAndOffers();
-    
-    console.log('🎯 DealPal: Product detected:', productData);
-    console.log('🎯 DealPal: Deals found:', deals);
-    
-    // Validate product data
-    if (!productData.productName || productData.productName === 'Unknown Product') {
-      console.warn('🎯 DealPal: Could not extract product name properly');
+    if (isAIEnabled && aiService && aiService.isInitialized) {
+      // Use AI-powered detection
+      detectProductWithAI();
+    } else {
+      // Fallback to rule-based detection
+      console.log('🎯 DealPal: Using fallback rule-based detection');
+      detectProductLegacy();
     }
-    
-    if (!productData.price || productData.price === 'Price not found') {
-      console.warn('🎯 DealPal: Could not extract price properly');
+  } catch (error) {
+    console.error('🎯 DealPal: Error in product detection:', error);
+    // Always fallback to legacy detection
+    detectProductLegacy();
+  }
+}
+
+async function detectProductWithAI() {
+  console.log('🤖 DealPal: Running AI-powered product detection...');
+  
+  try {
+    // Prepare content for AI analysis
+    const pageContent = {
+      url: window.location.href,
+      hostname: window.location.hostname,
+      title: document.title,
+      document: document
+    };
+
+    // Step 1: Run local AI detection
+    const localAIResult = await aiService.detectProduct(pageContent);
+    console.log('🤖 Local AI Detection Result:', localAIResult);
+
+    // Step 2: Enhance with Python AI service if available
+    let finalResult = localAIResult;
+    if (pythonAIService && pythonAIService.enabled) {
+      try {
+        console.log('🐍 Enhancing with Python AI service...');
+        finalResult = await pythonAIService.enhanceProductDetection(pageContent, localAIResult);
+        console.log('🐍 Python AI Enhancement Result:', finalResult);
+      } catch (error) {
+        console.warn('🐍 Python AI enhancement failed, using local result:', error);
+        finalResult = localAIResult;
+      }
     }
-    
-    // Send to background script with enhanced error handling
-    chrome.runtime.sendMessage({
-      action: "productDetected",
-      data: {
-        product: productData,
-        deals: deals,
+
+    if (finalResult.isProductPage && finalResult.confidence > 0.5) {
+      // AI successfully detected a product
+      handleSuccessfulDetection(finalResult.product, finalResult.deals, finalResult);
+    } else {
+      // AI didn't detect a product with sufficient confidence
+      console.log('🤖 AI detection confidence too low, trying legacy detection as backup');
+      detectProductLegacy();
+    }
+
+  } catch (error) {
+    console.error('🤖 AI detection failed:', error);
+    // Fallback to legacy detection
+    detectProductLegacy();
+  }
+}
+
+function detectProductLegacy() {
+  console.log('🎯 DealPal: Running legacy rule-based detection...');
+  
+  const productData = extractProductInfo();
+  const deals = detectCouponsAndOffers();
+  
+  console.log('🎯 DealPal: Legacy detection results:', {
+    product: productData.productName?.substring(0, 50) + '...',
+    deals: deals.coupons.length + deals.offers.length
+  });
+
+  handleSuccessfulDetection(productData, deals, {
+    source: 'legacy-rules',
+    confidence: 0.7, // Default confidence for rule-based detection
+    isProductPage: true
+  });
+}
+
+function handleSuccessfulDetection(productData, deals, metadata) {
+  console.log('🎯 DealPal: Product detection successful!');
+  console.log('🎯 Product:', productData);
+  console.log('🎯 Deals:', deals);
+  console.log('🎯 Metadata:', metadata);
+  
+  // Validate product data
+  if (!productData.productName || productData.productName === 'Unknown Product') {
+    console.warn('🎯 DealPal: Could not extract product name properly');
+  }
+  
+  if (!productData.price || productData.price === 'Price not found') {
+    console.warn('🎯 DealPal: Could not extract price properly');
+  }
+  
+  // Send to background script with enhanced data
+  chrome.runtime.sendMessage({
+    action: "productDetected",
+    data: {
+      product: productData,
+      deals: deals,
+      metadata: {
+        detectionMethod: metadata.source || 'unknown',
+        confidence: metadata.confidence || 0.5,
         timestamp: Date.now(),
         url: window.location.href,
         hostname: window.location.hostname
       }
-    }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("🎯 DealPal Error:", chrome.runtime.lastError.message);
-        showErrorNotification("Extension connection error");
-      } else if (response) {
-        console.log("🎯 DealPal: Data sent successfully", response);
-        if (response.warning) {
-          console.warn("🎯 DealPal Warning:", response.warning);
-        }
-        if (response.status === 'success') {
-          showSuccessNotification(productData, deals);
-        }
-      } else {
-        console.log("🎯 DealPal: No response from background script");
-        showInfoNotification("Product detected, but backend unavailable");
-      }
-    });
-    
-    // Show notification if deals found, even if backend fails
-    if (deals.coupons.length > 0 || deals.offers.length > 0) {
-      injectDealNotification(productData, deals);
-    } else if (productData.productName !== 'Unknown Product') {
-      // Show notification that product was detected but no deals found
-      showInfoNotification(`Product detected: ${productData.productName.substring(0, 30)}...`);
     }
-    
-  } catch (error) {
-    console.error('🎯 DealPal: Error in product detection:', error);
-    showErrorNotification("Product detection failed");
+  }, (response) => {
+    if (chrome.runtime.lastError) {
+      console.error("🎯 DealPal Error:", chrome.runtime.lastError.message);
+      showErrorNotification("Extension connection error");
+    } else if (response) {
+      console.log("🎯 DealPal: Data sent successfully", response);
+      if (response.warning) {
+        console.warn("🎯 DealPal Warning:", response.warning);
+      }
+      if (response.status === 'success') {
+        showSuccessNotification(productData, deals, metadata);
+      }
+    } else {
+      console.log("🎯 DealPal: No response from background script");
+      showInfoNotification("Product detected, but backend unavailable");
+    }
+  });
+  
+  // Show notification based on results
+  const dealCount = (deals.coupons?.length || 0) + (deals.offers?.length || 0);
+  if (dealCount > 0) {
+    injectDealNotification(productData, deals, metadata);
+  } else if (productData.productName !== 'Unknown Product') {
+    // Show notification that product was detected but no deals found
+    showInfoNotification(`Product detected: ${productData.productName.substring(0, 30)}...`);
   }
 }
 
-function showSuccessNotification(productData, deals) {
+function showSuccessNotification(productData, deals, metadata) {
   const dealCount = (deals.coupons?.length || 0) + (deals.offers?.length || 0);
+  const detectionType = metadata.source === 'local-ai' || metadata.source === 'cloud-ai-enhanced' ? '🤖 AI' : '📋 Rules';
+  
   const message = dealCount > 0 ? 
-    `Found ${dealCount} deals for ${productData.productName.substring(0, 30)}...` :
-    `Product detected: ${productData.productName.substring(0, 30)}...`;
+    `${detectionType} found ${dealCount} deals for ${productData.productName.substring(0, 30)}...` :
+    `${detectionType} detected: ${productData.productName.substring(0, 30)}...`;
+    
   console.log(`🎯 DealPal: ${message}`);
 }
 
@@ -527,9 +649,22 @@ function showErrorNotification(message) {
   console.error(`🎯 DealPal: ${message}`);
 }
 
-// Enhanced detection with multiple triggers
+// Enhanced detection with AI and multiple triggers
 function initDealPal() {
-  console.log('🎯 DealPal: Initializing...');
+  console.log('🎯 DealPal: Initializing with AI capabilities...');
+  
+  // Initialize AI service
+  if (isAIEnabled) {
+    try {
+      aiService = new AIProductDetectionService();
+      console.log('🤖 DealPal: AI service initialized');
+    } catch (error) {
+      console.warn('🤖 DealPal: AI service failed to initialize, using fallback:', error);
+      isAIEnabled = false;
+    }
+  }
+  
+  // Run initial detection
   detectProductPage();
   
   // Watch for dynamic content changes (SPA navigation)
@@ -556,9 +691,20 @@ function initDealPal() {
   setInterval(() => {
     if (window.location.href !== currentUrl) {
       currentUrl = window.location.href;
+      console.log('🎯 DealPal: URL changed, re-analyzing page');
       setTimeout(detectProductPage, 2000);
     }
   }, 1000);
+
+  // Log AI performance metrics periodically
+  if (isAIEnabled && aiService) {
+    setInterval(() => {
+      const metrics = aiService.getMetrics();
+      if (metrics.totalDetections > 0) {
+        console.log('🤖 DealPal AI Metrics:', metrics);
+      }
+    }, 30000); // Every 30 seconds
+  }
 }
 
 // Message listener for popup communication

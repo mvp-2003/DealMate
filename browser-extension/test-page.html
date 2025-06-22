@@ -52,24 +52,63 @@
     </div>
     
     <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
-        <h3>🧪 Extension Test Instructions</h3>
+        <h3>🧪 AI Extension Test Instructions</h3>
         <ol>
             <li>Load the DealPal extension in Chrome/Edge (Developer Mode → Load Unpacked)</li>
             <li>Open this test page</li>
-            <li>Check browser console for "🎯 DealPal" messages</li>
+            <li>Check browser console for "🎯 DealPal" and "🤖 AI" messages</li>
             <li>Click the DealPal extension icon to see detected data</li>
             <li>Look for deal notifications in the top-right corner</li>
         </ol>
         
-        <p><strong>Expected Results:</strong></p>
+        <p><strong>Expected AI Results:</strong></p>
         <ul>
+            <li>🤖 AI Detection with confidence score</li>
             <li>Product name: "Premium Wireless Bluetooth Headphones"</li>
             <li>Price: "₹2,499"</li>
             <li>Original price: "₹3,999"</li>
             <li>Discount: "38% off"</li>
             <li>Deals found: 2 coupons, 3 offers</li>
+            <li>Structured data extraction from JSON-LD</li>
+        </ul>
+
+        <p><strong>AI Features Being Tested:</strong></p>
+        <ul>
+            <li>🔍 Content classification (product vs non-product)</li>
+            <li>📝 Product information extraction</li>
+            <li>💰 Deal and coupon detection</li>
+            <li>🏷️ Brand and category inference</li>
+            <li>📊 Confidence scoring</li>
+            <li>💾 Intelligent caching</li>
         </ul>
     </div>
+
+    <!-- JSON-LD structured data for AI testing -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "Premium Wireless Bluetooth Headphones",
+      "image": "https://placehold.co/300x300.png?text=Headphones",
+      "description": "High-quality wireless Bluetooth headphones with noise cancellation and premium sound quality.",
+      "brand": {
+        "@type": "Brand",
+        "name": "AudioTech"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "2499",
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock",
+        "url": "https://example.com/headphones"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.5",
+        "reviewCount": "87"
+      }
+    }
+    </script>
 
     <script>
         // Simulate an e-commerce site

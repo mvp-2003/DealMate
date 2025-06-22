@@ -44,12 +44,18 @@ function loadCurrentProduct() {
     if (result.currentProduct) {
       currentProduct = result.currentProduct;
       const timeDiff = Date.now() - (result.lastUpdate || 0);
+      const metadata = currentProduct.metadata || {};
+      
+      // Show detection method
+      const detectionBadge = metadata.detectionMethod === 'local-ai' || metadata.detectionMethod === 'cloud-ai-enhanced' ? 
+        '🤖 AI' : '📋 Rules';
+      const confidence = metadata.confidence ? ` (${Math.round(metadata.confidence * 100)}%)` : '';
       
       if (timeDiff < 30000) { // Within last 30 seconds
-        updateStatus(`Found: ${currentProduct.productName.substring(0, 30)}...`, 'success');
+        updateStatus(`${detectionBadge}${confidence}: ${currentProduct.productName.substring(0, 25)}...`, 'success');
         showDeals(currentProduct.deals);
       } else {
-        updateStatus('Product detected (scan may be outdated)');
+        updateStatus(`${detectionBadge}: Product detected (scan may be outdated)`);
         showDeals(currentProduct.deals);
       }
     } else {
@@ -65,7 +71,7 @@ function loadCurrentProduct() {
           const isSupported = supportedSites.some(site => hostname.includes(site));
           
           if (isSupported) {
-            updateStatus('Supported site - click refresh to scan');
+            updateStatus('🤖 AI ready - click refresh to scan');
           } else {
             updateStatus('Visit any e-commerce site to start');
           }
