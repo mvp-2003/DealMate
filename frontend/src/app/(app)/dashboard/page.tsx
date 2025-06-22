@@ -9,7 +9,7 @@ import { TicketPercent, CreditCard } from 'lucide-react';
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen-safe bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen-safe">
       <div className="space-responsive">
         
         {/* Welcome Section - Mobile Optimized */}

@@ -40,9 +40,9 @@ pub fn predict_price(request: PricePredictionRequest) -> PricePredictionResponse
                 .filter_map(|p| p.get("price").and_then(|v| v.as_f64()))
                 .collect();
             if prices.len() > 1 {
-                if prices.last().unwrap() > prices.first().unwrap() * 1.1 {
+                if *prices.last().unwrap() > *prices.first().unwrap() * 1.1 {
                     trend_direction = "increasing".to_string();
-                } else if prices.last().unwrap() < prices.first().unwrap() * 0.9 {
+                } else if *prices.last().unwrap() < *prices.first().unwrap() * 0.9 {
                     trend_direction = "decreasing".to_string();
                 }
             }
@@ -77,7 +77,7 @@ pub fn predict_price(request: PricePredictionRequest) -> PricePredictionResponse
         "Stable pricing - buy when needed".to_string()
     };
 
-    let confidence = 0.7 + if request.historical_prices.is_some() { 0.2 } else { 0.0 };
+    let confidence: f64 = 0.7 + if request.historical_prices.is_some() { 0.2 } else { 0.0 };
 
     PricePredictionResponse {
         predicted_price_trend: trend_direction,

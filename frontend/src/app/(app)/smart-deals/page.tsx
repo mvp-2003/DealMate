@@ -232,7 +232,10 @@ export default function SmartDealsPage() {
                 {/* Additional stats for larger screens */}
                 <div className="hidden xl:block p-2 xs:p-3 lg:p-4 xl:p-6 rounded-lg bg-pink-500/10 hover:bg-pink-500/20 transition-colors">
                   <div className="text-lg xs:text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-pink-400">
-                    {rankedOffers.filter(offer => offer.discount && parseInt(offer.discount) > 30).length}
+                    {rankedOffers.filter(offer => {
+                      const discountPercent = ((offer.basePrice - offer.finalPrice) / offer.basePrice) * 100;
+                      return discountPercent > 30;
+                    }).length}
                   </div>
                   <div className="text-xs xs:text-sm lg:text-base text-muted-foreground">30%+ Off</div>
                 </div>

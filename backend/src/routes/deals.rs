@@ -1,8 +1,8 @@
 use axum::{http::StatusCode, response::Json};
 use serde::{Deserialize, Serialize};
 use crate::pricer::{self, PricePredictionRequest, PricePredictionResponse};
-use crate::stacksmart::{self, StackDealsRequest, StackedDealResult, ValidateStackRequest, ValidateStackResponse, StackSmartEngine};
-use crate::analyzer::{self, ProductAnalysisRequest, ProductAnalysisResponse, ProductAnalyzer};
+use crate::stacksmart::{StackDealsRequest, StackedDealResult, ValidateStackRequest, ValidateStackResponse, StackSmartEngine};
+use crate::analyzer::{ProductAnalysisRequest, ProductAnalysisResponse, ProductAnalyzer};
 
 #[derive(Serialize, Deserialize)]
 pub struct Deal {

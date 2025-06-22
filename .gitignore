@@ -116,6 +116,15 @@ dist/
 target/
 Cargo.lock
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+*.dist-info
+
 # AI Rules
 .amazonq
 .clinerules
