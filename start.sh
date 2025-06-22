@@ -4,10 +4,22 @@ set -e
 echo "🚀 Starting DealPal Production..."
 
 # Build if needed
-if [ ! -f "./backend/target/release/dealpal-backend" ] || [ ! -d "./frontend/.next" ]; then
+if [ ! -f "./backend/target/release/dealpal-backend" ] || [ ! -d "./frontend/.next" ] || [ ! -d "./backend/ai-service/venv" ]; then
     echo "📦 Building project first..."
     ./build.sh
 fi
+
+# Start AI Service in background
+echo "🤖 Starting AI Service..."
+cd backend/ai-service
+source venv/bin/activate
+python main.py &
+AI_SERVICE_PID=$!
+cd ../..
+
+# Wait for AI service to start
+echo "⏳ Waiting for AI service to initialize..."
+sleep 3
 
 # Start Backend in background
 echo "🦀 Starting Backend..."
@@ -24,11 +36,23 @@ FRONTEND_PID=$!
 cd ..
 
 echo "✅ Production servers started!"
-echo "Backend: http://localhost:8000"
-echo "Frontend: http://localhost:3000"
+echo "🤖 AI Service:  http://localhost:8001"
+echo "🦀 Backend:     http://localhost:8000"
+echo "📦 Frontend:    http://localhost:3000"
+echo "📚 API Docs:    http://localhost:8001/docs"
 echo ""
-echo "Press Ctrl+C to stop both servers"
+echo "🎯 Ready for testing with browser extension!"
+echo "Press Ctrl+C to stop all servers"
+
+# Cleanup function
+cleanup() {
+    echo ""
+    echo "🛑 Stopping all services..."
+    kill $AI_SERVICE_PID $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
+    echo "✅ All services stopped"
+    exit
+}
 
 # Wait for Ctrl+C
-trap "kill $BACKEND_PID $FRONTEND_PID; exit" INT
+trap cleanup INT
 wait

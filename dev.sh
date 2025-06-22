@@ -2,14 +2,32 @@
 
 echo "🚀 Starting DealPal Development..."
 
-# Start Backend in background
-echo "🦀 Starting Backend..."
+# Start AI Service in background (development mode with hot reload)
+echo "🤖 Starting AI Service with Hot Reload..."
+cd backend/ai-service
+if [ ! -d "venv" ]; then
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+else
+    source venv/bin/activate
+fi
+uvicorn main:app --host 0.0.0.0 --port 8001 --reload &
+AI_SERVICE_PID=$!
+cd ../..
+
+# Wait for AI service to start
+echo "⏳ Waiting for AI service to initialize..."
+sleep 3
+
+# Start Backend in background (development mode with hot reload)
+echo "🦀 Starting Backend with Hot Reload..."
 cd backend
-cargo run &
+cargo watch -x run &
 BACKEND_PID=$!
 cd ..
 
-# Start Frontend
+# Start Frontend in development mode
 echo "📦 Starting Frontend..."
 cd frontend
 npm run dev &
@@ -17,11 +35,23 @@ FRONTEND_PID=$!
 cd ..
 
 echo "✅ Development servers started!"
-echo "Backend: http://localhost:8000"
-echo "Frontend: http://localhost:9002"
+echo "🤖 AI Service:  http://localhost:8001 (with hot reload)"
+echo "🦀 Backend:     http://localhost:8000 (with hot reload)"
+echo "📦 Frontend:    http://localhost:3000 (with hot reload)"
+echo "📚 API Docs:    http://localhost:8001/docs"
 echo ""
-echo "Press Ctrl+C to stop both servers"
+echo "🔥 Development mode with hot reload enabled!"
+echo "Press Ctrl+C to stop all servers"
+
+# Cleanup function
+cleanup() {
+    echo ""
+    echo "🛑 Stopping all development services..."
+    kill $AI_SERVICE_PID $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
+    echo "✅ All services stopped"
+    exit
+}
 
 # Wait for Ctrl+C
-trap "kill $BACKEND_PID $FRONTEND_PID; exit" INT
+trap cleanup INT
 wait
