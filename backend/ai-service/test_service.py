@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env ./venv/bin/python
 """
 DealPal Python AI Service Test Script
 

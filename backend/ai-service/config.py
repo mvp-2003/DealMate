@@ -43,8 +43,8 @@ class Settings(BaseSettings):
     
     # Security
     api_key_header: str = Field(default="X-API-Key", env="API_KEY_HEADER")
-    allowed_origins: List[str] = Field(
-        default=["http://localhost:3000", "http://localhost:8000", "chrome-extension://*"],
+    allowed_origins: str = Field(
+        default="http://localhost:3000,http://localhost:8000,chrome-extension://*",
         env="ALLOWED_ORIGINS"
     )
     

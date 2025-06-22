@@ -61,7 +61,22 @@ echo ""
 echo "Press Ctrl+C to stop the service"
 echo ""
 
-# Run the service with auto-reload in development
-python main.py
+# Run the service in the background
+python main.py &
+SERVER_PID=$!
 
-echo "🛑 DealPal AI Service stopped."
+# Wait for the server to start
+echo "⏳ Waiting for server to start..."
+sleep 5
+
+# Run the test script
+echo "🏃 Running tests..."
+./venv/bin/python test_service.py
+TEST_EXIT_CODE=$?
+
+# Stop the server
+echo "🛑 Stopping DealPal AI Service..."
+kill $SERVER_PID
+
+# Exit with the test result
+exit $TEST_EXIT_CODE
