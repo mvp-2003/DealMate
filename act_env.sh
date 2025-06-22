@@ -40,6 +40,11 @@ source "$VENV_NAME/bin/activate"
 
 if [ -n "$VIRTUAL_ENV" ]; then
     echo "✅ Virtual environment activated successfully: $VIRTUAL_ENV"
+    
+    # Navigate back to the root directory
+    ROOT_DIR="/Users/rishabh.das/Desktop/Personal/DealPal"
+    echo "Returning to root directory: $ROOT_DIR"
+    cd "$ROOT_DIR"
 else
     echo "❌ Failed to activate virtual environment"
     return 1
