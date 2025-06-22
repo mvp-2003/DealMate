@@ -10,7 +10,7 @@ pydantic-settings>=2.0.0
 watchdog>=3.0.0
 
 # CORS and file handling
-python-multipart==0.0.6
+python-multipart==0.0.18
 aiofiles>=23.0.0
 
 # AI - Google Gemini Only
