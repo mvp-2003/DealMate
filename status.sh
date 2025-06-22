@@ -87,9 +87,9 @@ check_build_status() {
     fi
     
     # AI Service environment
-    if [ -d "./backend/ai-service/venv" ]; then
+    if [ -d "./backend/ai-service/.venv" ]; then
         echo -e "  AI Service Env: ${GREEN}✅ EXISTS${NC}"
-        local packages=$(./backend/ai-service/venv/bin/pip list 2>/dev/null | wc -l)
+        local packages=$(./backend/ai-service/.venv/bin/pip list 2>/dev/null | wc -l)
         echo "  Packages: $packages"
     else
         echo -e "  AI Service Env: ${RED}❌ MISSING${NC}"

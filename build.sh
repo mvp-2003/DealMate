@@ -19,10 +19,13 @@ cd ..
 # Setup AI Service
 echo "🤖 Setting up AI Service..."
 cd backend/ai-service
-if [ ! -d "venv" ]; then
-    python3 -m venv venv
+if [ ! -d ".venv" ]; then
+    echo "Creating new virtual environment..."
+    python3 -m venv .venv
+else
+    echo "Using existing virtual environment..."
 fi
-source venv/bin/activate
+source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 cd ../..
@@ -30,4 +33,4 @@ cd ../..
 echo "✅ Build Complete!"
 echo "Frontend: ./frontend/.next"
 echo "Backend: ./backend/target/release/dealpal-backend"
-echo "AI Service: ./backend/ai-service/venv"
+echo "AI Service: ./backend/ai-service/.venv"

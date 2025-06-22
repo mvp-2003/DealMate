@@ -45,7 +45,7 @@ fi
 if confirm "Clean AI Service virtual environment?"; then
     echo "🗑️  Cleaning AI Service..."
     cd backend/ai-service
-    rm -rf venv
+    rm -rf .venv
     rm -rf __pycache__
     rm -rf .pytest_cache
     echo "✅ AI Service cleaned"

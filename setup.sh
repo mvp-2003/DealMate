@@ -80,8 +80,13 @@ echo -e "${GREEN}✅ Backend dependencies verified${NC}"
 # AI Service dependencies
 echo -e "${YELLOW}Setting up AI Service environment...${NC}"
 cd backend/ai-service
-python3 -m venv venv
-source venv/bin/activate
+if [ ! -d ".venv" ]; then
+    echo "Creating new virtual environment..."
+    python3 -m venv .venv
+else
+    echo "Using existing virtual environment..."
+fi
+source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 cd ../..
@@ -160,7 +165,7 @@ if command_exists "code"; then
     cat > .vscode/settings.json << EOF
 {
     "rust-analyzer.cargo.buildScripts.enable": true,
-    "python.defaultInterpreterPath": "./backend/ai-service/venv/bin/python",
+    "python.defaultInterpreterPath": "./backend/ai-service/.venv/bin/python",
     "typescript.preferences.importModuleSpecifier": "relative",
     "editor.formatOnSave": true,
     "files.exclude": {

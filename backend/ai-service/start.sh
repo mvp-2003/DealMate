@@ -6,6 +6,10 @@ set -e
 
 echo "🚀 Starting DealPal Python AI Service..."
 
+# Activate virtual environment
+echo "⚙️ Activating virtual environment..."
+source .venv/bin/activate
+
 # Check if we're in the correct directory
 if [ ! -f "main.py" ]; then
     echo "❌ Error: main.py not found. Please run this script from the ai-service directory."
@@ -23,14 +27,14 @@ fi
 echo "✅ Found $python_version"
 
 # Create virtual environment if it doesn't exist
-if [ ! -d "venv" ]; then
+if [ ! -d ".venv" ]; then
     echo "📦 Creating virtual environment..."
-    python3 -m venv venv
+    python3 -m venv .venv
 fi
 
 # Activate virtual environment
 echo "🔧 Activating virtual environment..."
-source venv/bin/activate
+source .venv/bin/activate
 
 # Install dependencies
 echo "📥 Installing dependencies..."
@@ -80,7 +84,7 @@ sleep 5
 
 # Run the test script
 echo "🏃 Running tests..."
-./venv/bin/python test_service.py
+./.venv/bin/python test_service.py
 TEST_EXIT_CODE=$?
 
 # Stop the server

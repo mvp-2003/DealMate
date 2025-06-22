@@ -4,7 +4,7 @@ set -e
 echo "🚀 Starting DealPal Production..."
 
 # Build if needed
-if [ ! -f "./backend/target/release/dealpal-backend" ] || [ ! -d "./frontend/.next" ] || [ ! -d "./backend/ai-service/venv" ]; then
+if [ ! -f "./backend/target/release/dealpal-backend" ] || [ ! -f "./frontend/.next" ] || [ ! -d "./backend/ai-service/.venv" ]; then
     echo "📦 Building project first..."
     ./build.sh
 fi
@@ -12,7 +12,7 @@ fi
 # Start AI Service in background
 echo "🤖 Starting AI Service..."
 cd backend/ai-service
-source venv/bin/activate
+source .venv/bin/activate
 python main.py &
 AI_SERVICE_PID=$!
 cd ../..

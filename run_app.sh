@@ -104,7 +104,7 @@ echo "================================="
 # Start AI Service
 echo -e "${YELLOW}🤖 Starting AI Service...${NC}"
 cd backend/ai-service
-source venv/bin/activate
+source .venv/bin/activate
 nohup python main.py > ../../ai-service.log 2>&1 &
 AI_SERVICE_PID=$!
 cd ../..

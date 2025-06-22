@@ -5,12 +5,12 @@ echo "🚀 Starting DealPal Development..."
 # Start AI Service in background (development mode with hot reload)
 echo "🤖 Starting AI Service with Hot Reload..."
 cd backend/ai-service
-if [ ! -d "venv" ]; then
-    python3 -m venv venv
-    source venv/bin/activate
+if [ ! -d ".venv" ]; then
+    python3 -m venv .venv
+    source .venv/bin/activate
     pip install -r requirements.txt
 else
-    source venv/bin/activate
+    source .venv/bin/activate
 fi
 uvicorn main:app --host 0.0.0.0 --port 8001 --reload &
 AI_SERVICE_PID=$!

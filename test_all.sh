@@ -76,7 +76,7 @@ fi
 
 # AI Service tests
 if [ -f "./backend/ai-service/test_service.py" ]; then
-    run_tests "AI Service (Python)" "cd backend/ai-service && source venv/bin/activate && python -m pytest test_service.py -v" || all_tests_passed=false
+    run_tests "AI Service (Python)" "cd backend/ai-service && source .venv/bin/activate && python -m pytest test_service.py -v" || all_tests_passed=false
 else
     echo -e "${YELLOW}⚠️  AI Service tests not found${NC}"
 fi
