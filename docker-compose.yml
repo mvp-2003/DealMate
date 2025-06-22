@@ -22,10 +22,12 @@ services:
       - REDIS_URL=redis://redis:6379
       - LOG_LEVEL=INFO
       - GEMINI_MODEL=gemini-1.5-flash
+      - RUST_BACKEND_URL=http://backend:8000
     env_file:
       - ./backend/ai-service/.env
     depends_on:
       - redis
+      - backend
   
   frontend:
     build: ./frontend

@@ -10,6 +10,9 @@ pub mod db;
 pub mod error;
 pub mod models;
 pub mod routes;
+pub mod pricer;
+pub mod stacksmart;
+pub mod analyzer;
 
 use crate::routes::{health_check, wallet, deals};
 
@@ -35,6 +38,10 @@ pub fn app(pool: PgPool) -> Router {
         .route("/", get(|| async { "Hello, World!" }))
         .route("/health_check", get(health_check::health_check))
         .route("/api/deals", get(deals::get_deals).post(deals::handle_product_detection))
+        .route("/api/predict-price", post(deals::predict_price_handler))
+        .route("/api/stack-deals", post(deals::stack_deals_handler))
+        .route("/api/validate-stack", post(deals::validate_stack_handler))
+        .route("/api/analyze-product", post(deals::analyze_product_handler))
         .merge(wallet_routes(pool.clone()))
         .layer(TraceLayer::new_for_http())
         .layer(cors)

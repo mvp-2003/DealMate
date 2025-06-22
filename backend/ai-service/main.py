@@ -8,9 +8,6 @@ Features:
 - Advanced product detection using LLMs
 - Image-based product analysis
 - Sentiment analysis of reviews
-- Price prediction and trend analysis
-- Competitive product analysis
-- Personalized recommendations
 - Review summarization
 - Deal quality scoring
 """
@@ -22,6 +19,8 @@ from datetime import datetime
 from typing import List, Optional, Dict, Any
 import json
 import re
+import httpx
+import os
 
 # FastAPI and Pydantic imports (with fallback)
 try:
@@ -39,7 +38,6 @@ try:
     from config import settings
     from models import get_model_manager, initialize_models
     from services import ProductAnalysisService
-from stacksmart import StackSmartEngine, StackedDealResult
 except ImportError as e:
     print(f"❌ Failed to import local modules: {e}")
     print("Make sure config.py, models.py, and services.py are available")
@@ -72,7 +70,8 @@ app.add_middleware(
 # Global services
 model_manager = get_model_manager()
 product_service = ProductAnalysisService()
-stacksmart_engine = StackSmartEngine()
+RUST_BACKEND_URL = os.getenv("RUST_BACKEND_URL", "http://localhost:8000")
+
 
 # Pydantic models for API
 class ProductDetectionRequest(BaseModel):
@@ -104,45 +103,6 @@ class SentimentAnalysisResponse(BaseModel):
     review_summary: str
     positive_aspects: List[str]
     negative_aspects: List[str]
-
-class PricePredictionRequest(BaseModel):
-    product_name: str
-    current_price: float
-    category: str
-    historical_prices: Optional[List[Dict[str, Any]]] = None
-
-class PricePredictionResponse(BaseModel):
-    predicted_price_trend: str
-    confidence: float
-    price_forecast: Dict[str, float]
-    recommendation: str
-
-class StackDealsRequest(BaseModel):
-    deals: List[Dict[str, Any]]
-    base_price: float
-    user_context: Optional[Dict[str, Any]] = None
-
-class StackDealsResponse(BaseModel):
-    optimized_deals: List[Dict[str, Any]]
-    total_savings: float
-    final_price: float
-    original_price: float
-    confidence: float
-    application_order: List[str]
-    warnings: List[str]
-    processing_time: float
-
-class ValidateStackRequest(BaseModel):
-    deals: List[Dict[str, Any]]
-    base_price: float
-
-class ValidateStackResponse(BaseModel):
-    valid: bool
-    total_savings: Optional[float] = None
-    final_price: Optional[float] = None
-    confidence: Optional[float] = None
-    warnings: List[str] = []
-    error: Optional[str] = None
 
 # Startup event
 @app.on_event("startup")
@@ -203,14 +163,18 @@ async def detect_product(request: ProductDetectionRequest):
     try:
         logger.info(f"🔍 Analyzing product page: {request.url}")
         
-        # Use the product analysis service
-        result = await product_service.analyze_product_page(
-            url=request.url,
-            page_title=request.page_title,
-            text_content=request.text_content,
-            structured_data=request.structured_data,
-            images=request.images,
-            local_ai_result=request.local_ai_result
+        # Call the Rust service for initial analysis
+        async with httpx.AsyncClient() as client:
+            rust_service_url = f"{RUST_BACKEND_URL}/api/analyze-product"
+            response = await client.post(rust_service_url, json=request.dict())
+            response.raise_for_status()
+            rust_analysis = response.json()
+
+        # Use the product analysis service for AI enhancements
+        result = await product_service.enhance_analysis(
+            rust_analysis,
+            request.text_content,
+            request.images
         )
         
         processing_time = (datetime.now() - start_time).total_seconds()
@@ -289,143 +253,6 @@ async def analyze_sentiment(request: SentimentAnalysisRequest):
         raise
     except Exception as e:
         logger.error(f"❌ Sentiment analysis failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/predict-price", response_model=PricePredictionResponse)
-async def predict_price(request: PricePredictionRequest):
-    """
-    Predict price trends and provide recommendations
-    """
-    try:
-        logger.info(f"📈 Predicting price trend for {request.product_name}")
-        
-        # Simple heuristic-based prediction (can be enhanced with ML models)
-        category_trends = {
-            "electronics": {"volatility": 0.3, "seasonal": True},
-            "fashion": {"volatility": 0.5, "seasonal": True},
-            "books": {"volatility": 0.1, "seasonal": False},
-            "home": {"volatility": 0.2, "seasonal": False}
-        }
-        
-        category_info = category_trends.get(request.category.lower(), {"volatility": 0.25, "seasonal": False})
-        
-        # Analyze historical data if provided
-        trend_direction = "stable"
-        if request.historical_prices and len(request.historical_prices) > 1:
-            prices = [p["price"] for p in request.historical_prices if "price" in p]
-            if len(prices) > 1:
-                if prices[-1] > prices[0] * 1.1:
-                    trend_direction = "increasing"
-                elif prices[-1] < prices[0] * 0.9:
-                    trend_direction = "decreasing"
-        
-        # Generate forecasts based on trend and volatility
-        base_price = request.current_price
-        volatility = category_info["volatility"]
-        
-        if trend_direction == "increasing":
-            multipliers = [1.02, 1.05, 1.1]
-        elif trend_direction == "decreasing":
-            multipliers = [0.98, 0.95, 0.9]
-        else:
-            multipliers = [1.0, 1.0, 1.0]
-        
-        price_forecast = {
-            "1_week": round(base_price * multipliers[0], 2),
-            "1_month": round(base_price * multipliers[1], 2),
-            "3_months": round(base_price * multipliers[2], 2)
-        }
-        
-        # Generate recommendation
-        if trend_direction == "decreasing":
-            recommendation = "Wait for better deals - price likely to drop"
-        elif trend_direction == "increasing":
-            recommendation = "Good time to buy - price may increase"
-        else:
-            recommendation = "Stable pricing - buy when needed"
-        
-        confidence = 0.7 + (0.2 if request.historical_prices else 0)
-        
-        return PricePredictionResponse(
-            predicted_price_trend=trend_direction,
-            confidence=min(confidence, 1.0),
-            price_forecast=price_forecast,
-            recommendation=recommendation
-        )
-        
-    except Exception as e:
-        logger.error(f"❌ Price prediction failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/stack-deals", response_model=StackDealsResponse)
-async def stack_deals(request: StackDealsRequest):
-    """
-    Optimize deal stacking using StackSmart engine
-    """
-    try:
-        logger.info(f"🔗 StackSmart: Optimizing {len(request.deals)} deals for base price ₹{request.base_price}")
-        
-        # Use StackSmart engine to optimize deals
-        result = await stacksmart_engine.optimize_deals(
-            available_deals=request.deals,
-            base_price=request.base_price,
-            user_context=request.user_context
-        )
-        
-        # Convert Deal objects to dictionaries
-        optimized_deals = []
-        for deal in result.deals:
-            optimized_deals.append({
-                "id": deal.id,
-                "title": deal.title,
-                "description": deal.description,
-                "deal_type": deal.deal_type.value,
-                "value": deal.value,
-                "value_type": deal.value_type,
-                "code": deal.code,
-                "platform": deal.platform,
-                "confidence": deal.confidence
-            })
-        
-        return StackDealsResponse(
-            optimized_deals=optimized_deals,
-            total_savings=result.total_savings,
-            final_price=result.final_price,
-            original_price=result.original_price,
-            confidence=result.confidence,
-            application_order=result.application_order,
-            warnings=result.warnings,
-            processing_time=result.processing_time
-        )
-        
-    except Exception as e:
-        logger.error(f"❌ Deal stacking failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/validate-stack", response_model=ValidateStackResponse)
-async def validate_stack(request: ValidateStackRequest):
-    """
-    Validate if a specific deal stack is valid
-    """
-    try:
-        logger.info(f"✅ Validating stack of {len(request.deals)} deals")
-        
-        result = await stacksmart_engine.validate_deal_stack(
-            deals=request.deals,
-            base_price=request.base_price
-        )
-        
-        return ValidateStackResponse(
-            valid=result["valid"],
-            total_savings=result.get("total_savings"),
-            final_price=result.get("final_price"),
-            confidence=result.get("confidence"),
-            warnings=result.get("warnings", []),
-            error=result.get("error")
-        )
-        
-    except Exception as e:
-        logger.error(f"❌ Stack validation failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Helper functions
