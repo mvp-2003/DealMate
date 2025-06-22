@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Remember the current directory
+ORIGINAL_DIR="$(pwd)"
+
 # Define the target directory with the virtual environment
 TARGET_DIR="/Users/rishabh.das/Desktop/Personal/DealPal/backend/ai-service"
 VENV_NAME=".venv"
@@ -41,11 +44,12 @@ source "$VENV_NAME/bin/activate"
 if [ -n "$VIRTUAL_ENV" ]; then
     echo "✅ Virtual environment activated successfully: $VIRTUAL_ENV"
     
-    # Navigate back to the root directory
-    ROOT_DIR="/Users/rishabh.das/Desktop/Personal/DealPal"
-    echo "Returning to root directory: $ROOT_DIR"
-    cd "$ROOT_DIR"
+    # Return to the original directory where the script was called from
+    echo "Returning to original directory: $ORIGINAL_DIR"
+    cd "$ORIGINAL_DIR"
 else
     echo "❌ Failed to activate virtual environment"
+    # Return to original directory even if activation failed
+    cd "$ORIGINAL_DIR"
     return 1
 fi
