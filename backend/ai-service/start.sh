@@ -39,12 +39,21 @@ pip install -r requirements.txt
 
 # Create .env file if it doesn't exist
 if [ ! -f ".env" ]; then
-    echo "⚙️ Creating .env file from example..."
-    cp .env.example .env
+    echo "⚙️ Creating .env file with default template..."
+    cat > .env << 'EOF'
+# AI Service Configuration
+# Add your API keys here:
+# OPENAI_API_KEY=your_openai_api_key_here
+# GEMINI_API_KEY=your_gemini_api_key_here
+
+# Database Configuration (if needed)
+# DATABASE_URL=postgresql://user:password@localhost:5432/database_name
+EOF
     echo ""
     echo "📝 Please edit .env file to configure your API keys:"
     echo "   - OPENAI_API_KEY for enhanced AI capabilities"
-    echo "   - DATABASE_URL for database connection"
+    echo "   - GEMINI_API_KEY for Gemini AI capabilities"
+    echo "   - DATABASE_URL for database connection (if needed)"
     echo ""
 fi
 
