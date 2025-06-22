@@ -13,7 +13,7 @@ pub struct ProductDetectionRequest {
     pub timestamp: u64,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct ProductInfo {
     #[serde(rename = "productName")]
     pub product_name: String,
@@ -26,13 +26,13 @@ pub struct ProductInfo {
     pub url: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct DetectedDeals {
     pub coupons: Vec<CouponInfo>,
     pub offers: Vec<OfferInfo>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CouponInfo {
     pub text: String,
     #[serde(rename = "type")]
@@ -40,7 +40,7 @@ pub struct CouponInfo {
     pub value: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct OfferInfo {
     pub text: String,
     #[serde(rename = "type")]
@@ -197,7 +197,7 @@ pub async fn enhance_product_detection(
         text_content: format!("{} {} {}", 
             payload.product.product_name,
             payload.product.price,
-            payload.product.discount.unwrap_or_default()
+            payload.product.discount.clone().unwrap_or_default()
         ),
         structured_data: None, // Would be extracted from page content
         local_ai_result: Some(serde_json::json!({
