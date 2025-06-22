@@ -1,0 +1,29 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "cargo run --release"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[environments.production.variables]
+DATABASE_URL = "${{Postgres.DATABASE_URL}}"
+RUST_LOG = "info"
+PORT = "8000"
+
+[environments.production.services.backend]
+source = "backend/"
+build = "cargo build --release"
+start = "./target/release/dealpal-backend"
+
+[environments.production.services.ai-service]
+source = "backend/ai-service/"
+build = "pip install -r requirements.txt"
+start = "python main.py"
+variables = [
+  "GOOGLE_API_KEY",
+  "DATABASE_URL",
+  "GEMINI_MODEL=gemini-1.5-flash"
+]

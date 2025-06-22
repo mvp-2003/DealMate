@@ -108,16 +108,20 @@ fi
 
 echo ""
 
-# Database Test
-echo -e "${BLUE}💾 Database Test${NC}"
-if command -v psql &> /dev/null; then
-    if psql -d dealpal -c "SELECT 1;" > /dev/null 2>&1; then
-        echo -e "${GREEN}✅ Database connection successful${NC}"
+# Database Test (Railway)
+echo -e "${BLUE}💾 Railway Database Test${NC}"
+if [ -n "$DATABASE_URL" ]; then
+    if command -v psql &> /dev/null; then
+        if psql "$DATABASE_URL" -c "SELECT 1;" > /dev/null 2>&1; then
+            echo -e "${GREEN}✅ Railway database connection successful${NC}"
+        else
+            echo -e "${RED}❌ Railway database connection failed${NC}"
+        fi
     else
-        echo -e "${RED}❌ Database connection failed${NC}"
+        echo -e "${YELLOW}⚠️ PostgreSQL client not found${NC}"
     fi
 else
-    echo -e "${YELLOW}⚠️ PostgreSQL client not found${NC}"
+    echo -e "${YELLOW}⚠️ DATABASE_URL not set${NC}"
 fi
 
 echo ""

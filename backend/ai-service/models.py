@@ -79,9 +79,10 @@ class GeminiAIManager:
         try:
             genai.configure(api_key=settings.gemini_api_key)
             
-            # Initialize different Gemini models
+            # Initialize Gemini models with correct names
             self.models["gemini-text"] = genai.GenerativeModel(settings.gemini_model)
-            self.models["gemini-vision"] = genai.GenerativeModel('gemini-pro-vision')
+            # Use gemini-1.5-flash for vision tasks too (it supports multimodal)
+            self.models["gemini-vision"] = genai.GenerativeModel('gemini-1.5-flash')
             
             self.model_status["gemini"] = True
             logger.info("✅ Gemini client configured")

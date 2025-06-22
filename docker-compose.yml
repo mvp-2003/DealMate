@@ -17,18 +17,15 @@ services:
     ports:
       - "8001:8001"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - POSTGRES_URL=${DATABASE_URL}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
       - LOG_LEVEL=INFO
+      - GEMINI_MODEL=gemini-1.5-flash
     env_file:
       - ./backend/ai-service/.env
     depends_on:
-      - db
       - redis
-    volumes:
-      - ai-models-cache:/tmp/huggingface_cache
-      - torch-cache:/tmp/torch_cache
   
   frontend:
     build: ./frontend
