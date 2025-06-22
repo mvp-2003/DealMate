@@ -27,14 +27,17 @@ This comprehensive guide covers testing all features of the DealPal platform, fr
 
 2. **Environment Configuration**
    ```bash
-   # Backend environment
-   cp backend/.env.example backend/.env
+   # Backend environment (if needed)
+   # Create backend/.env with your database configuration
    
    # AI Service environment (already configured)
    # backend/ai-service/.env contains Gemini API key
    
-   # Frontend environment
-   cp frontend/.env.example frontend/.env.local
+   # Frontend environment (if needed)
+   # Create frontend/.env.local with your configuration
+   
+   # Browser Extension environment (required)
+   # Ensure browser-extension/.env contains your Gemini API key
    ```
 
 3. **Database Setup**

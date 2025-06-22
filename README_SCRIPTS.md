@@ -49,7 +49,8 @@
 ```bash
 git clone <repo>
 cd DealPal
-./setup.sh          # One-time setup
+./setup.sh          # One-time setup (creates .env files)
+# Edit browser-extension/.env with your Gemini API key
 ./run_app.sh         # Start everything
 ```
 

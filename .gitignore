@@ -71,6 +71,14 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Browser extension environment
+browser-extension/.env
+browser-extension/.env.local
 
 # parcel-bundler cache files
 .cache
