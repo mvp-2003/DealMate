@@ -39,6 +39,7 @@ try:
     from config import settings
     from models import get_model_manager, initialize_models
     from services import ProductAnalysisService
+from stacksmart import StackSmartEngine, StackedDealResult
 except ImportError as e:
     print(f"❌ Failed to import local modules: {e}")
     print("Make sure config.py, models.py, and services.py are available")
@@ -71,6 +72,7 @@ app.add_middleware(
 # Global services
 model_manager = get_model_manager()
 product_service = ProductAnalysisService()
+stacksmart_engine = StackSmartEngine()
 
 # Pydantic models for API
 class ProductDetectionRequest(BaseModel):
@@ -114,6 +116,33 @@ class PricePredictionResponse(BaseModel):
     confidence: float
     price_forecast: Dict[str, float]
     recommendation: str
+
+class StackDealsRequest(BaseModel):
+    deals: List[Dict[str, Any]]
+    base_price: float
+    user_context: Optional[Dict[str, Any]] = None
+
+class StackDealsResponse(BaseModel):
+    optimized_deals: List[Dict[str, Any]]
+    total_savings: float
+    final_price: float
+    original_price: float
+    confidence: float
+    application_order: List[str]
+    warnings: List[str]
+    processing_time: float
+
+class ValidateStackRequest(BaseModel):
+    deals: List[Dict[str, Any]]
+    base_price: float
+
+class ValidateStackResponse(BaseModel):
+    valid: bool
+    total_savings: Optional[float] = None
+    final_price: Optional[float] = None
+    confidence: Optional[float] = None
+    warnings: List[str] = []
+    error: Optional[str] = None
 
 # Startup event
 @app.on_event("startup")
@@ -326,6 +355,77 @@ async def predict_price(request: PricePredictionRequest):
         
     except Exception as e:
         logger.error(f"❌ Price prediction failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/stack-deals", response_model=StackDealsResponse)
+async def stack_deals(request: StackDealsRequest):
+    """
+    Optimize deal stacking using StackSmart engine
+    """
+    try:
+        logger.info(f"🔗 StackSmart: Optimizing {len(request.deals)} deals for base price ₹{request.base_price}")
+        
+        # Use StackSmart engine to optimize deals
+        result = await stacksmart_engine.optimize_deals(
+            available_deals=request.deals,
+            base_price=request.base_price,
+            user_context=request.user_context
+        )
+        
+        # Convert Deal objects to dictionaries
+        optimized_deals = []
+        for deal in result.deals:
+            optimized_deals.append({
+                "id": deal.id,
+                "title": deal.title,
+                "description": deal.description,
+                "deal_type": deal.deal_type.value,
+                "value": deal.value,
+                "value_type": deal.value_type,
+                "code": deal.code,
+                "platform": deal.platform,
+                "confidence": deal.confidence
+            })
+        
+        return StackDealsResponse(
+            optimized_deals=optimized_deals,
+            total_savings=result.total_savings,
+            final_price=result.final_price,
+            original_price=result.original_price,
+            confidence=result.confidence,
+            application_order=result.application_order,
+            warnings=result.warnings,
+            processing_time=result.processing_time
+        )
+        
+    except Exception as e:
+        logger.error(f"❌ Deal stacking failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/validate-stack", response_model=ValidateStackResponse)
+async def validate_stack(request: ValidateStackRequest):
+    """
+    Validate if a specific deal stack is valid
+    """
+    try:
+        logger.info(f"✅ Validating stack of {len(request.deals)} deals")
+        
+        result = await stacksmart_engine.validate_deal_stack(
+            deals=request.deals,
+            base_price=request.base_price
+        )
+        
+        return ValidateStackResponse(
+            valid=result["valid"],
+            total_savings=result.get("total_savings"),
+            final_price=result.get("final_price"),
+            confidence=result.get("confidence"),
+            warnings=result.get("warnings", []),
+            error=result.get("error")
+        )
+        
+    except Exception as e:
+        logger.error(f"❌ Stack validation failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Helper functions
