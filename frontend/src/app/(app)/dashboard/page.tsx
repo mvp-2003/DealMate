@@ -1,4 +1,3 @@
-
 import ProductInfoCard from '@/components/dashboard/ProductInfoCard';
 import PriceComparisonTable from '@/components/dashboard/PriceComparisonTable';
 import OffersList from '@/components/dashboard/OffersList';
@@ -23,8 +22,8 @@ export default function DashboardPage() {
         </div>
         
         {/* Hero Section with Product Cards - Responsive Grid */}
-        <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-3 xs:gap-4 sm:gap-6 lg:gap-8 mb-6 xs:mb-8">
-          <div className="animate-fade-in">
+        <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-8 mb-12 xs:mb-16">
+          <div className="relative animate-fade-in">
             <ProductInfoCard
               title="Cool Gadget Pro X"
               currentPrice="₹999"
@@ -34,7 +33,7 @@ export default function DashboardPage() {
               imageUrl="https://placehold.co/600x400.png"
             />
           </div>
-          <div className="animate-fade-in" style={{animationDelay: '0.1s'}}>
+          <div className="relative animate-fade-in" style={{animationDelay: '0.1s'}}>
             <ProductInfoCard
               title="Smart Headphones Ultra"
               currentPrice="₹1,499"
@@ -44,7 +43,7 @@ export default function DashboardPage() {
               imageUrl="https://placehold.co/600x400.png"
             />
           </div>
-          <div className="sm:col-span-2 lg:col-span-1 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <div className="relative sm:col-span-2 lg:col-span-1 animate-fade-in" style={{animationDelay: '0.2s'}}>
             <ProductInfoCard
               title="Wireless Speaker Pro"
               currentPrice="₹799"

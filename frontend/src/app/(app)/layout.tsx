@@ -9,7 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Header />
       <NavigationTabs />
       <ScrollArea className="flex-1 scrollbar-thin">
-        <main className="container-responsive py-3 xs:py-4 sm:py-6 h-full">
+        <main className="px-4 sm:px-6 lg:px-8 py-3 xs:py-4 sm:py-6 h-full">
           {children}
         </main>
       </ScrollArea>

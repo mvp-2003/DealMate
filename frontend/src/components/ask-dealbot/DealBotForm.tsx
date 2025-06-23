@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -62,10 +61,10 @@ export default function DealBotForm({ onSubmitQuery, isLoading }: DealBotFormPro
                     </div>
                   </div>
                 </FormControl>
-                <FormMessage id="dealbot-query-message" className="text-xs xs:text-sm" />
+                <FormMessage id="dealbot-query-message" className="text-xs xs:text-sm pl-2" />
                 
                 {/* Quick Suggestions - Mobile Friendly */}
-                <div className="flex flex-wrap gap-1.5 xs:gap-2 mt-2">
+                <div className="flex items-center flex-wrap gap-1.5 xs:gap-2 mt-2">
                   <span className="text-xs xs:text-sm text-muted-foreground">Try:</span>
                   {[
                     "Best laptop deals",
@@ -115,4 +114,3 @@ export default function DealBotForm({ onSubmitQuery, isLoading }: DealBotFormPro
     </div>
   );
 }
-

@@ -102,7 +102,7 @@ html {
 /* Enhanced 3D Card Styles - Mobile Optimized */
 .neumorphic-card {
   @apply rounded-xl bg-card transition-all duration-300 ease-in-out;
-  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  background-color: var(--card);
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.25),
     0 2px 8px rgba(0, 0, 0, 0.15),
@@ -114,7 +114,6 @@ html {
 /* Desktop hover effects */
 @media (hover: hover) and (pointer: fine) {
   .neumorphic-card:hover {
-    transform: translateY(-4px) scale(1.02);
     box-shadow: 
       0 16px 48px rgba(0, 0, 0, 0.4),
       0 8px 24px rgba(0, 0, 0, 0.3),
@@ -157,22 +156,6 @@ html {
       0 2px 8px rgba(0, 0, 0, 0.2),
       0 1px 1px rgba(255, 255, 255, 0.1) inset;
   }
-}
-
-.floating-card {
-  @apply transition-all duration-500 ease-out;
-}
-
-/* Only animate on larger screens with fine pointers */
-@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
-  .floating-card {
-    animation: float 6s ease-in-out infinite;
-  }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotateX(0deg); }
-  50% { transform: translateY(-8px) rotateX(3deg); }
 }
 
 .gradient-border {
@@ -248,8 +231,8 @@ html {
 /* Extra Small Devices (320px - 374px) */
 @media (max-width: 374px) {
   .container {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
   
   .neumorphic-card {
@@ -292,8 +275,8 @@ html {
 /* Medium Devices (640px - 767px) */
 @media (min-width: 640px) and (max-width: 767px) {
   .container {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
@@ -314,18 +297,12 @@ html {
   .container {
     padding-left: 2rem;
     padding-right: 2rem;
-    max-width: 1000px;
-  }
-  
-  .floating-card {
-    animation: float 8s ease-in-out infinite;
   }
 }
 
 /* Large Laptops (1280px - 1535px) */
 @media (min-width: 1280px) and (max-width: 1535px) {
   .container {
-    max-width: 1200px;
     padding-left: 2.5rem;
     padding-right: 2.5rem;
   }
@@ -334,7 +311,6 @@ html {
 /* Desktop (1536px - 1919px) */
 @media (min-width: 1536px) and (max-width: 1919px) {
   .container {
-    max-width: 1400px;
     padding-left: 3rem;
     padding-right: 3rem;
   }
@@ -347,7 +323,6 @@ html {
 /* Ultra-wide screens (1920px - 2559px) */
 @media (min-width: 1920px) and (max-width: 2559px) {
   .container {
-    max-width: 1800px;
     padding-left: 4rem;
     padding-right: 4rem;
   }
@@ -364,7 +339,6 @@ html {
 /* 4K and larger (2560px+) */
 @media (min-width: 2560px) {
   .container {
-    max-width: 2200px;
     padding-left: 6rem;
     padding-right: 6rem;
   }

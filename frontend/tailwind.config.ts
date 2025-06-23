@@ -200,41 +200,6 @@ export default {
           paddingBottom: 'env(safe-area-inset-bottom)',
           paddingLeft: 'env(safe-area-inset-left)',
         },
-        '.container-responsive': {
-          width: '100%',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          paddingLeft: '1rem',
-          paddingRight: '1rem',
-          '@screen sm': {
-            paddingLeft: '1.5rem',
-            paddingRight: '1.5rem',
-          },
-          '@screen lg': {
-            paddingLeft: '2rem',
-            paddingRight: '2rem',
-          },
-          '@screen xl': {
-            maxWidth: '1280px',
-            paddingLeft: '2.5rem',
-            paddingRight: '2.5rem',
-          },
-          '@screen 2xl': {
-            maxWidth: '1536px',
-            paddingLeft: '3rem',
-            paddingRight: '3rem',
-          },
-          '@screen 3xl': {
-            maxWidth: '1800px',
-            paddingLeft: '4rem',
-            paddingRight: '4rem',
-          },
-          '@screen 4xl': {
-            maxWidth: '2200px',
-            paddingLeft: '6rem',
-            paddingRight: '6rem',
-          },
-        },
       }
       addUtilities(newUtilities)
     },
