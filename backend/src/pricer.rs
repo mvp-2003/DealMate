@@ -50,7 +50,7 @@ pub fn predict_price(request: PricePredictionRequest) -> PricePredictionResponse
     }
 
     let base_price = request.current_price;
-    let (volatility, _seasonal) = category_info;
+    let (_volatility, _seasonal) = category_info;
 
     let multipliers = if trend_direction == "increasing" {
         [1.02, 1.05, 1.1]
