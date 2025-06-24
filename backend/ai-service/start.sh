@@ -41,24 +41,17 @@ echo "📥 Installing dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Create .env file if it doesn't exist
-if [ ! -f ".env" ]; then
-    echo "⚙️ Creating .env file with default template..."
-    cat > .env << 'EOF'
-# AI Service Configuration
-# Add your API keys here:
-# OPENAI_API_KEY=your_openai_api_key_here
-# GEMINI_API_KEY=your_gemini_api_key_here
-
-# Database Configuration (if needed)
-# DATABASE_URL=postgresql://user:password@localhost:5432/database_name
-EOF
+# Check for master .env file
+if [ ! -f "../../.env" ]; then
+    echo "⚠️ Warning: Master .env file not found at project root."
+    echo "   Please ensure ../../.env exists with all necessary environment variables:"
+    echo "   - GOOGLE_API_KEY for Gemini AI capabilities"
+    echo "   - DATABASE_URL for database connection"
+    echo "   - REDIS_URL for Redis connection"
+    echo "   - Other service configuration variables"
     echo ""
-    echo "📝 Please edit .env file to configure your API keys:"
-    echo "   - OPENAI_API_KEY for enhanced AI capabilities"
-    echo "   - GEMINI_API_KEY for Gemini AI capabilities"
-    echo "   - DATABASE_URL for database connection (if needed)"
-    echo ""
+else
+    echo "✅ Master .env file found. Using centralized configuration."
 fi
 
 # Check if ports are available

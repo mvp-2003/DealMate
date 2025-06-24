@@ -27,17 +27,15 @@ This comprehensive guide covers testing all features of the DealPal platform, fr
 
 2. **Environment Configuration**
    ```bash
-   # Backend environment (if needed)
-   # Create backend/.env with your database configuration
+   # All services now use the master .env file at the project root
+   # Ensure .env file contains all necessary environment variables:
+   # - DATABASE_URL (PostgreSQL connection)
+   # - GOOGLE_API_KEY (Gemini API key)
+   # - REDIS_URL (Redis connection)
+   # - All service configuration variables
    
-   # AI Service environment (already configured)
-   # backend/ai-service/.env contains Gemini API key
-   
-   # Frontend environment (if needed)
-   # Create frontend/.env.local with your configuration
-   
-   # Browser Extension environment (required)
-   # Ensure browser-extension/.env contains your Gemini API key
+   # No need for separate .env files in subdirectories
+   # All configuration is centralized in the master .env file
    ```
 
 3. **Database Setup**

@@ -123,36 +123,15 @@ else
     echo -e "${GREEN}✅ .env file already exists${NC}"
 fi
 
-# Browser Extension environment setup
-echo -e "\n${BLUE}🔌 Browser Extension Environment${NC}"
+# Environment file setup
+echo -e "\n${BLUE}🔌 Environment Configuration${NC}"
 
-if [ ! -f "browser-extension/.env" ]; then
-    echo -e "${YELLOW}Creating browser-extension/.env file template...${NC}"
-    cat > browser-extension/.env << EOF
-# DealPal Browser Extension Environment Configuration
-# Fill in your Gemini API key below
-
-# Google Gemini API Configuration (Required)
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Optional: Custom Gemini model (defaults to gemini-1.5-flash)
-GEMINI_MODEL=gemini-1.5-flash
-
-# Optional: Backend AI Service URL (if using Python AI service)
-PYTHON_AI_SERVICE_URL=http://localhost:8001
-
-# Feature Flags for Extension
-ENABLE_LOCAL_AI=true
-ENABLE_CLOUD_AI=true
-ENABLE_PYTHON_AI_SERVICE=false
-
-# Debug Mode
-DEBUG=false
-EOF
-    echo -e "${GREEN}✅ Browser extension .env template created${NC}"
-    echo -e "${YELLOW}⚠️  Please edit browser-extension/.env with your actual Gemini API key${NC}"
+if [ ! -f ".env" ]; then
+    echo -e "${YELLOW}Master .env file not found. This should contain all environment variables.${NC}"
+    echo -e "${YELLOW}Please create .env file with all necessary configuration.${NC}"
 else
-    echo -e "${GREEN}✅ Browser extension .env file already exists${NC}"
+    echo -e "${GREEN}✅ Master .env file exists${NC}"
+    echo -e "${GREEN}All services will use the master .env file for configuration${NC}"
 fi
 
 # VSCode setup

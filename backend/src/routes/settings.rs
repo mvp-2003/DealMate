@@ -126,7 +126,7 @@ pub async fn update_settings(
                     eprintln!("  Message: {}", db_err.message());
                     eprintln!("  Constraint: {:?}", db_err.constraint());
                     eprintln!("  Table: {:?}", db_err.table());
-                    eprintln!("  Column: {:?}", db_err.column());
+                    // eprintln!("  Column: {:?}", db_err.column()); // column() method not available in sqlx 0.7
                 }
                 sqlx::Error::Decode(decode_err) => {
                     eprintln!("Decode error: {}", decode_err);

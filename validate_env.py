@@ -91,29 +91,39 @@ async def main():
     all_good &= check_env_var("GEMINI_MODEL", required=False)
     all_good &= check_env_var("REDIS_URL", required=False)
     
-    # Check browser extension .env file
-    print("\n🔌 Browser Extension Environment:")
-    browser_env_path = "browser-extension/.env"
-    if os.path.exists(browser_env_path):
-        print(f"✅ Browser extension .env found: {browser_env_path}")
-        # Check if it contains GEMINI_API_KEY
+    # Check master .env file
+    print("\n🔌 Master Environment Configuration:")
+    master_env_path = ".env"
+    if os.path.exists(master_env_path):
+        print(f"✅ Master .env found: {master_env_path}")
+        # Check if it contains essential keys
         try:
-            with open(browser_env_path, 'r') as f:
+            with open(master_env_path, 'r') as f:
                 content = f.read()
-                if "GEMINI_API_KEY=" in content and "your_gemini_api_key_here" not in content:
-                    print("✅ Browser extension GEMINI_API_KEY configured")
-                elif "GEMINI_API_KEY=" in content:
-                    print("⚠️  Browser extension GEMINI_API_KEY needs to be set")
+                
+                # Check for Google API key
+                if "GOOGLE_API_KEY=" in content and "your_" not in content.lower():
+                    print("✅ GOOGLE_API_KEY configured in master .env")
+                elif "GOOGLE_API_KEY=" in content:
+                    print("⚠️  GOOGLE_API_KEY needs to be set in master .env")
                     all_good = False
                 else:
-                    print("❌ Browser extension missing GEMINI_API_KEY")
+                    print("❌ Master .env missing GOOGLE_API_KEY")
                     all_good = False
+                    
+                # Check for Database URL
+                if "DATABASE_URL=" in content and "postgresql://" in content:
+                    print("✅ DATABASE_URL configured in master .env")
+                else:
+                    print("❌ Master .env missing or invalid DATABASE_URL")
+                    all_good = False
+                    
         except Exception as e:
-            print(f"❌ Error reading browser extension .env: {e}")
+            print(f"❌ Error reading master .env: {e}")
             all_good = False
     else:
-        print(f"❌ Browser extension .env missing: {browser_env_path}")
-        print("💡 Create it with: ./setup.sh")
+        print(f"❌ Master .env missing: {master_env_path}")
+        print("💡 Create it with proper environment variables")
         all_good = False
     
     # Validate database URL
