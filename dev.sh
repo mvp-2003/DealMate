@@ -6,12 +6,10 @@ echo "🚀 Starting DealPal Development..."
 echo "🤖 Starting AI Service with Hot Reload..."
 cd backend/ai-service
 if [ ! -d ".venv" ]; then
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
-else
-    source .venv/bin/activate
+    echo "❌ Virtual environment not found! Please run ./build.sh first to set up the environment."
+    exit 1
 fi
+source .venv/bin/activate
 uvicorn main:app --host 0.0.0.0 --port 8001 --reload &
 AI_SERVICE_PID=$!
 cd ../..

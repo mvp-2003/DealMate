@@ -26,18 +26,19 @@ fi
 
 echo "✅ Found $python_version"
 
-# Create virtual environment if it doesn't exist
+# Check if virtual environment exists
 if [ ! -d ".venv" ]; then
-    echo "📦 Creating virtual environment..."
-    python3 -m venv .venv
+    echo "❌ Error: Virtual environment not found!"
+    echo "   Please run '../../build.sh' from the project root to set up the environment."
+    exit 1
 fi
 
 # Activate virtual environment
 echo "🔧 Activating virtual environment..."
 source .venv/bin/activate
 
-# Install dependencies
-echo "📥 Installing dependencies..."
+# Install/update dependencies
+echo "📥 Installing/updating dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt
 

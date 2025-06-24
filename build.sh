@@ -20,14 +20,18 @@ cd ..
 echo "🤖 Setting up AI Service..."
 cd backend/ai-service
 if [ ! -d ".venv" ]; then
-    echo "Creating new virtual environment..."
+    echo "Creating virtual environment..."
     python3 -m venv .venv
+    source .venv/bin/activate
+    echo "Installing Python dependencies..."
+    pip install --upgrade pip
+    pip install -r requirements.txt
 else
-    echo "Using existing virtual environment..."
+    echo "Virtual environment exists, updating dependencies..."
+    source .venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
 fi
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
 cd ../..
 
 echo "✅ Build Complete!"
