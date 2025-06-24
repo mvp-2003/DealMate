@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   backend:
     build: ./backend
@@ -10,7 +9,7 @@ services:
       - ./.env
     depends_on:
       - db
-  
+
   # Python AI Service
   ai-service:
     build: ./backend/ai-service
@@ -28,7 +27,7 @@ services:
     depends_on:
       - redis
       - backend
-  
+
   frontend:
     build: ./frontend
     ports:
@@ -39,7 +38,7 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
       - NEXT_PUBLIC_AI_API_URL=http://localhost:8001
-  
+
   # Database
   db:
     image: postgres:15
@@ -51,7 +50,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  
+
   # Redis for caching
   redis:
     image: redis:7-alpine

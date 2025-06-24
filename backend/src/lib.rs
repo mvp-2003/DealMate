@@ -29,7 +29,7 @@ fn wallet_routes(pool: PgPool) -> Router {
 
 fn settings_routes(pool: PgPool) -> Router {
     Router::new()
-        .route("/api/settings/:user_id", get(settings::get_settings).put(settings::update_settings))
+        .route("/settings/:user_id", get(settings::get_settings).post(settings::update_settings))
         .with_state(pool)
 }
 
