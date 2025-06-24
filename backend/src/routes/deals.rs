@@ -49,25 +49,18 @@ pub struct ProductDetails {
 pub async fn handle_product_detection(
     Json(payload): Json<ProductDetectionRequest>,
 ) -> (StatusCode, Json<ProductDetectionResponse>) {
-    // Basic logic to check for "product" in the URL
-    let is_product_page = payload.url.contains("product");
+    let client = reqwest::Client::new();
+    let res = client
+        .post("http://localhost:8001/detect-product-details")
+        .json(&payload)
+        .send()
+        .await
+        .unwrap()
+        .json::<ProductDetectionResponse>()
+        .await
+        .unwrap();
 
-    let product_details = if is_product_page {
-        Some(ProductDetails {
-            name: "Sample Product".to_string(),
-            price: 123.45,
-            currency: "USD".to_string(),
-        })
-    } else {
-        None
-    };
-
-    let response = ProductDetectionResponse {
-        is_product_page,
-        product_details,
-    };
-
-    (StatusCode::OK, Json(response))
+    (StatusCode::OK, Json(res))
 }
 
 pub async fn predict_price_handler(

@@ -16,6 +16,7 @@ try:
         validate_stack_service,
         analyze_product_service,
         get_real_time_deals,
+        detect_product_details,
         startup_event,
         shutdown_event,
     )
@@ -127,6 +128,18 @@ async def get_deals():
         return deals
     except Exception as e:
         logger.error(f"Error fetching real-time deals: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/detect-product-details")
+async def detect_product_details_endpoint(request: ProductURL):
+    """
+    Detects product details from a given URL.
+    """
+    try:
+        details = await detect_product_details(request.url)
+        return details
+    except Exception as e:
+        logger.error(f"Error detecting product details: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
