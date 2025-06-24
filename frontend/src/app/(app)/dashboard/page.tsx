@@ -57,12 +57,16 @@ export default function DashboardPage() {
         
         {/* Savings Overview - Mobile First Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 xs:gap-4 sm:gap-6 mb-6 xs:mb-8">
-          <div className="lg:col-span-1 order-2 lg:order-1">
+          <div className="lg:col-span-1 order-2 lg:order-1 transition-transform duration-200 hover:scale-105">
             <SavingsScore score="₹300" percentageOff="23%" />
           </div>
           <div className="lg:col-span-3 order-1 lg:order-2 grid grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4 sm:gap-6">
-            <PriceHistoryChart />
-            <MonthlySavingsChart />
+            <div className="transition-transform duration-200 hover:scale-105">
+              <PriceHistoryChart />
+            </div>
+            <div className="transition-transform duration-200 hover:scale-105">
+              <MonthlySavingsChart />
+            </div>
           </div>
         </div>
 
