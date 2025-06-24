@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Save } from "lucide-react";
+import { useEffect } from "react";
 
 const platforms = [
   { id: "amazon", label: "Amazon.in" },
@@ -31,28 +32,70 @@ const settingsFormSchema = z.object({
 
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
-// Default values should ideally be fetched from user preferences (e.g., Firestore)
-const defaultValues: Partial<SettingsFormValues> = {
-  preferredPlatforms: ["amazon", "flipkart"],
-  alertFrequency: "daily",
-  darkMode: false,
-  autoApplyCoupons: true,
-  priceDropNotifications: true,
-};
+// Hardcoded user ID for demonstration purposes
+const USER_ID = "a1b2c3d4-e5f6-7890-1234-567890abcdef";
 
 export default function SettingsForm() {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
-    defaultValues,
+    defaultValues: {
+        preferredPlatforms: [],
+        alertFrequency: "daily",
+        darkMode: false,
+        autoApplyCoupons: true,
+        priceDropNotifications: true,
+    },
   });
 
-  function onSubmit(data: SettingsFormValues) {
-    // In a real app, save these settings to Firebase/Supabase
-    console.log(data);
-    toast({
-      title: "Settings Saved",
-      description: "Your preferences have been updated successfully.",
-    });
+  useEffect(() => {
+    async function fetchSettings() {
+      try {
+        const response = await fetch(`/api/settings/${USER_ID}`);
+        if (response.ok) {
+          const data = await response.json();
+          form.reset(data);
+        } else {
+          // Handle case where user has no settings yet
+          console.log("No settings found for user, using default values.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch settings:", error);
+        toast({
+          title: "Error",
+          description: "Could not load your settings.",
+          variant: "destructive",
+        });
+      }
+    }
+    fetchSettings();
+  }, [form]);
+
+  async function onSubmit(data: SettingsFormValues) {
+    try {
+      const response = await fetch(`/api/settings/${USER_ID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Settings Saved",
+          description: "Your preferences have been updated successfully.",
+        });
+      } else {
+        throw new Error('Failed to save settings');
+      }
+    } catch (error) {
+      console.error("Failed to save settings:", error);
+      toast({
+        title: "Error",
+        description: "Could not save your settings.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (

@@ -14,7 +14,7 @@ pub mod pricer;
 pub mod stacksmart;
 pub mod analyzer;
 
-use crate::routes::{health_check, wallet, deals};
+use crate::routes::{health_check, wallet, deals, settings};
 
 // Create a new function for wallet routes to improve modularity
 fn wallet_routes(pool: PgPool) -> Router {
@@ -24,6 +24,12 @@ fn wallet_routes(pool: PgPool) -> Router {
             "/wallet/:wallet_id",
             get(wallet::get_wallet).delete(wallet::delete_wallet),
         )
+        .with_state(pool)
+}
+
+fn settings_routes(pool: PgPool) -> Router {
+    Router::new()
+        .route("/api/settings/:user_id", get(settings::get_settings).put(settings::update_settings))
         .with_state(pool)
 }
 
@@ -43,6 +49,7 @@ pub fn app(pool: PgPool) -> Router {
         .route("/api/validate-stack", post(deals::validate_stack_handler))
         .route("/api/analyze-product", post(deals::analyze_product_handler))
         .merge(wallet_routes(pool.clone()))
+        .merge(settings_routes(pool.clone()))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
 }
