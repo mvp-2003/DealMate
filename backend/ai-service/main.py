@@ -17,6 +17,7 @@ try:
         analyze_product_service,
         get_real_time_deals,
         detect_product_details,
+        optimize_deals_service,
         startup_event,
         shutdown_event,
     )
@@ -140,6 +141,18 @@ async def detect_product_details_endpoint(request: ProductURL):
         return details
     except Exception as e:
         logger.error(f"Error detecting product details: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/optimize-deals")
+async def optimize_deals(request: DealStackRequest):
+    """
+    Optimizes deals to find the best stack.
+    """
+    try:
+        optimized_deals = await optimize_deals_service(request)
+        return optimized_deals
+    except Exception as e:
+        logger.error(f"Error optimizing deals: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")

@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Instant;
+use reqwest;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 pub enum DealType {
@@ -83,23 +84,17 @@ impl StackSmartEngine {
     }
 
     pub async fn optimize_deals(&self, request: StackDealsRequest) -> StackedDealResult {
-        let start_time = Instant::now();
-        // This is a placeholder for the complex optimization logic.
-        // In a real implementation, this would involve generating combinations,
-        // evaluating them, and finding the best one.
-        let final_price = request.base_price * 0.9; // a dummy 10% discount
-        let total_savings = request.base_price - final_price;
-
-        StackedDealResult {
-            deals: request.deals,
-            total_savings,
-            final_price,
-            original_price: request.base_price,
-            confidence: 0.9,
-            application_order: vec!["dummy_deal".to_string()],
-            warnings: vec![],
-            processing_time: start_time.elapsed().as_secs_f64(),
-        }
+        let client = reqwest::Client::new();
+        let res = client
+            .post("http://localhost:8001/optimize-deals")
+            .json(&request)
+            .send()
+            .await
+            .unwrap()
+            .json::<StackedDealResult>()
+            .await
+            .unwrap();
+        res
     }
 
     pub async fn validate_deal_stack(&self, request: ValidateStackRequest) -> ValidateStackResponse {
