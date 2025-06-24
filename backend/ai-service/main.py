@@ -204,7 +204,7 @@ async def analyze_sentiment(request: SentimentAnalysisRequest):
         logger.info(f"📊 Analyzing sentiment for {len(request.reviews)} reviews")
         
         # Analyze each review using the model manager
-        sentiments = await model_manager.analyze_sentiment(request.reviews)
+        sentiments = await model_manager.analyze_sentiment_advanced(request.reviews)
         
         # Calculate overall sentiment
         if not sentiments:
@@ -301,6 +301,309 @@ async def _summarize_reviews_with_llm(reviews: List[str], product_name: str) -> 
         logger.error(f"❌ Review summarization failed: {e}")
     
     return None
+
+@app.post("/analyze/enhance")
+async def enhance_analysis_advanced(request: Dict[str, Any], background_tasks: BackgroundTasks):
+    """
+    Advanced analysis enhancement using Gemini AI with multi-modal capabilities
+    """
+    try:
+        logger.info("🔍 Starting advanced analysis enhancement")
+        
+        # Initialize model manager
+        await initialize_models()
+        model_manager = get_model_manager()
+        
+        if not model_manager.is_model_available("gemini"):
+            raise HTTPException(status_code=503, detail="Gemini AI model not available")
+        
+        # Extract request data
+        url = request.get("url", "")
+        title = request.get("title", "")
+        text_content = request.get("text_content", "")[:3000]  # Limit for API efficiency
+        structured_data = request.get("structured_data", {})
+        local_analysis = request.get("local_analysis", {})
+        images = request.get("images", [])[:3]  # Limit to 3 images
+        enhancement_type = request.get("enhancement_type", "full_analysis")
+        
+        # Initialize services
+        analysis_service = ProductAnalysisService()
+        
+        # Prepare product info for analysis
+        product_info = {
+            "url": url,
+            "title": title,
+            "name": local_analysis.get("product", {}).get("name", title),
+            "price": local_analysis.get("product", {}).get("price"),
+            "brand": local_analysis.get("product", {}).get("brand"),
+            "category": local_analysis.get("product", {}).get("category")
+        }
+        
+        # Comprehensive enhancement
+        enhanced_result = await analysis_service.enhance_analysis(
+            rust_analysis=local_analysis,
+            text_content=text_content,
+            images=images
+        )
+        
+        # Add processing metadata
+        enhanced_result["processing_info"] = {
+            "enhancement_type": enhancement_type,
+            "gemini_model_used": True,
+            "processing_timestamp": datetime.now().isoformat(),
+            "api_version": "2.0_enhanced"
+        }
+        
+        logger.info("✅ Advanced analysis enhancement completed")
+        
+        return enhanced_result
+        
+    except Exception as e:
+        logger.error(f"❌ Advanced analysis enhancement failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Enhancement failed: {str(e)}")
+
+@app.post("/analyze/stacksmart")
+async def optimize_offers_stacksmart(request: Dict[str, Any]):
+    """
+    StackSmart offer optimization using Gemini AI
+    """
+    try:
+        logger.info("📊 Starting StackSmart offer optimization")
+        
+        await initialize_models()
+        model_manager = get_model_manager()
+        
+        if not model_manager.is_model_available("gemini"):
+            raise HTTPException(status_code=503, detail="Gemini AI model not available")
+        
+        product_info = request.get("product_info", {})
+        available_offers = request.get("offers", [])
+        constraints = request.get("constraints", {})
+        user_preferences = request.get("user_preferences", {})
+        
+        # Create optimization prompt for Gemini
+        optimization_prompt = f"""Analyze these offers for optimal stacking and application:
+
+Product: {product_info.get('name', 'Unknown')}
+Price: ${product_info.get('price', 0)}
+
+Available Offers:
+{json.dumps(available_offers, indent=2)}
+
+Constraints: {json.dumps(constraints, indent=2)}
+
+Provide a JSON response with optimal offer combination:
+{{
+  "optimal_combination": [
+    {{
+      "offer_id": "string",
+      "application_order": 1,
+      "estimated_savings": 0.00,
+      "compatibility_score": 0.95
+    }}
+  ],
+  "total_savings": 0.00,
+  "final_price": 0.00,
+  "confidence_score": 0.85,
+  "application_sequence": [
+    {{
+      "step": 1,
+      "action": "Apply coupon code XYZ",
+      "expected_result": "10% discount applied",
+      "verification": "Check cart total"
+    }}
+  ],
+  "alternative_combinations": [],
+  "risk_factors": [],
+  "user_experience_rating": "EASY|MEDIUM|COMPLEX"
+}}"""
+
+        messages = [
+            {"role": "system", "content": "You are an expert at optimizing e-commerce offers and coupon stacking for maximum savings."},
+            {"role": "user", "content": optimization_prompt}
+        ]
+        
+        response = await model_manager.call_gemini(messages, response_format="json", temperature=0.1)
+        
+        if response["success"]:
+            optimization_result = response["response"]
+            
+            # Add metadata
+            optimization_result["processing_info"] = {
+                "method": "gemini_stacksmart",
+                "offers_analyzed": len(available_offers),
+                "processing_timestamp": datetime.now().isoformat()
+            }
+            
+            logger.info("✅ StackSmart optimization completed")
+            return optimization_result
+        else:
+            raise Exception(response.get("error", "Optimization failed"))
+            
+    except Exception as e:
+        logger.error(f"❌ StackSmart optimization failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Optimization failed: {str(e)}")
+
+@app.post("/analyze/price-intelligence")
+async def analyze_price_intelligence(request: Dict[str, Any]):
+    """
+    Price intelligence and prediction using Gemini AI
+    """
+    try:
+        logger.info("💰 Starting price intelligence analysis")
+        
+        await initialize_models()
+        model_manager = get_model_manager()
+        
+        if not model_manager.is_model_available("gemini"):
+            raise HTTPException(status_code=503, detail="Gemini AI model not available")
+        
+        product_info = request.get("product_info", {})
+        current_price = request.get("current_price", 0)
+        price_history = request.get("price_history", [])
+        market_context = request.get("market_context", {})
+        
+        # Create price analysis prompt for Gemini
+        price_analysis_prompt = f"""Analyze this product's pricing for intelligence and predictions:
+
+Product Information:
+- Name: {product_info.get('name', 'Unknown')}
+- Current Price: ${current_price}
+- Category: {product_info.get('category', 'General')}
+- Brand: {product_info.get('brand', 'Unknown')}
+
+Price History: {json.dumps(price_history[-10:], indent=2) if price_history else 'No historical data'}
+
+Market Context: {json.dumps(market_context, indent=2)}
+
+Current Date: {datetime.now().strftime('%Y-%m-%d')}
+
+Provide comprehensive price intelligence analysis in JSON:
+{{
+  "current_price_assessment": {{
+    "position": "LOW|MEDIUM|HIGH",
+    "percentile": 0.75,
+    "value_rating": "EXCELLENT|GOOD|FAIR|POOR"
+  }},
+  "price_predictions": {{
+    "7_days": {{"expected_price": 0.00, "confidence": 0.80, "change_probability": "INCREASE|DECREASE|STABLE"}},
+    "30_days": {{"expected_price": 0.00, "confidence": 0.70, "change_probability": "INCREASE|DECREASE|STABLE"}},
+    "90_days": {{"expected_price": 0.00, "confidence": 0.60, "change_probability": "INCREASE|DECREASE|STABLE"}}
+  }},
+  "seasonal_analysis": {{
+    "current_season_factor": 1.0,
+    "next_major_sale": {{"event": "Black Friday", "days_away": 45, "expected_discount": "20-40%"}},
+    "best_buying_months": ["November", "December", "January"]
+  }},
+  "market_intelligence": {{
+    "competitive_positioning": "PREMIUM|MARKET|BUDGET",
+    "brand_pricing_pattern": "STABLE|AGGRESSIVE|PREMIUM",
+    "category_trends": "INCREASING|DECREASING|STABLE"
+  }},
+  "purchase_recommendation": {{
+    "action": "BUY_NOW|WAIT|MONITOR",
+    "confidence": 0.85,
+    "reasoning": "Detailed explanation of recommendation",
+    "optimal_timing": "Now|Wait 2 weeks|Wait for sale event"
+  }},
+  "risk_factors": [],
+  "confidence_score": 0.80
+}}"""
+
+        messages = [
+            {"role": "system", "content": "You are an expert price analyst with deep knowledge of e-commerce pricing patterns, seasonal trends, and market dynamics."},
+            {"role": "user", "content": price_analysis_prompt}
+        ]
+        
+        response = await model_manager.call_gemini(messages, response_format="json", temperature=0.2)
+        
+        if response["success"]:
+            price_analysis = response["response"]
+            
+            # Add processing metadata
+            price_analysis["processing_info"] = {
+                "method": "gemini_price_intelligence",
+                "historical_data_points": len(price_history),
+                "analysis_timestamp": datetime.now().isoformat(),
+                "model_confidence": response.get("tokens_used", 0)
+            }
+            
+            logger.info("✅ Price intelligence analysis completed")
+            return price_analysis
+        else:
+            raise Exception(response.get("error", "Price analysis failed"))
+            
+    except Exception as e:
+        logger.error(f"❌ Price intelligence analysis failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Price analysis failed: {str(e)}")
+
+@app.post("/analyze/deal-quality")
+async def analyze_deal_quality_advanced(request: Dict[str, Any]):
+    """
+    Advanced deal quality and authenticity analysis using Gemini AI
+    """
+    try:
+        logger.info("🎯 Starting advanced deal quality analysis")
+        
+        await initialize_models()
+        model_manager = get_model_manager()
+        
+        if not model_manager.is_model_available("gemini"):
+            raise HTTPException(status_code=503, detail="Gemini AI model not available")
+        
+        deal_info = request.get("deal_info", {})
+        product_info = request.get("product_info", {})
+        store_context = request.get("store_context", {})
+        
+        # Use the enhanced deal quality analysis
+        quality_analysis = await model_manager.analyze_deal_quality(deal_info)
+        
+        # Add additional context analysis
+        context_prompt = f"""Analyze this deal in broader market context:
+
+Deal: {deal_info.get('description', 'Unknown deal')}
+Product: {product_info.get('name', 'Unknown')}
+Store: {store_context.get('name', 'Unknown')}
+Original Price: ${deal_info.get('original_price', 0)}
+Sale Price: ${deal_info.get('sale_price', 0)}
+
+Provide contextual analysis:
+{{
+  "market_comparison": "BETTER_THAN_MARKET|MARKET_AVERAGE|BELOW_MARKET",
+  "deal_type_analysis": "GENUINE_DISCOUNT|INFLATED_ORIGINAL|SEASONAL_NORMAL|CLEARANCE",
+  "urgency_assessment": "REAL_SCARCITY|ARTIFICIAL_URGENCY|NO_URGENCY",
+  "store_reputation_factor": 0.85,
+  "historical_price_context": "BEST_EVER|GOOD_DEAL|AVERAGE|POOR",
+  "recommendation_score": 0.80
+}}"""
+
+        messages = [
+            {"role": "system", "content": "You are an expert at analyzing deal quality and detecting deceptive pricing practices."},
+            {"role": "user", "content": context_prompt}
+        ]
+        
+        context_response = await model_manager.call_gemini(messages, response_format="json", temperature=0.1)
+        
+        if context_response["success"]:
+            # Combine quality analysis with context
+            combined_analysis = {
+                **quality_analysis,
+                "contextual_analysis": context_response["response"],
+                "processing_info": {
+                    "method": "gemini_deal_quality_advanced",
+                    "analysis_timestamp": datetime.now().isoformat()
+                }
+            }
+            
+            logger.info("✅ Advanced deal quality analysis completed")
+            return combined_analysis
+        else:
+            # Return just the basic quality analysis if context fails
+            return quality_analysis
+            
+    except Exception as e:
+        logger.error(f"❌ Advanced deal quality analysis failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Deal analysis failed: {str(e)}")
 
 # Run the application
 if __name__ == "__main__":

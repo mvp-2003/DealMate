@@ -8,7 +8,10 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    dotenv().ok();
+    // Try to load from project root first, then local
+    if dotenvy::from_filename("../.env").is_err() {
+        dotenv().ok();
+    }
 
     tracing_subscriber::registry()
         .with(

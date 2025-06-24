@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "passed": 6,
+    "total": 7,
+    "success_rate": 85.71428571428571
+  },
+  "details": {
+    "health_check": {
+      "status": "PASSED",
+      "models_loaded": {
+        "gemini": true
+      },
+      "features": {
+        "product_detection": true,
+        "sentiment_analysis": true,
+        "text_classification": true,
+        "llm_enhancement": true,
+        "image_analysis": true
+      }
+    },
+    "product_detection": {
+      "status": "FAILED",
+      "error": "Status code: 500"
+    },
+    "sentiment_analysis": {
+      "status": "PASSED",
+      "sentiment": "neutral",
+      "score": 0.0,
+      "summary": "Analyzed 2 reviews"
+    },
+    "enhancement_analysis": {
+      "status": "PASSED",
+      "enhanced": true,
+      "confidence": 0
+    },
+    "stacksmart_optimization": {
+      "status": "PASSED",
+      "optimization": {},
+      "savings": 0.0
+    },
+    "price_intelligence": {
+      "status": "PASSED",
+      "analysis": {},
+      "prediction": {}
+    },
+    "deal_quality_analysis": {
+      "status": "PASSED",
+      "quality_score": 0,
+      "analysis": {}
+    }
+  },
+  "timestamp": 1750758161.863541
+}

@@ -1,84 +1,60 @@
-# DealPal
+# DealPal - Environment Configuration
 
-This is the main repository for the DealPal application, which includes the frontend, backend, and browser extension.
+## Master Environment File
 
-## Backend
+All environment variables are now centralized in the root `.env` file. This file contains configuration for:
 
-The backend is written in Rust using the Axum framework.
+- **Database**: PostgreSQL connection
+- **AI Services**: Gemini API keys and models
+- **Service URLs**: Backend and AI service endpoints
+- **Feature Flags**: Enable/disable various features
+- **Performance**: Rate limiting and caching settings
 
-### Connecting to Railway Postgres
+## Setup Instructions
 
-1.  Ensure you have a `.env` file in the `backend` directory.
-2.  Copy the `DATABASE_URL` from the "Public Network" tab of your PostgreSQL instance on Railway.
-3.  Add the `DATABASE_URL` to your `.env` file:
+1. **Copy the master environment file:**
+   ```bash
+   cp .env.example .env
+   ```
 
-    ```
-    DATABASE_URL=postgresql://postgres:your_password@your_host:your_port/your_db
-    ```
+2. **Update your API keys and settings in `.env`**
 
-### Running Migrations
+3. **Each service will automatically load from the master `.env` file:**
+   - Rust Backend: Loads from `../.env` then local `.env`
+   - Python AI Service: Loads from `../../.env` then local `.env`
+   - Browser Extension: Uses `config.js` with values from master `.env`
 
-This project uses `sqlx-cli` for database migrations.
+## Environment Variables
 
-1.  Install `sqlx-cli`:
+### Database
+- `DATABASE_URL`: PostgreSQL connection string
 
-    ```bash
-    cargo install sqlx-cli
-    ```
+### AI Configuration
+- `GOOGLE_API_KEY`: Google Gemini API key
+- `GEMINI_MODEL`: Model version to use
+- `GEMINI_MAX_TOKENS`: Maximum tokens per request
 
-2.  Create a new migration:
+### Service URLs
+- `RUST_BACKEND_URL`: Rust backend service URL
+- `PYTHON_AI_SERVICE_URL`: Python AI service URL
 
-    ```bash
-    sqlx migrate add <migration_name>
-    ```
+### Feature Flags
+- `ENABLE_LOCAL_AI`: Enable local AI processing
+- `ENABLE_CLOUD_AI`: Enable cloud AI services
+- `ENABLE_PYTHON_AI_SERVICE`: Enable Python AI service
+- `ENABLE_IMAGE_ANALYSIS`: Enable image analysis features
+- `ENABLE_SENTIMENT_ANALYSIS`: Enable sentiment analysis
+- `ENABLE_PRICE_PREDICTION`: Enable price prediction
 
-3.  Run migrations:
+### Performance
+- `RATE_LIMIT_REQUESTS_PER_MINUTE`: API rate limiting
+- `MAX_WORKERS`: Maximum worker threads
+- `REQUEST_TIMEOUT`: Request timeout in seconds
 
-    ```bash
-    sqlx migrate run
-    ```
+### Debug
+- `DEBUG`: Enable debug mode
+- `LOG_LEVEL`: Logging level (INFO, DEBUG, ERROR)
 
-### Running the Backend
+## Migration from Individual .env Files
 
-To run the backend server, navigate to the `backend` directory and run:
-
-```bash
-cargo run
-```
-
-## Frontend
-
-The frontend is a Next.js application. See the `frontend/README.md` for more details.
-
-## Browser Extension
-
-The browser extension is a simple JavaScript-based extension. See the `browser-extension/README.md` for more details.
-
-## Podman Support
-
-This project supports running the application using Podman as an alternative to Docker.
-
-### Prerequisites
-
-1.  Install Podman: Follow the instructions for your operating system from the [Podman installation guide](https://podman.io/getting-started/installation).
-2.  Install `podman-compose`:
-
-    ```bash
-    pip install podman-compose
-    ```
-
-### Running the Application with Podman
-
-1.  Build the images:
-
-    ```bash
-    ./podman-build.sh
-    ```
-
-2.  Bring up the application:
-
-    ```bash
-    ./podman-up.sh
-    ```
-
-This will build the Docker images using Podman and then bring up the application using `podman-compose`.
+The individual `.env` files in each service directory are now optional and will be used as fallbacks if the master `.env` file is not found.

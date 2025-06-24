@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     metrics_port: int = Field(default=8002, env="METRICS_PORT")
     
     class Config:
-        env_file = ".env"
+        env_file = ["../../.env", ".env"]  # Check project root first, then local
         env_file_encoding = "utf-8"
         case_sensitive = False
     

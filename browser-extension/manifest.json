@@ -76,7 +76,10 @@
         "*://*.vijaysales.com/*"
       ],
       "js": [
+        "config.js",
         "ai-extractors.js",
+        "stacksmart-engine.js",
+        "price-intelligence.js",
         "ai-service.js",
         "python-ai-service.js",
         "content.js"
