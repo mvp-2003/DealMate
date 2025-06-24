@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,17 @@ async def analyze_product_service(request):
     """
     logger.info(f"Analyzing product at URL: {request.product_url}")
     return {"analysis": "This is a great product!"}
+
+async def get_real_time_deals() -> List[Dict[str, Any]]:
+    """
+    Fetches real-time deals from a data source.
+    """
+    logger.info("Fetching real-time deals")
+    # In a real implementation, this would call an external API or a database
+    return [
+        {"id": "1", "title": "Real-Time Deal 1", "description": "A fantastic real-time deal!", "price": 149.99, "url": "https://example.com/real-deal1"},
+        {"id": "2", "title": "Real-Time Deal 2", "description": "An amazing limited-time offer!", "price": 79.99, "url": "https://example.com/real-deal2"},
+    ]
 
 async def startup_event():
     """

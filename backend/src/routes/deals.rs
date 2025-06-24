@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::pricer::{self, PricePredictionRequest, PricePredictionResponse};
 use crate::stacksmart::{StackDealsRequest, StackedDealResult, ValidateStackRequest, ValidateStackResponse, StackSmartEngine};
 use crate::analyzer::{ProductAnalysisRequest, ProductAnalysisResponse, ProductAnalyzer};
+use reqwest;
 
 #[derive(Serialize, Deserialize)]
 pub struct Deal {
@@ -14,23 +15,16 @@ pub struct Deal {
 }
 
 pub async fn get_deals() -> Json<Vec<Deal>> {
-    let deals = vec![
-        Deal {
-            id: "1".to_string(),
-            title: "Example Deal 1".to_string(),
-            description: "This is a great deal!".to_string(),
-            price: 99.99,
-            url: "https://example.com/deal1".to_string(),
-        },
-        Deal {
-            id: "2".to_string(),
-            title: "Example Deal 2".to_string(),
-            description: "Another amazing deal!".to_string(),
-            price: 49.99,
-            url: "https://example.com/deal2".to_string(),
-        },
-    ];
-    Json(deals)
+    let client = reqwest::Client::new();
+    let res = client
+        .get("http://localhost:8001/get-real-time-deals")
+        .send()
+        .await
+        .unwrap()
+        .json::<Vec<Deal>>()
+        .await
+        .unwrap();
+    Json(res)
 }
 
 #[derive(Serialize, Deserialize, Debug)]

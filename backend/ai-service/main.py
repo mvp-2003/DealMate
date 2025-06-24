@@ -15,6 +15,7 @@ try:
         stack_deals_service,
         validate_stack_service,
         analyze_product_service,
+        get_real_time_deals,
         startup_event,
         shutdown_event,
     )
@@ -114,6 +115,18 @@ async def analyze_product(request: ProductAnalysisRequest):
         return analysis
     except Exception as e:
         logger.error(f"Error analyzing product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/get-real-time-deals")
+async def get_deals():
+    """
+    Fetches real-time deals.
+    """
+    try:
+        deals = await get_real_time_deals()
+        return deals
+    except Exception as e:
+        logger.error(f"Error fetching real-time deals: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
