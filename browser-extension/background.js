@@ -7,19 +7,74 @@ const FRONTEND_URL = 'http://localhost:9002';
 // Store recent product detections
 let recentProducts = [];
 let recentDeals = new Map();
+let contextMenusCreated = false;
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log('🎯 DealPal Background: Received message', request.action);
+// Setup context menus on install
+chrome.runtime.onInstalled.addListener(() => {
+  setupContextMenus();
+});
+
+function setupContextMenus() {
+  if (contextMenusCreated) return;
   
-  if (request.action === "productDetected") {
-    handleProductDetection(request.data, sender, sendResponse);
-    return true; // Keep message channel open for async response
+  try {
+    // Remove existing menus first
+    chrome.contextMenus.removeAll(() => {
+      // Create DealPal context menus
+      chrome.contextMenus.create({
+        id: 'dealpal-main',
+        title: 'DealPal',
+        contexts: ['selection', 'link', 'page']
+      });
+      
+      chrome.contextMenus.create({
+        id: 'dealpal-check-deals',
+        parentId: 'dealpal-main',
+        title: 'Check deals for "%s"',
+        contexts: ['selection']
+      });
+      
+      chrome.contextMenus.create({
+        id: 'dealpal-add-to-watchlist',
+        parentId: 'dealpal-main',
+        title: 'Add to watchlist',
+        contexts: ['link', 'page']
+      });
+      
+      chrome.contextMenus.create({
+        id: 'dealpal-compare-prices',
+        parentId: 'dealpal-main',
+        title: 'Compare prices',
+        contexts: ['link', 'page']
+      });
+      
+      chrome.contextMenus.create({
+        id: 'dealpal-test-coupons',
+        parentId: 'dealpal-main',
+        title: 'Test available coupons',
+        contexts: ['page']
+      });
+      
+      contextMenusCreated = true;
+      console.log('🎯 DealPal: Context menus created');
+    });
+  } catch (error) {
+    console.error('🎯 DealPal: Context menu error:', error);
   }
+}
+
+// Handle context menu clicks
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  console.log('🎯 DealPal: Context menu clicked:', info.menuItemId);
   
-  if (request.action === "getRecentProducts") {
-    sendResponse({ products: recentProducts, deals: Object.fromEntries(recentDeals) });
-    return false;
-  }
+  // Send message to content script to handle the action
+  chrome.tabs.sendMessage(tab.id, {
+    action: 'contextMenuClicked',
+    menuItemId: info.menuItemId,
+    selectionText: info.selectionText,
+    linkUrl: info.linkUrl,
+    pageUrl: info.pageUrl
+  });
 });
 
 async function handleProductDetection(data, sender, sendResponse) {
@@ -154,6 +209,44 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.action.onClicked.addListener((tab) => {
   // Open DealPal dashboard
   chrome.tabs.create({ url: `${FRONTEND_URL}/smart-deals` });
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('🎯 DealPal Background: Received message', request.action);
+  
+  if (request.action === "productDetected") {
+    handleProductDetection(request.data, sender, sendResponse);
+    return true; // Keep message channel open for async response
+  }
+  
+  if (request.action === "getRecentProducts") {
+    sendResponse({ products: recentProducts, deals: Object.fromEntries(recentDeals) });
+    return false;
+  }
+  
+  if (request.action === "setupContextMenus") {
+    setupContextMenus();
+    sendResponse({ success: true });
+    return false;
+  }
+  
+  if (request.action === "openPopup") {
+    // Open popup programmatically
+    chrome.action.openPopup();
+    return false;
+  }
+  
+  if (request.action === "getCoupons") {
+    // Get available coupons for current tab
+    getCouponsForTab(sender.tab?.id, sendResponse);
+    return true;
+  }
+  
+  if (request.action === "searchDeals") {
+    // Search for deals based on query
+    searchDeals(request.query, sendResponse);
+    return true;
+  }
 });
 
 console.log('🎯 DealPal: Background script ready');

@@ -5,6 +5,7 @@ console.log('🎯 DealPal: Content script loaded on', window.location.hostname);
 let aiService = null;
 let pythonAIService = null;
 let isAIEnabled = true;
+let autoCouponTester = null;
 
 // Load AI service modules when DOM is ready
 (async function initializeAIServices() {
@@ -16,6 +17,10 @@ let isAIEnabled = true;
     // Initialize Python AI service
     pythonAIService = new PythonAIService();
     console.log('🐍 DealPal: Python AI service initialized');
+    
+    // Initialize Auto Coupon Tester
+    autoCouponTester = new AutoCouponTester();
+    console.log('🎯 DealPal: Auto Coupon Tester initialized');
     
     // Health check for Python AI service
     const health = await pythonAIService.healthCheck();
@@ -590,6 +595,26 @@ function handleSuccessfulDetection(productData, deals, metadata) {
   if (!productData.price || productData.price === 'Price not found') {
     validationIssues.push('price');
     console.warn('🎯 DealPal: Could not extract price properly');
+  }
+  
+  // Auto-test coupons if we're on a checkout page and have testable coupons
+  if (autoCouponTester && deals.coupons && deals.coupons.length > 0) {
+    autoCouponTester.detectCheckoutPage().then(isCheckout => {
+      if (isCheckout) {
+        console.log('🎯 DealPal: Checkout detected, starting auto coupon testing...');
+        const testableCoupons = deals.coupons.filter(coupon => 
+          coupon.value && coupon.value.length > 2 && coupon.value.length < 50
+        ).map(coupon => ({
+          code: coupon.value,
+          description: coupon.text,
+          type: coupon.type
+        }));
+        
+        if (testableCoupons.length > 0) {
+          autoCouponTester.autoTestCoupons(testableCoupons);
+        }
+      }
+    });
   }
   
   // Enhanced data package for backend
