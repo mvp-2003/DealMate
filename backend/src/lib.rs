@@ -1,5 +1,5 @@
 use axum::{
-    routing::{get, post},
+    routing::{get, post, put},
     Router,
 };
 use sqlx::PgPool;
@@ -14,7 +14,7 @@ pub mod pricer;
 pub mod stacksmart;
 pub mod analyzer;
 
-use crate::routes::{health_check, wallet, deals, settings, partnerships};
+use crate::routes::{health_check, wallet, deals, settings, partnerships, user};
 
 // Create a new function for wallet routes to improve modularity
 fn wallet_routes(pool: PgPool) -> Router {
@@ -29,13 +29,25 @@ fn wallet_routes(pool: PgPool) -> Router {
 
 fn settings_routes(pool: PgPool) -> Router {
     Router::new()
-        .route("/settings/:user_id", get(settings::get_settings).post(settings::update_settings))
+        .route("/settings/:user_id", get(settings::get_settings).put(settings::update_settings))
         .with_state(pool)
 }
 
 fn partnerships_routes(pool: PgPool) -> Router {
     Router::new()
         .nest("/api/partnerships", partnerships::create_router())
+        .with_state(pool)
+}
+
+fn user_routes(pool: PgPool) -> Router {
+    Router::new()
+        .route("/users", post(user::create_user))
+        .route(
+            "/users/:user_id",
+            get(user::get_user)
+                .put(user::update_user)
+                .delete(user::delete_user),
+        )
         .with_state(pool)
 }
 
@@ -57,6 +69,7 @@ pub fn app(pool: PgPool) -> Router {
         .merge(wallet_routes(pool.clone()))
         .merge(settings_routes(pool.clone()))
         .merge(partnerships_routes(pool.clone()))
+        .merge(user_routes(pool.clone()))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
 }
