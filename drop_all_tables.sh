@@ -9,21 +9,34 @@ if [[ -z "$DATABASE_URL" ]]; then
   exit 1
 fi
 
-# Connect to the database and drop all user-defined tables
+# Drop all user-defined tables
 TABLES=$(psql "$DATABASE_URL" -t -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public';")
 
-if [[ -z "$TABLES" ]]; then
-  echo "No tables found to drop."
-  exit 0
+if [[ -n "$TABLES" ]]; then
+  for TABLE in $TABLES; do
+    echo "Dropping table: $TABLE"
+    psql "$DATABASE_URL" -c "DROP TABLE IF EXISTS $TABLE CASCADE;"
+  done
 fi
 
-for TABLE in $TABLES; do
-  echo "Dropping table: $TABLE"
-  psql "$DATABASE_URL" -c "DROP TABLE IF EXISTS $TABLE CASCADE;"
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while dropping table: $TABLE"
-    exit 1
-  fi
-done
+# Drop all user-defined types
+TYPES=$(psql "$DATABASE_URL" -t -c "SELECT typname FROM pg_type WHERE typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public');")
 
-echo "All user-defined tables dropped successfully."
+if [[ -n "$TYPES" ]]; then
+  for TYPE in $TYPES; do
+    echo "Dropping type: $TYPE"
+    psql "$DATABASE_URL" -c "DROP TYPE IF EXISTS $TYPE CASCADE;"
+  done
+fi
+
+# Drop all user-defined sequences
+SEQUENCES=$(psql "$DATABASE_URL" -t -c "SELECT relname FROM pg_class WHERE relkind = 'S' AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public');")
+
+if [[ -n "$SEQUENCES" ]]; then
+  for SEQUENCE in $SEQUENCES; do
+    echo "Dropping sequence: $SEQUENCE"
+    psql "$DATABASE_URL" -c "DROP SEQUENCE IF EXISTS $SEQUENCE CASCADE;"
+  done
+fi
+
+echo "All user-defined objects dropped successfully."
