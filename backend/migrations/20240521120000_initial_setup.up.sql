@@ -1,8 +1,11 @@
 -- Create users table
 CREATE TABLE users (
     id UUID PRIMARY KEY,
+    auth0_id TEXT UNIQUE NOT NULL,
+    username VARCHAR(255) NOT NULL,
     email TEXT UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Create wallets table
