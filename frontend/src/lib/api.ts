@@ -1,9 +1,10 @@
 import { Wallet, UserCard, LoyaltyProgram, UserRewardGoal } from './types';
+import { authApi } from './auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
 export async function getWallet(walletId: string): Promise<Wallet> {
-  const response = await fetch(`${API_BASE_URL}/wallet/${walletId}`);
+  const response = await authApi.makeAuthenticatedRequest(`/api/wallet/${walletId}`);
   if (!response.ok) {
     throw new Error('Failed to fetch wallet');
   }
@@ -35,7 +36,7 @@ export async function fetchUserRewardGoals(): Promise<UserRewardGoal[]> {
 }
 
 export async function fetchDeals(productUrl: string) {
-  const response = await fetch(`${API_BASE_URL}/api/deals?product_url=${encodeURIComponent(productUrl)}`);
+  const response = await authApi.makeAuthenticatedRequest(`/api/deals?product_url=${encodeURIComponent(productUrl)}`);
   if (!response.ok) {
     throw new Error('Failed to fetch deals');
   }

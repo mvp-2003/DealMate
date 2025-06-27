@@ -8,10 +8,8 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Try to load from project root first, then local
-    if dotenvy::from_filename("../.env").is_err() {
-        dotenv().ok();
-    }
+    // Load from project root .env file
+    dotenvy::from_filename("../.env").expect(".env file not found in project root");
 
     tracing_subscriber::registry()
         .with(

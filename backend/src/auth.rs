@@ -1,0 +1,191 @@
+use axum::{
+    extract::{Query, State},
+    http::{HeaderMap, StatusCode},
+    response::{IntoResponse, Redirect},
+    Json,
+};
+use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
+use reqwest::Client;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use once_cell::sync::Lazy;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Claims {
+    pub sub: String,
+    pub email: Option<String>,
+    pub name: Option<String>,
+    pub picture: Option<String>,
+    pub exp: usize,
+    pub iat: usize,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AuthQuery {
+    code: Option<String>,
+    state: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TokenResponse {
+    access_token: String,
+    id_token: String,
+    token_type: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JWK {
+    kty: String,
+    kid: String,
+    #[serde(rename = "use")]
+    key_use: String,
+    n: String,
+    e: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JWKS {
+    keys: Vec<JWK>,
+}
+
+static JWKS_CACHE: Lazy<tokio::sync::RwLock<Option<JWKS>>> = Lazy::new(|| {
+    tokio::sync::RwLock::new(None)
+});
+
+pub async fn login_handler() -> impl IntoResponse {
+    let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
+    let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
+    let audience = std::env::var("AUTH0_AUDIENCE").expect("AUTH0_AUDIENCE must be set");
+    let redirect_uri = "http://localhost:8000/auth/callback";
+    
+    let auth_url = format!(
+        "https://{}/authorize?response_type=code&client_id={}&redirect_uri={}&scope=openid profile email&audience={}",
+        auth0_domain, client_id, redirect_uri, audience
+    );
+    
+    Redirect::temporary(&auth_url)
+}
+
+pub async fn signup_handler() -> impl IntoResponse {
+    let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
+    let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
+    let audience = std::env::var("AUTH0_AUDIENCE").expect("AUTH0_AUDIENCE must be set");
+    let redirect_uri = "http://localhost:8000/auth/callback";
+    
+    let auth_url = format!(
+        "https://{}/authorize?response_type=code&client_id={}&redirect_uri={}&scope=openid profile email&audience={}&screen_hint=signup",
+        auth0_domain, client_id, redirect_uri, audience
+    );
+    
+    Redirect::temporary(&auth_url)
+}
+
+pub async fn callback_handler(Query(params): Query<AuthQuery>) -> impl IntoResponse {
+    let code = match params.code {
+        Some(code) => code,
+        None => return (StatusCode::BAD_REQUEST, "Missing authorization code").into_response(),
+    };
+
+    match exchange_code_for_token(&code).await {
+        Ok(token_response) => {
+            let frontend_url = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:9002".to_string());
+            let redirect_url = format!("{}/dashboard?token={}", frontend_url, token_response.access_token);
+            Redirect::temporary(&redirect_url).into_response()
+        }
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, "Token exchange failed").into_response(),
+    }
+}
+
+pub async fn logout_handler() -> impl IntoResponse {
+    let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
+    let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
+    let frontend_url = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:9002".to_string());
+    
+    let logout_url = format!(
+        "https://{}/v2/logout?client_id={}&returnTo={}",
+        auth0_domain, client_id, frontend_url
+    );
+    
+    Redirect::temporary(&logout_url)
+}
+
+async fn exchange_code_for_token(code: &str) -> Result<TokenResponse, Box<dyn std::error::Error>> {
+    let auth0_domain = std::env::var("AUTH0_DOMAIN")?;
+    let client_id = std::env::var("AUTH0_CLIENT_ID")?;
+    let client_secret = std::env::var("AUTH0_CLIENT_SECRET")?;
+    let redirect_uri = "http://localhost:8000/auth/callback";
+
+    let client = Client::new();
+    let mut params = HashMap::new();
+    params.insert("grant_type", "authorization_code");
+    params.insert("client_id", &client_id);
+    params.insert("client_secret", &client_secret);
+    params.insert("code", code);
+    params.insert("redirect_uri", redirect_uri);
+
+    let response = client
+        .post(&format!("https://{}/oauth/token", auth0_domain))
+        .form(&params)
+        .send()
+        .await?;
+
+    let token_response: TokenResponse = response.json().await?;
+    Ok(token_response)
+}
+
+pub async fn verify_token(token: &str) -> Result<Claims, Box<dyn std::error::Error>> {
+    let header = decode_header(token)?;
+    let kid = header.kid.ok_or("Missing kid in token header")?;
+    
+    let jwks = get_jwks().await?;
+    let jwk = jwks.keys.iter().find(|k| k.kid == kid)
+        .ok_or("JWK not found")?;
+    
+    let decoding_key = DecodingKey::from_rsa_components(&jwk.n, &jwk.e)?;
+    let mut validation = Validation::new(Algorithm::RS256);
+    let audience = std::env::var("AUTH0_AUDIENCE")?;
+    validation.set_audience(&[audience]);
+    validation.set_issuer(&[format!("https://{}/", std::env::var("AUTH0_DOMAIN")?)]);
+    
+    let token_data = decode::<Claims>(token, &decoding_key, &validation)?;
+    Ok(token_data.claims)
+}
+
+async fn get_jwks() -> Result<JWKS, Box<dyn std::error::Error>> {
+    {
+        let cache = JWKS_CACHE.read().await;
+        if let Some(jwks) = cache.as_ref() {
+            return Ok(jwks.clone());
+        }
+    }
+    
+    let auth0_domain = std::env::var("AUTH0_DOMAIN")?;
+    let client = Client::new();
+    let response = client
+        .get(&format!("https://{}/.well-known/jwks.json", auth0_domain))
+        .send()
+        .await?;
+    
+    let jwks: JWKS = response.json().await?;
+    
+    {
+        let mut cache = JWKS_CACHE.write().await;
+        *cache = Some(jwks.clone());
+    }
+    
+    Ok(jwks)
+}
+
+pub async fn protected_handler(headers: HeaderMap) -> impl IntoResponse {
+    let auth_header = match headers.get("authorization") {
+        Some(header) => header.to_str().unwrap_or(""),
+        None => return (StatusCode::UNAUTHORIZED, "Missing authorization header").into_response(),
+    };
+
+    let token = auth_header.strip_prefix("Bearer ").unwrap_or("");
+    
+    match verify_token(token).await {
+        Ok(claims) => Json(claims).into_response(),
+        Err(_) => (StatusCode::UNAUTHORIZED, "Invalid token").into_response(),
+    }
+}

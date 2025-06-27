@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '../components/auth/auth-styles.css';
+
 /*
   Inter and Source Code Pro fonts are already linked in src/app/layout.tsx
   The body font-family is set in tailwind.config.ts

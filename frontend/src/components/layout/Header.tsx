@@ -1,4 +1,5 @@
 import { ShoppingBag } from 'lucide-react';
+import UserProfile from '@/components/auth/UserProfile';
 
 export default function Header() {
   return (
@@ -16,8 +17,7 @@ export default function Header() {
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
           <span className="hidden sm:inline">Online</span>
         </div>
-        {/* Future: User Avatar/Auth Button */}
-        {/* <div className="w-8 h-8 bg-muted rounded-full touch-target"></div> */}
+        <UserProfile />
       </div>
     </header>
   );
