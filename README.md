@@ -20,6 +20,12 @@ Welcome to DealPal! This guide will help you get started quickly.
 
 3. **Start Development**
    ```bash
+   cd scripts
+   ./dev.sh
+   ```
+   
+   Or with Docker:
+   ```bash
    docker-compose up --build
    ```
 
@@ -148,15 +154,18 @@ ENABLE_PRICE_PREDICTION=true
 
 ## 🛠️ Development Scripts
 
-All development scripts are located in the `scripts/` folder:
+All development scripts are located in the `scripts/` folder. Run them from the scripts directory:
 
-- `scripts/setup.sh` - Initial project setup
-- `scripts/start.sh` - Start all services
-- `scripts/stop.sh` - Stop all services
-- `scripts/build.sh` - Build all components
-- `scripts/clean.sh` - Clean build artifacts
-- `scripts/dev.sh` - Development mode
-- `scripts/status.sh` - Check service status
+```bash
+cd scripts
+./setup.sh     # Initial project setup
+./start.sh     # Start all services
+./stop.sh      # Stop all services
+./build.sh     # Build all components
+./clean.sh     # Clean build artifacts
+./dev.sh       # Development mode
+./status.sh    # Check service status
+```
 
 ## 🎯 Core Features
 

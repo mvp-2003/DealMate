@@ -4,18 +4,18 @@ set -e
 echo "🚀 Starting DealPal Production..."
 
 # Build if needed
-if [ ! -f "./backend/target/release/dealpal-backend" ] || [ ! -f "./frontend/.next" ] || [ ! -d "./backend/ai-service/.venv" ]; then
+if [ ! -f "../backend/target/release/dealpal-backend" ] || [ ! -f "../frontend/.next" ] || [ ! -d "../backend/ai-service/.venv" ]; then
     echo "📦 Building project first..."
     ./build.sh
 fi
 
 # Start AI Service in background
 echo "🤖 Starting AI Service..."
-cd backend/ai-service
+cd ../backend/ai-service
 source .venv/bin/activate
 python main.py &
 AI_SERVICE_PID=$!
-cd ../..
+cd ../../scripts
 
 # Wait for AI service to start
 echo "⏳ Waiting for AI service to initialize..."
@@ -23,17 +23,17 @@ sleep 3
 
 # Start Backend in background
 echo "🦀 Starting Backend..."
-cd backend
+cd ../backend
 ./target/release/dealpal-backend &
 BACKEND_PID=$!
-cd ..
+cd ../scripts
 
 # Start Frontend
 echo "📦 Starting Frontend..."
-cd frontend
+cd ../frontend
 npm start &
 FRONTEND_PID=$!
-cd ..
+cd ../scripts
 
 echo "✅ Production servers started!"
 echo "🤖 AI Service:  http://localhost:8001"

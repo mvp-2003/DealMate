@@ -24,38 +24,30 @@ confirm() {
 # Clean Frontend
 if confirm "Clean Frontend build artifacts and node_modules?"; then
     echo "🗑️  Cleaning Frontend..."
-    cd frontend
+    cd ../frontend
     rm -rf .next
     rm -rf node_modules
     rm -rf .turbo
     echo "✅ Frontend cleaned"
-    cd ..
+    cd ../scripts
 fi
 
 # Clean Backend
 if confirm "Clean Backend build artifacts?"; then
     echo "🗑️  Cleaning Backend..."
-    cd backend
+    cd ../backend
     cargo clean
     echo "✅ Backend cleaned"
-    cd ..
-fi
-
-# Clean AI Service
-if confirm "Clean AI Service virtual environment?"; then
-    echo "🗑️  Cleaning AI Service..."
-    cd backend/ai-service
-    rm -rf __pycache__
-    rm -rf .pytest_cache
-    echo "✅ AI Service cleaned"
-    cd ../..
+    cd ../scripts
 fi
 
 # Clean root node_modules
-if [ -d "node_modules" ] && confirm "Clean root node_modules?"; then
+if [ -d "../node_modules" ] && confirm "Clean root node_modules?"; then
     echo "🗑️  Cleaning root node_modules..."
+    cd ..
     rm -rf node_modules
     rm -rf package-lock.json
+    cd scripts
     echo "✅ Root node_modules cleaned"
 fi
 
@@ -69,19 +61,8 @@ fi
 # Clean test artifacts
 if confirm "Clean test artifacts and logs?"; then
     echo "🗑️  Cleaning test artifacts..."
-    find . -name "*.log" -type f -delete 2>/dev/null || true
-    find . -name ".pytest_cache" -type d -exec rm -rf {} + 2>/dev/null || true
-    find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
-    find . -name "*.pyc" -type f -delete 2>/dev/null || true
+    find .. -name "*.log" -type f -delete 2>/dev/null || true
     echo "✅ Test artifacts cleaned"
-fi
-
-# Reset git (optional)
-if confirm "Reset git to clean state (WARNING: This will discard uncommitted changes)?"; then
-    echo "🔄 Resetting git..."
-    git clean -fd
-    git reset --hard HEAD
-    echo "✅ Git reset complete"
 fi
 
 echo ""

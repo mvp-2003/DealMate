@@ -15,7 +15,7 @@ pip3 install requests > /dev/null 2>&1
 
 # Run the authentication flow test
 echo "🧪 Running Authentication Flow Tests..."
-python3 tests/auth_flow_test.py
+python3 ../tests/auth_flow_test.py
 
 echo ""
 echo "📋 Test Summary:"
@@ -23,6 +23,6 @@ echo "- Authentication flow test completed"
 echo "- Check output above for detailed results"
 echo ""
 echo "🔧 To run individual tests:"
-echo "- Backend tests: cd backend && cargo test"
-echo "- Frontend tests: cd frontend && npm test"
-echo "- Full flow test: python3 tests/auth_flow_test.py"
+echo "- Backend tests: cd ../backend && cargo test"
+echo "- Frontend tests: cd ../frontend && npm test"
+echo "- Full flow test: python3 ../tests/auth_flow_test.py"

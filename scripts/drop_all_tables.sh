@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Load environment variables from .env file
-source .env
+source ../.env
 
 # Check if DATABASE_URL is set
 if [[ -z "$DATABASE_URL" ]]; then

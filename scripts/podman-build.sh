@@ -2,14 +2,14 @@
 
 # Build the backend image
 echo "Building backend image..."
-cd backend
+cd ../backend
 podman build -t backend .
-cd ..
+cd ../scripts
 
 # Build the frontend image
 echo "Building frontend image..."
-cd frontend
+cd ../frontend
 podman build -t frontend .
-cd ..
+cd ../scripts
 
 echo "All images built successfully!"

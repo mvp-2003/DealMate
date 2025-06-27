@@ -18,7 +18,7 @@ if curl -s http://localhost:8001/health > /dev/null; then
     
 else
     echo "❌ AI Service: NOT RUNNING"
-    echo "   Start with: cd backend/ai-service && uvicorn main:app --host 0.0.0.0 --port 8001"
+    echo "   Start with: cd ../backend/ai-service && uvicorn main:app --host 0.0.0.0 --port 8001"
     exit 1
 fi
 

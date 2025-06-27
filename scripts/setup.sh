@@ -65,21 +65,21 @@ echo -e "\n${BLUE}📦 Installing Project Dependencies${NC}"
 
 # Frontend dependencies
 echo -e "${YELLOW}Installing Frontend dependencies...${NC}"
-cd frontend
+cd ../frontend
 npm install
-cd ..
+cd ../scripts
 echo -e "${GREEN}✅ Frontend dependencies installed${NC}"
 
 # Backend dependencies (Rust dependencies are handled by Cargo)
 echo -e "${YELLOW}Checking Backend dependencies...${NC}"
-cd backend
+cd ../backend
 cargo check
-cd ..
+cd ../scripts
 echo -e "${GREEN}✅ Backend dependencies verified${NC}"
 
 # AI Service dependencies
 echo -e "${YELLOW}Setting up AI Service environment...${NC}"
-cd backend/ai-service
+cd ../backend/ai-service
 if [ ! -d ".venv" ]; then
     echo "Creating new virtual environment..."
     python3 -m venv .venv
@@ -89,15 +89,15 @@ fi
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-cd ../..
+cd ../../scripts
 echo -e "${GREEN}✅ AI Service environment set up${NC}"
 
 # Environment setup
 echo -e "\n${BLUE}🔧 Environment Configuration${NC}"
 
-if [ ! -f ".env" ]; then
+if [ ! -f "../.env" ]; then
     echo -e "${YELLOW}Creating .env file template...${NC}"
-    cat > .env << EOF
+    cat > ../.env << EOF
 # DealPal Environment Configuration
 # Copy this to .env and fill in your values
 
@@ -126,7 +126,7 @@ fi
 # Environment file setup
 echo -e "\n${BLUE}🔌 Environment Configuration${NC}"
 
-if [ ! -f ".env" ]; then
+if [ ! -f "../.env" ]; then
     echo -e "${YELLOW}Master .env file not found. This should contain all environment variables.${NC}"
     echo -e "${YELLOW}Please create .env file with all necessary configuration.${NC}"
 else
@@ -139,9 +139,9 @@ if command_exists "code"; then
     echo -e "\n${BLUE}🎯 VSCode Configuration${NC}"
     
     # Create VSCode settings
-    mkdir -p .vscode
+    mkdir -p ../.vscode
     
-    cat > .vscode/settings.json << EOF
+    cat > ../.vscode/settings.json << EOF
 {
     "rust-analyzer.cargo.buildScripts.enable": true,
     "python.defaultInterpreterPath": "./backend/ai-service/.venv/bin/python",
@@ -156,7 +156,7 @@ if command_exists "code"; then
 }
 EOF
 
-    cat > .vscode/extensions.json << EOF
+    cat > ../.vscode/extensions.json << EOF
 {
     "recommendations": [
         "rust-lang.rust-analyzer",

@@ -103,11 +103,11 @@ echo "================================="
 
 # Start AI Service
 echo -e "${YELLOW}🤖 Starting AI Service...${NC}"
-cd backend/ai-service
+cd ../backend/ai-service
 source .venv/bin/activate
 nohup python main.py > ../../ai-service.log 2>&1 &
 AI_SERVICE_PID=$!
-cd ../..
+cd ../../scripts
 echo "AI Service PID: $AI_SERVICE_PID"
 
 # Wait for AI service to start
@@ -116,10 +116,10 @@ sleep 5
 
 # Start Backend
 echo -e "${YELLOW}🦀 Starting Backend...${NC}"
-cd backend
+cd ../backend
 nohup ./target/release/dealpal-backend > ../backend.log 2>&1 &
 BACKEND_PID=$!
-cd ..
+cd ../scripts
 echo "Backend PID: $BACKEND_PID"
 
 # Wait for backend to start
@@ -128,10 +128,10 @@ sleep 3
 
 # Start Frontend
 echo -e "${YELLOW}📦 Starting Frontend...${NC}"
-cd frontend
+cd ../frontend
 nohup npm start > ../frontend.log 2>&1 &
 FRONTEND_PID=$!
-cd ..
+cd ../scripts
 echo "Frontend PID: $FRONTEND_PID"
 
 # Wait for frontend to start

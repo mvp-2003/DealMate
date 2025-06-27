@@ -4,7 +4,7 @@ echo "🚀 Starting DealPal Development..."
 
 # Start AI Service in background (development mode with hot reload)
 echo "🤖 Starting AI Service with Hot Reload..."
-cd backend/ai-service
+cd ../backend/ai-service
 if [ ! -d ".venv" ]; then
     echo "❌ Virtual environment not found! Please run ./build.sh first to set up the environment."
     exit 1
@@ -12,7 +12,7 @@ fi
 source .venv/bin/activate
 uvicorn main:app --host 0.0.0.0 --port 8001 --reload &
 AI_SERVICE_PID=$!
-cd ../..
+cd ../../scripts
 
 # Wait for AI service to start
 echo "⏳ Waiting for AI service to initialize..."
@@ -20,17 +20,17 @@ sleep 3
 
 # Start Backend in background (development mode with hot reload)
 echo "🦀 Starting Backend with Hot Reload..."
-cd backend
+cd ../backend
 cargo watch -x run &
 BACKEND_PID=$!
-cd ..
+cd ../scripts
 
 # Start Frontend in development mode
 echo "📦 Starting Frontend..."
-cd frontend
+cd ../frontend
 npm run dev &
 FRONTEND_PID=$!
-cd ..
+cd ../scripts
 
 echo "✅ Development servers started!"
 echo "🤖 AI Service:  http://localhost:8001 (with hot reload)"

@@ -69,27 +69,27 @@ check_build_status() {
     echo -e "${CYAN}Build Artifacts${NC}"
     
     # Frontend build
-    if [ -d "./frontend/.next" ]; then
+    if [ -d "../frontend/.next" ]; then
         echo -e "  Frontend Build: ${GREEN}✅ EXISTS${NC}"
-        local build_size=$(du -sh ./frontend/.next 2>/dev/null | cut -f1)
+        local build_size=$(du -sh ../frontend/.next 2>/dev/null | cut -f1)
         echo "  Size: $build_size"
     else
         echo -e "  Frontend Build: ${RED}❌ MISSING${NC}"
     fi
     
     # Backend build
-    if [ -f "./backend/target/release/dealpal-backend" ]; then
+    if [ -f "../backend/target/release/dealpal-backend" ]; then
         echo -e "  Backend Build: ${GREEN}✅ EXISTS${NC}"
-        local build_size=$(ls -lh ./backend/target/release/dealpal-backend 2>/dev/null | awk '{print $5}')
+        local build_size=$(ls -lh ../backend/target/release/dealpal-backend 2>/dev/null | awk '{print $5}')
         echo "  Size: $build_size"
     else
         echo -e "  Backend Build: ${RED}❌ MISSING${NC}"
     fi
     
     # AI Service environment
-    if [ -d "./backend/ai-service/.venv" ]; then
+    if [ -d "../backend/ai-service/.venv" ]; then
         echo -e "  AI Service Env: ${GREEN}✅ EXISTS${NC}"
-        local packages=$(./backend/ai-service/.venv/bin/pip list 2>/dev/null | wc -l)
+        local packages=$(../backend/ai-service/.venv/bin/pip list 2>/dev/null | wc -l)
         echo "  Packages: $packages"
     else
         echo -e "  AI Service Env: ${RED}❌ MISSING${NC}"
