@@ -1,28 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
 import './auth-styles.css';
 
 export default function AuthContainer() {
-  const [isLogin, setIsLogin] = useState(true);
-
-  const handleToggleForm = () => {
-    setIsLogin(!isLogin);
-  };
+  const searchParams = useSearchParams();
+  const isLogin = searchParams.get('form') !== 'signup';
 
   return (
     <div className="auth-container">
-      {isLogin ? (
-        <LoginForm 
-          onSignUpClick={handleToggleForm}
-        />
-      ) : (
-        <SignUpForm 
-          onLoginClick={handleToggleForm}
-        />
-      )}
+      {isLogin ? <LoginForm /> : <SignUpForm />}
     </div>
   );
 }

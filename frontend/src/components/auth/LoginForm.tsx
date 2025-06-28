@@ -2,12 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-interface LoginFormProps {
-  onSignUpClick?: () => void;
-}
-
-export default function LoginForm({ onSignUpClick }: LoginFormProps) {
+export default function LoginForm() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -21,15 +18,21 @@ export default function LoginForm({ onSignUpClick }: LoginFormProps) {
     }
   }, [router]);
 
-  const handleLoginWithAuth0 = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/login`;
+  const handleLoginWithConnection = (connection: string) => {
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/login`;
+    const params = new URLSearchParams({ connection });
+    window.location.href = `${baseUrl}?${params.toString()}`;
   };
 
   const handleForgotPassword = () => {
-    // This should ideally point to a dedicated forgot password page
-    // For now, we'll keep the existing behavior but log a warning
-    console.warn('Forgot password clicked. Redirecting to login with signup hint.');
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/login?screen_hint=signup&prompt=login`;
+    const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+    const returnTo = process.env.NEXT_PUBLIC_URL;
+    if (auth0Domain && clientId && returnTo) {
+      window.location.href = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${encodeURIComponent(returnTo)}`;
+    } else {
+      console.error('Auth0 configuration is missing for password reset.');
+    }
   };
 
   const handleStandardLogin = (e: React.FormEvent) => {
@@ -72,15 +75,22 @@ export default function LoginForm({ onSignUpClick }: LoginFormProps) {
       
       <div className="btn">
         <button type="submit" className="button1">Login</button>
-        <button type="button" className="button2" onClick={onSignUpClick}>Sign Up</button>
       </div>
       
-      <button type="button" className="button3" onClick={handleLoginWithAuth0}>
-        Login with Auth0
-      </button>
-      <button type="button" className="button3" onClick={handleForgotPassword}>
-        Forgot Password
-      </button>
+      <div className="social-login">
+        <button type="button" className="social-button google" onClick={() => handleLoginWithConnection('google-oauth2')}>
+          <img src="/google-logo.svg" alt="Google" /> Login with Google
+        </button>
+        <button type="button" className="social-button microsoft" onClick={() => handleLoginWithConnection('windowslive')}>
+          <img src="/microsoft-logo.svg" alt="Microsoft" /> Login with Microsoft
+        </button>
+      </div>
+      <div className="auth-form-footer">
+        <span>Don't have an <br /> account? <Link href="/auth?form=signup">Sign Up</Link></span>
+        <button type="button" className="link-button" onClick={handleForgotPassword}>
+          Forgot Password
+        </button>
+      </div>
     </form>
   );
 }

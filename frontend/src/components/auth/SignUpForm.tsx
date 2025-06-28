@@ -1,18 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
-interface SignUpFormProps {
-  onLoginClick?: () => void;
-}
-
-export default function SignUpForm({ onLoginClick }: SignUpFormProps) {
+export default function SignUpForm() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignUpWithAuth0 = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/signup`;
+  const handleSignUpWithConnection = (connection: string) => {
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/signup`;
+    const params = new URLSearchParams({ connection });
+    window.location.href = `${baseUrl}?${params.toString()}`;
   };
 
   const handleStandardSignUp = (e: React.FormEvent) => {
@@ -69,12 +68,19 @@ export default function SignUpForm({ onLoginClick }: SignUpFormProps) {
       
       <div className="btn">
         <button type="submit" className="button1">Sign Up</button>
-        <button type="button" className="button2" onClick={onLoginClick}>Login</button>
       </div>
 
-      <button type="button" className="button3" onClick={handleSignUpWithAuth0}>
-        Sign Up with Auth0
-      </button>
+      <div className="social-login">
+        <button type="button" className="social-button google" onClick={() => handleSignUpWithConnection('google-oauth2')}>
+          <img src="/google-logo.svg" alt="Google" /> Sign Up with Google
+        </button>
+        <button type="button" className="social-button microsoft" onClick={() => handleSignUpWithConnection('windowslive')}>
+          <img src="/microsoft-logo.svg" alt="Microsoft" /> Sign Up with Microsoft
+        </button>
+      </div>
+      <div className="auth-form-footer">
+        <span>Already have an <br /> account? <Link href="/auth">Login</Link></span>
+      </div>
     </form>
   );
 }

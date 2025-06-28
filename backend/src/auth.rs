@@ -57,7 +57,7 @@ pub async fn login_handler() -> impl IntoResponse {
     let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
     let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
     let audience = std::env::var("AUTH0_AUDIENCE").expect("AUTH0_AUDIENCE must be set");
-    let redirect_uri = std::env::var("BACKEND_URL").unwrap_or_else(|_| "http://localhost:8000".to_string()) + "/auth/callback";
+    let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string()) + "/auth/callback";
     
     let auth_url = format!(
         "https://{}/authorize?response_type=code&client_id={}&redirect_uri={}&scope=openid profile email&audience={}",
@@ -71,7 +71,7 @@ pub async fn signup_handler() -> impl IntoResponse {
     let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
     let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
     let audience = std::env::var("AUTH0_AUDIENCE").expect("AUTH0_AUDIENCE must be set");
-    let redirect_uri = std::env::var("BACKEND_URL").unwrap_or_else(|_| "http://localhost:8000".to_string()) + "/auth/callback";
+    let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string()) + "/auth/callback";
     
     let auth_url = format!(
         "https://{}/authorize?response_type=code&client_id={}&redirect_uri={}&scope=openid profile email&audience={}&screen_hint=signup",
@@ -113,7 +113,7 @@ pub async fn logout_handler() -> impl IntoResponse {
 async fn exchange_code_for_token(code: &str) -> Result<TokenResponse, Box<dyn std::error::Error>> {
     let auth0_domain = std::env::var("AUTH0_DOMAIN")?;
     let client_id = std::env::var("AUTH0_CLIENT_ID")?;
-    let redirect_uri = std::env::var("BACKEND_URL").unwrap_or_else(|_| "http://localhost:8000".to_string()) + "/auth/callback";
+    let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string()) + "/auth/callback";
 
     let client = Client::new();
     let mut params = HashMap::new();
