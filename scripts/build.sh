@@ -5,20 +5,20 @@ echo "🚀 Building DealPal..."
 
 # Build Frontend
 echo "📦 Building Frontend..."
-cd ../frontend
+cd frontend
 npm install
 npm run build
-cd ../scripts
+cd ..
 
 # Build Backend
 echo "🦀 Building Backend..."
-cd ../backend
+cd backend
 cargo build --release
-cd ../scripts
+cd ..
 
 # Setup AI Service
 echo "🤖 Setting up AI Service..."
-cd ../backend/ai-service
+cd backend/ai-service
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
     python3 -m venv .venv
@@ -32,9 +32,9 @@ else
     pip install --upgrade pip
     pip install -r requirements.txt
 fi
-cd ../../scripts
+cd ../../
 
 echo "✅ Build Complete!"
-echo "Frontend: ../frontend/.next"
-echo "Backend: ../backend/target/release/dealpal-backend"
-echo "AI Service: ../backend/ai-service/.venv"
+echo "Frontend: frontend/.next"
+echo "Backend: backend/target/release/dealpal-backend"
+echo "AI Service: backend/ai-service/.venv"

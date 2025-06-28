@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface LoginFormProps {
   onSignUpClick?: () => void;
@@ -9,6 +9,8 @@ interface LoginFormProps {
 
 export default function LoginForm({ onSignUpClick }: LoginFormProps) {
   const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -19,16 +21,26 @@ export default function LoginForm({ onSignUpClick }: LoginFormProps) {
     }
   }, [router]);
 
-  const handleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/login`;
+  const handleLoginWithAuth0 = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/login`;
   };
 
   const handleForgotPassword = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/login?screen_hint=signup&prompt=login`;
+    // This should ideally point to a dedicated forgot password page
+    // For now, we'll keep the existing behavior but log a warning
+    console.warn('Forgot password clicked. Redirecting to login with signup hint.');
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/login?screen_hint=signup&prompt=login`;
+  };
+
+  const handleStandardLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implement standard login logic here
+    console.log('Standard login attempt with:', { username, password });
+    // Example: call an API endpoint
   };
 
   return (
-    <div className="auth-form">
+    <form className="auth-form" onSubmit={handleStandardLogin}>
       <p id="heading">Login</p>
       
       <div className="field">
@@ -40,7 +52,8 @@ export default function LoginForm({ onSignUpClick }: LoginFormProps) {
           placeholder="Username" 
           className="input-field" 
           type="text"
-          disabled
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
       </div>
       
@@ -52,18 +65,22 @@ export default function LoginForm({ onSignUpClick }: LoginFormProps) {
           placeholder="Password" 
           className="input-field" 
           type="password"
-          disabled
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </div>
       
       <div className="btn">
-        <button type="button" className="button1" onClick={handleLogin}>Login with Auth0</button>
+        <button type="submit" className="button1">Login</button>
         <button type="button" className="button2" onClick={onSignUpClick}>Sign Up</button>
       </div>
       
+      <button type="button" className="button3" onClick={handleLoginWithAuth0}>
+        Login with Auth0
+      </button>
       <button type="button" className="button3" onClick={handleForgotPassword}>
         Forgot Password
       </button>
-    </div>
+    </form>
   );
 }
