@@ -3,23 +3,40 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { authApi } from '@/lib/auth';
 
 export default function LoginForm() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
+    const error = urlParams.get('error');
+    
     if (token) {
       localStorage.setItem('auth_token', token);
       router.push('/dashboard');
+    } else if (error) {
+      switch (error) {
+        case 'authentication_failed':
+          alert('Authentication failed. Please try again.');
+          break;
+        case 'missing_code':
+          alert('Authentication error. Please try again.');
+          break;
+        default:
+          alert('An error occurred during authentication.');
+      }
+      // Clean up URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [router]);
 
   const handleLoginWithConnection = (connection: string) => {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/login`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/login`;
     const params = new URLSearchParams({ connection });
     window.location.href = `${baseUrl}?${params.toString()}`;
   };
@@ -27,19 +44,41 @@ export default function LoginForm() {
   const handleForgotPassword = () => {
     const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
     const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
-    const returnTo = process.env.NEXT_PUBLIC_URL;
-    if (auth0Domain && clientId && returnTo) {
-      window.location.href = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${encodeURIComponent(returnTo)}`;
+    const returnTo = encodeURIComponent(window.location.origin + '/auth');
+    
+    if (auth0Domain && clientId) {
+      // Redirect to Auth0 password reset page
+      window.location.href = `https://${auth0Domain}/dbconnections/change_password?client_id=${clientId}&email=&connection=Username-Password-Authentication&response_type=code&redirect_uri=${returnTo}`;
     } else {
       console.error('Auth0 configuration is missing for password reset.');
+      alert('Password reset is not configured. Please contact support.');
     }
   };
 
-  const handleStandardLogin = (e: React.FormEvent) => {
+  const handleStandardLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement standard login logic here
-    console.log('Standard login attempt with:', { username, password });
-    // Example: call an API endpoint
+    
+    if (!username || !password) {
+      alert('Please enter both username and password');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await authApi.loginWithPassword(username, password);
+      
+      if (result.success) {
+        router.push('/dashboard');
+      } else {
+        alert(result.error || 'Login failed. Please check your credentials.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -74,7 +113,9 @@ export default function LoginForm() {
       </div>
       
       <div className="btn">
-        <button type="submit" className="button1">Login</button>
+        <button type="submit" className="button1" disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Login'}
+        </button>
       </div>
       
       <div className="social-login">

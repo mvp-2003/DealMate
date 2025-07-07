@@ -2,23 +2,46 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { authApi } from '@/lib/auth';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignUpWithConnection = (connection: string) => {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/signup`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/signup`;
     const params = new URLSearchParams({ connection });
     window.location.href = `${baseUrl}?${params.toString()}`;
   };
 
-  const handleStandardSignUp = (e: React.FormEvent) => {
+  const handleStandardSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement standard sign-up logic here
-    console.log('Standard sign-up attempt with:', { email, username, password });
-    // Example: call an API endpoint
+    
+    if (!email || !username || !password) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await authApi.signUpWithPassword(email, username, password);
+      
+      if (result.success) {
+        alert('Account created successfully! Please check your email to verify your account, then login.');
+        // Redirect to login form
+        window.location.href = '/auth';
+      } else {
+        alert(result.error || 'Sign up failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Sign up error:', error);
+      alert('Sign up failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -67,7 +90,9 @@ export default function SignUpForm() {
       </div>
       
       <div className="btn">
-        <button type="submit" className="button1">Sign Up</button>
+        <button type="submit" className="button1" disabled={isLoading}>
+          {isLoading ? 'Creating Account...' : 'Sign Up'}
+        </button>
       </div>
 
       <div className="social-login">

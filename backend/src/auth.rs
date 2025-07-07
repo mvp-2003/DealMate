@@ -25,6 +25,7 @@ pub struct AuthQuery {
     code: Option<String>,
     #[allow(dead_code)]
     state: Option<String>,
+    connection: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -53,30 +54,40 @@ static JWKS_CACHE: Lazy<tokio::sync::RwLock<Option<JWKS>>> = Lazy::new(|| {
     tokio::sync::RwLock::new(None)
 });
 
-pub async fn login_handler() -> impl IntoResponse {
+pub async fn login_handler(Query(params): Query<AuthQuery>) -> impl IntoResponse {
     let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
     let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
     let audience = std::env::var("AUTH0_AUDIENCE").expect("AUTH0_AUDIENCE must be set");
     let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string()) + "/auth/callback";
     
-    let auth_url = format!(
+    let mut auth_url = format!(
         "https://{}/authorize?response_type=code&client_id={}&redirect_uri={}&scope=openid profile email&audience={}",
         auth0_domain, client_id, redirect_uri, audience
     );
     
+    // Add connection parameter for social logins
+    if let Some(connection) = params.connection {
+        auth_url = format!("{}&connection={}", auth_url, connection);
+    }
+    
     Redirect::temporary(&auth_url)
 }
 
-pub async fn signup_handler() -> impl IntoResponse {
+pub async fn signup_handler(Query(params): Query<AuthQuery>) -> impl IntoResponse {
     let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
     let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
     let audience = std::env::var("AUTH0_AUDIENCE").expect("AUTH0_AUDIENCE must be set");
     let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string()) + "/auth/callback";
     
-    let auth_url = format!(
+    let mut auth_url = format!(
         "https://{}/authorize?response_type=code&client_id={}&redirect_uri={}&scope=openid profile email&audience={}&screen_hint=signup",
         auth0_domain, client_id, redirect_uri, audience
     );
+    
+    // Add connection parameter for social logins
+    if let Some(connection) = params.connection {
+        auth_url = format!("{}&connection={}", auth_url, connection);
+    }
     
     Redirect::temporary(&auth_url)
 }

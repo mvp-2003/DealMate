@@ -43,6 +43,78 @@ export const authApi = {
     });
   },
 
+  async loginWithPassword(username: string, password: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+      const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+      const audience = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
+      
+      if (!auth0Domain || !clientId) {
+        return { success: false, error: 'Auth0 configuration missing' };
+      }
+
+      const response = await fetch(`https://${auth0Domain}/oauth/token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          grant_type: 'password',
+          username,
+          password,
+          client_id: clientId,
+          audience,
+          scope: 'openid profile email'
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('auth_token', data.access_token);
+        return { success: true };
+      } else {
+        const error = await response.json();
+        return { success: false, error: error.error_description || 'Login failed' };
+      }
+    } catch (error) {
+      return { success: false, error: 'Network error occurred' };
+    }
+  },
+
+  async signUpWithPassword(email: string, username: string, password: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+      const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+      
+      if (!auth0Domain || !clientId) {
+        return { success: false, error: 'Auth0 configuration missing' };
+      }
+
+      const response = await fetch(`https://${auth0Domain}/dbconnections/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          client_id: clientId,
+          connection: 'Username-Password-Authentication',
+          email,
+          username,
+          password,
+        }),
+      });
+
+      if (response.ok) {
+        return { success: true };
+      } else {
+        const error = await response.json();
+        return { success: false, error: error.description || 'Sign up failed' };
+      }
+    } catch (error) {
+      return { success: false, error: 'Network error occurred' };
+    }
+  },
+
   getLoginUrl(): string {
     return `${BACKEND_URL}/auth/login`;
   },
