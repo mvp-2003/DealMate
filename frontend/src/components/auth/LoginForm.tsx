@@ -12,6 +12,9 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // Only run on client-side
+    if (typeof window === 'undefined') return;
+    
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const error = urlParams.get('error');
@@ -36,12 +39,18 @@ export default function LoginForm() {
   }, [router]);
 
   const handleLoginWithConnection = (connection: string) => {
+    // Only run on client-side
+    if (typeof window === 'undefined') return;
+    
     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/login`;
     const params = new URLSearchParams({ connection });
     window.location.href = `${baseUrl}?${params.toString()}`;
   };
 
   const handleForgotPassword = () => {
+    // Only run on client-side
+    if (typeof window === 'undefined') return;
+    
     const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
     const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
     const returnTo = encodeURIComponent(window.location.origin + '/auth');

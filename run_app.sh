@@ -128,10 +128,8 @@ sleep 3
 
 # Start Frontend
 echo -e "${YELLOW}📦 Starting Frontend...${NC}"
-cd frontend
-nohup npm start > ../frontend.log 2>&1 &
+nohup npm start > frontend.log 2>&1 &
 FRONTEND_PID=$!
-cd ..
 echo "Frontend PID: $FRONTEND_PID"
 
 # Wait for frontend to start

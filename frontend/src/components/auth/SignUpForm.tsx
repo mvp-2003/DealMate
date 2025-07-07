@@ -11,6 +11,9 @@ export default function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignUpWithConnection = (connection: string) => {
+    // Only run on client-side
+    if (typeof window === 'undefined') return;
+    
     const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/signup`;
     const params = new URLSearchParams({ connection });
     window.location.href = `${baseUrl}?${params.toString()}`;
@@ -32,7 +35,9 @@ export default function SignUpForm() {
       if (result.success) {
         alert('Account created successfully! Please check your email to verify your account, then login.');
         // Redirect to login form
-        window.location.href = '/auth';
+        if (typeof window !== 'undefined') {
+          window.location.href = '/auth';
+        }
       } else {
         alert(result.error || 'Sign up failed. Please try again.');
       }
