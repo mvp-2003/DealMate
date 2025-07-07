@@ -3,8 +3,8 @@
 # Remember the current directory
 ORIGINAL_DIR="$(pwd)"
 
-# Define the target directory with the virtual environment
-TARGET_DIR="/Users/rishabh.das/Desktop/Personal/DealPal/backend/ai-service"
+# Define the target directory with the virtual environment (relative to project root)
+TARGET_DIR="./backend/ai-service"
 VENV_NAME=".venv"
 
 # Check if script is being sourced (required for activation to persist)

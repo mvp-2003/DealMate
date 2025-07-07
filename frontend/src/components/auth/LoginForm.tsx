@@ -1,14 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-interface LoginFormProps {
-  onSignUpClick?: () => void;
-}
-
-export default function LoginForm({ onSignUpClick }: LoginFormProps) {
+export default function LoginForm() {
   const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -19,16 +18,32 @@ export default function LoginForm({ onSignUpClick }: LoginFormProps) {
     }
   }, [router]);
 
-  const handleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/login`;
+  const handleLoginWithConnection = (connection: string) => {
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/login`;
+    const params = new URLSearchParams({ connection });
+    window.location.href = `${baseUrl}?${params.toString()}`;
   };
 
   const handleForgotPassword = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/login?screen_hint=signup&prompt=login`;
+    const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+    const returnTo = process.env.NEXT_PUBLIC_URL;
+    if (auth0Domain && clientId && returnTo) {
+      window.location.href = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${encodeURIComponent(returnTo)}`;
+    } else {
+      console.error('Auth0 configuration is missing for password reset.');
+    }
+  };
+
+  const handleStandardLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implement standard login logic here
+    console.log('Standard login attempt with:', { username, password });
+    // Example: call an API endpoint
   };
 
   return (
-    <div className="auth-form">
+    <form className="auth-form" onSubmit={handleStandardLogin}>
       <p id="heading">Login</p>
       
       <div className="field">
@@ -40,7 +55,8 @@ export default function LoginForm({ onSignUpClick }: LoginFormProps) {
           placeholder="Username" 
           className="input-field" 
           type="text"
-          disabled
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
       </div>
       
@@ -52,18 +68,29 @@ export default function LoginForm({ onSignUpClick }: LoginFormProps) {
           placeholder="Password" 
           className="input-field" 
           type="password"
-          disabled
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </div>
       
       <div className="btn">
-        <button type="button" className="button1" onClick={handleLogin}>Login with Auth0</button>
-        <button type="button" className="button2" onClick={onSignUpClick}>Sign Up</button>
+        <button type="submit" className="button1">Login</button>
       </div>
       
-      <button type="button" className="button3" onClick={handleForgotPassword}>
-        Forgot Password
-      </button>
-    </div>
+      <div className="social-login">
+        <button type="button" className="social-button google" onClick={() => handleLoginWithConnection('google-oauth2')}>
+          <img src="/google-logo.svg" alt="Google" /> Login with Google
+        </button>
+        <button type="button" className="social-button microsoft" onClick={() => handleLoginWithConnection('windowslive')}>
+          <img src="/microsoft-logo.svg" alt="Microsoft" /> Login with Microsoft
+        </button>
+      </div>
+      <div className="auth-form-footer">
+        <span>Don't have an <br /> account? <Link href="/auth?form=signup">Sign Up</Link></span>
+        <button type="button" className="link-button" onClick={handleForgotPassword}>
+          Forgot Password
+        </button>
+      </div>
+    </form>
   );
 }

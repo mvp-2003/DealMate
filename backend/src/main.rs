@@ -1,6 +1,5 @@
 use dealpal_backend::app;
 use dealpal_backend::db;
-use dotenvy::dotenv;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tokio::signal;

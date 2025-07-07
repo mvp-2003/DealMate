@@ -1,123 +1,138 @@
-.auth-form {
+.auth-container {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-left: 2em;
-  padding-right: 2em;
-  padding-bottom: 0.4em;
-  background-color: #171717;
-  border-radius: 25px;
-  transition: .4s ease-in-out;
-  max-width: 400px;
-  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #1a202c;
 }
 
-.auth-form:hover {
-  transform: scale(1.05);
-  border: 1px solid black;
+.auth-form {
+  background: #2d3748;
+  padding: 2.5rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  color: white;
 }
 
 #heading {
-  text-align: center;
-  margin: 2em;
-  color: rgb(255, 255, 255);
-  font-size: 1.2em;
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
 }
 
 .field {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5em;
-  border-radius: 25px;
-  padding: 0.6em;
-  border: none;
-  outline: none;
-  color: white;
-  background-color: #171717;
-  box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
+  position: relative;
+  margin-bottom: 1.5rem;
 }
 
 .input-icon {
-  height: 1.3em;
-  width: 1.3em;
-  fill: white;
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #a0aec0;
 }
 
 .input-field {
-  background: none;
-  border: none;
-  outline: none;
   width: 100%;
-  color: #d3d3d3;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 1px solid #4a5568;
+  border-radius: 10px;
+  background-color: #1a202c;
+  color: white;
+  font-size: 1rem;
 }
 
-.auth-form .btn {
+.input-field::placeholder {
+  color: #a0aec0;
+}
+
+.btn {
   display: flex;
-  justify-content: center;
-  flex-direction: row;
-  margin-top: 2.5em;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.button1, .button2 {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .button1 {
-  padding: 0.5em;
-  padding-left: 1.1em;
-  padding-right: 1.1em;
-  border-radius: 5px;
-  margin-right: 0.5em;
-  border: none;
-  outline: none;
-  transition: .4s ease-in-out;
-  background-color: #252525;
+  background-color: #4299e1;
   color: white;
-  cursor: pointer;
 }
 
 .button1:hover {
-  background-color: black;
-  color: white;
+  background-color: #3182ce;
 }
 
 .button2 {
-  padding: 0.5em;
-  padding-left: 2.3em;
-  padding-right: 2.3em;
-  border-radius: 5px;
-  border: none;
-  outline: none;
-  transition: .4s ease-in-out;
-  background-color: #252525;
+  background-color: #4a5568;
   color: white;
-  cursor: pointer;
 }
 
 .button2:hover {
-  background-color: black;
-  color: white;
+  background-color: #2d3748;
 }
 
-.button3 {
-  margin-bottom: 3em;
-  padding: 0.5em;
-  border-radius: 5px;
-  border: none;
-  outline: none;
-  transition: .4s ease-in-out;
-  background-color: #252525;
-  color: white;
-  cursor: pointer;
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.button3:hover {
-  background-color: red;
-  color: white;
-}
-
-.auth-container {
-  min-height: 100vh;
+.social-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-  padding: 20px;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #4a5568;
+  background-color: #2d3748;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  gap: 0.75rem;
+  transition: background-color 0.3s ease;
+}
+
+.social-button:hover {
+  background-color: #4a5568;
+}
+
+.social-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.auth-form-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.link-button, a {
+  background: none;
+  border: none;
+  color: #63b3ed;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.link-button:hover, a:hover {
+  text-decoration: underline;
 }

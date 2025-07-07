@@ -80,7 +80,7 @@ if check_services_running; then
     else
         echo -e "${GREEN}✅ Skipping to health checks...${NC}"
         echo ""
-        ./status.sh
+        ./scripts/status.sh
         exit 0
     fi
 fi
@@ -88,7 +88,7 @@ fi
 # Step 1: Build everything
 echo -e "${BLUE}📦 Step 1: Building All Components${NC}"
 echo "=================================="
-./build.sh
+./scripts/build.sh
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Build completed successfully${NC}"
 else
@@ -103,11 +103,11 @@ echo "================================="
 
 # Start AI Service
 echo -e "${YELLOW}🤖 Starting AI Service...${NC}"
-cd ../backend/ai-service
+cd backend/ai-service
 source .venv/bin/activate
 nohup python main.py > ../../ai-service.log 2>&1 &
 AI_SERVICE_PID=$!
-cd ../../scripts
+cd ../../
 echo "AI Service PID: $AI_SERVICE_PID"
 
 # Wait for AI service to start
@@ -116,10 +116,10 @@ sleep 5
 
 # Start Backend
 echo -e "${YELLOW}🦀 Starting Backend...${NC}"
-cd ../backend
+cd backend
 nohup ./target/release/dealpal-backend > ../backend.log 2>&1 &
 BACKEND_PID=$!
-cd ../scripts
+cd ..
 echo "Backend PID: $BACKEND_PID"
 
 # Wait for backend to start
@@ -128,10 +128,10 @@ sleep 3
 
 # Start Frontend
 echo -e "${YELLOW}📦 Starting Frontend...${NC}"
-cd ../frontend
+cd frontend
 nohup npm start > ../frontend.log 2>&1 &
 FRONTEND_PID=$!
-cd ../scripts
+cd ..
 echo "Frontend PID: $FRONTEND_PID"
 
 # Wait for frontend to start
@@ -176,7 +176,7 @@ echo ""
 # Step 4: Platform status
 echo -e "${BLUE}📊 Step 4: Platform Status${NC}"
 echo "=========================="
-./status.sh
+./scripts/status.sh
 echo ""
 
 # Step 5: Keep running and show info
@@ -201,8 +201,8 @@ echo -e "  Backend:           tail -f backend.log"
 echo -e "  Frontend:          tail -f frontend.log"
 echo ""
 echo -e "${CYAN}🔧 Management Commands:${NC}"
-echo -e "  Status Check:      ./status.sh"
-echo -e "  Run Tests:         ./test_all.sh"
+echo -e "  Status Check:      ./scripts/status.sh"
+echo -e "  Run Tests:         ./scripts/test_all.sh"
 echo -e "  Stop Services:     Press Ctrl+C or run: kill $AI_SERVICE_PID $BACKEND_PID $FRONTEND_PID"
 echo ""
 echo -e "${GREEN}🎯 Ready for browser extension testing!${NC}"
