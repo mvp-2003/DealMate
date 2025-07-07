@@ -264,7 +264,10 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 ## 6. Technical Architecture Details
 
 ### 6.1 Backend Services
-- **API Gateway**: Centralized request routing and authentication
+- **API Gateway**: The Rust backend acts as a central API gateway, routing requests to the appropriate microservices. It provides a single entry point for the frontend, simplifying the client-side code and centralizing concerns like authentication and logging.
+  - `/api/*`: Routes to the core Rust backend services.
+  - `/auth/*`: Proxies requests to the Node.js authentication service.
+  - `/ai/*`: Proxies requests to the Python AI service.
 - **Microservices**: Modular service architecture for scalability
 - **Message Queue**: Asynchronous processing with Redis/RabbitMQ
 - **Caching Layer**: Multi-level caching for performance optimization
@@ -277,7 +280,15 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 - **Secure Communications**: TLS 1.3 for all data transmission
 - **Regular Security Audits**: Quarterly penetration testing
 
-### 6.3 Performance & Scalability
+### 6.3 Configuration Management
+For local development, the project uses a `.env` file in the root directory. For production environments, it is strongly recommended to use a dedicated secret management service to securely store and manage credentials. This approach enhances security by avoiding the need to store secrets in version control or on the filesystem.
+
+**Recommended Secret Management Services:**
+-   **AWS Secrets Manager**
+-   **Google Secret Manager**
+-   **HashiCorp Vault**
+
+### 6.4 Performance & Scalability
 - **CDN Integration**: Global content delivery network
 - **Auto-Scaling**: Dynamic resource allocation based on demand
 - **Load Balancing**: Distributed traffic management

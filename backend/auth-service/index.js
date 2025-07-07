@@ -10,6 +10,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const checkInternalSecret = (req, res, next) => {
+    const secret = req.headers['x-internal-secret'];
+    if (!secret || secret !== process.env.INTER_SERVICE_SECRET) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    next();
+};
+
 // Authorization middleware. When used, the Access Token must
 // exist and be verified against the Auth0 JSON Web Key Set.
 const checkJwt = auth({
@@ -63,17 +71,17 @@ app.get('/api/private', checkJwt, (req, res) => {
 
 // This route will be called by the frontend after an Auth0 login
 // to ensure the user is in our database.
-app.post('/api/auth/token', checkJwt, syncUser, (req, res) => {
+app.post('/api/auth/token', checkInternalSecret, checkJwt, syncUser, (req, res) => {
     res.json(req.user);
 });
 
 // This is a protected route that returns the user's profile from our database.
-app.get('/api/user/profile', checkJwt, syncUser, (req, res) => {
+app.get('/api/user/profile', checkInternalSecret, checkJwt, syncUser, (req, res) => {
     res.json(req.user);
 });
 
 // Local authentication routes
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/auth/register', checkInternalSecret, async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -99,7 +107,7 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', checkInternalSecret, async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
