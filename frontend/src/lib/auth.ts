@@ -28,6 +28,11 @@ export const authApi = {
   },
 
   async makeAuthenticatedRequest(endpoint: string, options: RequestInit = {}) {
+    // Only run on client-side
+    if (typeof window === 'undefined') {
+      throw new Error('Client-side only function');
+    }
+    
     const token = localStorage.getItem('auth_token');
     if (!token) {
       throw new Error('No auth token found');
@@ -45,6 +50,11 @@ export const authApi = {
 
   async loginWithPassword(username: string, password: string): Promise<{ success: boolean; error?: string }> {
     try {
+      // Only run on client-side
+      if (typeof window === 'undefined') {
+        return { success: false, error: 'Client-side only function' };
+      }
+      
       const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
       const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
       const audience = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
@@ -83,6 +93,11 @@ export const authApi = {
 
   async signUpWithPassword(email: string, username: string, password: string): Promise<{ success: boolean; error?: string }> {
     try {
+      // Only run on client-side
+      if (typeof window === 'undefined') {
+        return { success: false, error: 'Client-side only function' };
+      }
+      
       const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
       const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
       
@@ -128,10 +143,18 @@ export const authApi = {
   },
 
   isAuthenticated(): boolean {
+    // Only run on client-side
+    if (typeof window === 'undefined') {
+      return false;
+    }
     return !!localStorage.getItem('auth_token');
   },
 
   logout(): void {
+    // Only run on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
     localStorage.removeItem('auth_token');
     window.location.href = this.getLogoutUrl();
   }

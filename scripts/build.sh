@@ -5,10 +5,8 @@ echo "🚀 Building DealPal..."
 
 # Build Frontend
 echo "📦 Building Frontend..."
-cd frontend
 npm install
 npm run build
-cd ..
 
 # Build Backend
 echo "🦀 Building Backend..."

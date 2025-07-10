@@ -13,6 +13,9 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Only run on client-side
+    if (typeof window === 'undefined') return;
+    
     const token = localStorage.getItem('auth_token');
     if (token) {
       setIsAuthenticated(true);

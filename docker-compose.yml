@@ -29,7 +29,9 @@ services:
       - backend
 
   frontend:
-    build: ./frontend
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
     ports:
       - "3000:3000"
     depends_on:
@@ -38,6 +40,17 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
       - NEXT_PUBLIC_AI_API_URL=http://localhost:8001
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: backend/auth-service/Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./.env
+    depends_on:
+      - db
 
   # Database
   db:

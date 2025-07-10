@@ -1,6 +1,8 @@
 use dealpal_backend::app;
 use dealpal_backend::db;
+use dealpal_backend::proxy::AppState;
 use std::net::SocketAddr;
+use std::str::FromStr;
 use tokio::net::TcpListener;
 use tokio::signal;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -22,7 +24,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     db::run_migrations(&pool).await?;
 
-    let app = app(pool);
+    let auth_service_addr = std::env::var("AUTH_SERVICE_URL")
+        .unwrap_or_else(|_| "127.0.0.1:3001".to_string());
+    let ai_service_addr = std::env::var("AI_SERVICE_URL")
+        .unwrap_or_else(|_| "127.0.0.1:8001".to_string());
+
+    let app_state = AppState {
+        auth_service_addr: SocketAddr::from_str(&auth_service_addr).unwrap(),
+        ai_service_addr: SocketAddr::from_str(&ai_service_addr).unwrap(),
+    };
+
+    let app = app(pool, app_state);
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
     let listener = TcpListener::bind(addr).await?;
 
