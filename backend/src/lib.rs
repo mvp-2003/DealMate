@@ -22,7 +22,6 @@ use crate::auth::{login_handler, signup_handler, callback_handler, logout_handle
 use crate::middleware::auth_middleware;
 use crate::proxy::{auth_proxy, ai_proxy, AppState};
 use axum::middleware::from_fn;
-use std::net::SocketAddr;
 
 // Create a new function for wallet routes to improve modularity
 fn wallet_routes(pool: PgPool) -> Router {
@@ -87,13 +86,17 @@ pub fn app(pool: PgPool, app_state: AppState) -> Router {
         .merge(user_routes(pool.clone()))
         .route_layer(from_fn(auth_middleware));
 
+    // Create proxy routes separately with the AppState
+    let proxy_routes = Router::new()
+        .route("/auth/*path", axum::routing::any(auth_proxy))
+        .route("/ai/*path", axum::routing::any(ai_proxy))
+        .with_state(app_state);
+
     Router::new()
         .route("/", get(|| async { "Hello, World!" }))
         .route("/health_check", get(health_check::health_check))
         .nest("/api", protected_routes)
-        .route("/auth/*path", axum::routing::any(auth_proxy))
-        .route("/ai/*path", axum::routing::any(ai_proxy))
-        .with_state(app_state)
+        .merge(proxy_routes)
         .layer(TraceLayer::new_for_http())
         .layer(cors)
 }

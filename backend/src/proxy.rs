@@ -4,7 +4,6 @@ use axum::{
     http::{header, Request, Response, Uri},
     response::{IntoResponse, Response as AxumResponse},
 };
-use http_body_util::BodyExt;
 use hyper::client::conn::http1;
 use hyper_util::rt::TokioIo;
 use std::net::SocketAddr;
@@ -70,7 +69,7 @@ pub async fn auth_proxy(
         }
     };
 
-    Ok(resp.map(|b| b.boxed()))
+    Ok(resp.map(|_| Body::empty()))
 }
 
 pub async fn ai_proxy(
@@ -126,5 +125,5 @@ pub async fn ai_proxy(
         }
     };
 
-    Ok(resp.map(|b| b.boxed()))
+    Ok(resp.map(|_| Body::empty()))
 }

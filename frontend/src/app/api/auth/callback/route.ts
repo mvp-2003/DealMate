@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       const errorText = await response.text();
       return NextResponse.json({ error: 'Failed to exchange code for token', details: errorText }, { status: response.status });
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

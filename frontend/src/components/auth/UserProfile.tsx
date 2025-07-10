@@ -24,7 +24,7 @@ export default function UserProfile() {
               picture: payload.picture,
               email: payload.email
             });
-          } catch (e) {
+          } catch {
             console.error('Invalid token');
           }
         }

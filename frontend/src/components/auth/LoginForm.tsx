@@ -136,7 +136,7 @@ export default function LoginForm() {
         </button>
       </div>
       <div className="auth-form-footer">
-        <span>Don't have an <br /> account? <Link href="/auth?form=signup">Sign Up</Link></span>
+        <span>Don&apos;t have an <br /> account? <Link href="/auth?form=signup">Sign Up</Link></span>
         <button type="button" className="link-button" onClick={handleForgotPassword}>
           Forgot Password
         </button>
