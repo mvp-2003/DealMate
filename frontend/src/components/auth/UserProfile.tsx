@@ -1,45 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { authApi, User } from '@/lib/auth';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function UserProfile() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        const userData = await authApi.getUser(token);
-        if (userData) {
-          setUser(userData);
-        } else {
-          // Fallback to JWT decode if API fails
-          try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            setUser({
-              sub: payload.sub,
-              name: payload.name || payload.email || 'User',
-              picture: payload.picture,
-              email: payload.email
-            });
-          } catch {
-            console.error('Invalid token');
-          }
-        }
-      }
-      setIsLoading(false);
-    };
-    
-    loadUser();
-  }, []);
+  const { user, logout, isLoading } = useAuth0();
 
   if (isLoading) return <div>Loading...</div>;
   if (!user) return null;
 
   const handleLogout = () => {
-    authApi.logout();
+    logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   return (

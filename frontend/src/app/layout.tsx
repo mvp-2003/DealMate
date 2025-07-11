@@ -1,6 +1,7 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
+import Auth0ProviderWithHistory from '@/components/auth/Auth0ProviderWithHistory';
 
 export const metadata: Metadata = {
   title: 'DealPal',
@@ -35,7 +36,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased safe-area-inset-all">
-        {children}
+        <Auth0ProviderWithHistory>{children}</Auth0ProviderWithHistory>
       </body>
     </html>
   );

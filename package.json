@@ -16,6 +16,7 @@
     "dev:auth": "nodemon backend/auth-service/index.js"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.3.0",
     "@auth0/nextjs-auth0": "^4.7.0",
     "@genkit-ai/googleai": "^1.8.0",
     "@genkit-ai/next": "^1.8.0",

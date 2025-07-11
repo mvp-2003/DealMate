@@ -1,67 +1,21 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { authApi } from '@/lib/auth';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function LoginForm() {
-  const router = useRouter();
+  const { loginWithRedirect, loginWithPopup } = useAuth0();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    // Only run on client-side
-    if (typeof window === 'undefined') return;
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const error = urlParams.get('error');
-    
-    if (token) {
-      localStorage.setItem('auth_token', token);
-      router.push('/dashboard');
-    } else if (error) {
-      switch (error) {
-        case 'authentication_failed':
-          alert('Authentication failed. Please try again.');
-          break;
-        case 'missing_code':
-          alert('Authentication error. Please try again.');
-          break;
-        default:
-          alert('An error occurred during authentication.');
-      }
-      // Clean up URL parameters
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, [router]);
-
-  const handleLoginWithConnection = (connection: string) => {
-    // Only run on client-side
-    if (typeof window === 'undefined') return;
-    
-    const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/auth/login`;
-    const params = new URLSearchParams({ connection });
-    window.location.href = `${baseUrl}?${params.toString()}`;
-  };
-
-  const handleForgotPassword = () => {
-    // Only run on client-side
-    if (typeof window === 'undefined') return;
-    
-    const auth0Domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
-    const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
-    const returnTo = encodeURIComponent(window.location.origin + '/auth');
-    
-    if (auth0Domain && clientId) {
-      // Redirect to Auth0 password reset page
-      window.location.href = `https://${auth0Domain}/dbconnections/change_password?client_id=${clientId}&email=&connection=Username-Password-Authentication&response_type=code&redirect_uri=${returnTo}`;
-    } else {
-      console.error('Auth0 configuration is missing for password reset.');
-      alert('Password reset is not configured. Please contact support.');
-    }
+  const handleSocialLogin = (connection: 'google-oauth2' | 'windowslive') => {
+    loginWithRedirect({
+      authorizationParams: {
+        connection,
+      },
+    });
   };
 
   const handleStandardLogin = async (e: React.FormEvent) => {
@@ -75,13 +29,12 @@ export default function LoginForm() {
     setIsLoading(true);
 
     try {
-      const result = await authApi.loginWithPassword(username, password);
-      
-      if (result.success) {
-        router.push('/dashboard');
-      } else {
-        alert(result.error || 'Login failed. Please check your credentials.');
-      }
+      await loginWithRedirect({
+        authorizationParams: {
+          connection: 'Username-Password-Authentication',
+          login_hint: username,
+        },
+      });
     } catch (error) {
       console.error('Login error:', error);
       alert('Login failed. Please try again.');
@@ -128,16 +81,16 @@ export default function LoginForm() {
       </div>
       
       <div className="social-login">
-        <button type="button" className="social-button google" onClick={() => handleLoginWithConnection('google-oauth2')}>
+        <button type="button" className="social-button google" onClick={() => handleSocialLogin('google-oauth2')}>
           <img src="/google-logo.svg" alt="Google" /> Login with Google
         </button>
-        <button type="button" className="social-button microsoft" onClick={() => handleLoginWithConnection('windowslive')}>
+        <button type="button" className="social-button microsoft" onClick={() => handleSocialLogin('windowslive')}>
           <img src="/microsoft-logo.svg" alt="Microsoft" /> Login with Microsoft
         </button>
       </div>
       <div className="auth-form-footer">
-        <span>Don&apos;t have an <br /> account? <Link href="/auth?form=signup">Sign Up</Link></span>
-        <button type="button" className="link-button" onClick={handleForgotPassword}>
+        <span>Don't have an <br /> account? <Link href="/auth?form=signup">Sign Up</Link></span>
+        <button type="button" className="link-button" onClick={() => loginWithRedirect({ authorizationParams: { screen_hint: 'forgot_password' } })}>
           Forgot Password
         </button>
       </div>
