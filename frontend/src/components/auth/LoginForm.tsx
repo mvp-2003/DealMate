@@ -18,29 +18,19 @@ export default function LoginForm() {
     });
   };
 
-  const handleStandardLogin = async (e: React.FormEvent) => {
+  const handleStandardLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!username || !password) {
-      alert('Please enter both username and password');
-      return;
-    }
-
     setIsLoading(true);
-
-    try {
-      await loginWithRedirect({
-        authorizationParams: {
-          connection: 'Username-Password-Authentication',
-          login_hint: username,
-        },
-      });
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    loginWithRedirect({
+      authorizationParams: {
+        connection: 'Username-Password-Authentication',
+        login_hint: username,
+      },
+    }).catch(err => {
+        console.error(err);
+        setIsLoading(false);
+        alert('Login failed. Please try again.');
+    });
   };
 
   return (
@@ -90,7 +80,17 @@ export default function LoginForm() {
       </div>
       <div className="auth-form-footer">
         <span>Don't have an <br /> account? <Link href="/auth?form=signup">Sign Up</Link></span>
-        <button type="button" className="link-button" onClick={() => loginWithRedirect({ authorizationParams: { screen_hint: 'forgot_password' } })}>
+        <button
+          type="button"
+          className="link-button"
+          onClick={() =>
+            loginWithRedirect({
+              authorizationParams: {
+                screen_hint: 'forgot_password',
+              },
+            })
+          }
+        >
           Forgot Password
         </button>
       </div>

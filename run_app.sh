@@ -6,6 +6,13 @@
 
 set -e
 
+# Load environment variables
+if [ -f ".env" ]; then
+    set -a
+    source .env
+    set +a
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -43,6 +50,7 @@ show_spinner() {
 # Function to check if services are running
 check_services_running() {
     local ai_running=false
+    local auth_running=false
     local backend_running=false
     local frontend_running=false
     
@@ -50,15 +58,19 @@ check_services_running() {
         ai_running=true
     fi
     
+    if curl -s --max-time 2 "http://localhost:3001/api/public" > /dev/null 2>&1; then
+        auth_running=true
+    fi
+    
     if curl -s --max-time 2 "http://localhost:8000" > /dev/null 2>&1; then
         backend_running=true
     fi
     
-    if curl -s --max-time 2 "http://localhost:3000" > /dev/null 2>&1; then
+    if curl -s --max-time 2 "http://localhost:9002" > /dev/null 2>&1; then
         frontend_running=true
     fi
     
-    if [ "$ai_running" = true ] && [ "$backend_running" = true ] && [ "$frontend_running" = true ]; then
+    if [ "$ai_running" = true ] && [ "$auth_running" = true ] && [ "$backend_running" = true ] && [ "$frontend_running" = true ]; then
         return 0
     else
         return 1
@@ -75,6 +87,7 @@ if check_services_running; then
         # Kill existing services
         pkill -f "dealpal-backend" 2>/dev/null || true
         pkill -f "python main.py" 2>/dev/null || true
+        pkill -f "node.*auth-service" 2>/dev/null || true
         pkill -f "npm.*start\|next.*start" 2>/dev/null || true
         sleep 2
     else
@@ -114,6 +127,16 @@ echo "AI Service PID: $AI_SERVICE_PID"
 echo -e "${YELLOW}⏳ Waiting for AI service to initialize...${NC}"
 sleep 5
 
+# Start Auth Service
+echo -e "${YELLOW}🔐 Starting Auth Service...${NC}"
+nohup node backend/auth-service/index.js > auth-service.log 2>&1 &
+AUTH_SERVICE_PID=$!
+echo "Auth Service PID: $AUTH_SERVICE_PID"
+
+# Wait for auth service to start
+echo -e "${YELLOW}⏳ Waiting for auth service to initialize...${NC}"
+sleep 3
+
 # Start Backend
 echo -e "${YELLOW}🦀 Starting Backend...${NC}"
 cd backend
@@ -128,7 +151,7 @@ sleep 3
 
 # Start Frontend
 echo -e "${YELLOW}📦 Starting Frontend...${NC}"
-nohup npm start > frontend.log 2>&1 &
+nohup npm run dev > frontend.log 2>&1 &
 FRONTEND_PID=$!
 echo "Frontend PID: $FRONTEND_PID"
 
@@ -155,6 +178,13 @@ else
     echo -e "${RED}❌ AI Service not responding${NC}"
 fi
 
+echo -e "${YELLOW}Testing Auth Service...${NC}"
+if curl -s --max-time 10 "http://localhost:3001/api/public" > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ Auth Service is responding${NC}"
+else
+    echo -e "${RED}❌ Auth Service not responding${NC}"
+fi
+
 echo -e "${YELLOW}Testing Backend...${NC}"
 if curl -s --max-time 10 "http://localhost:8000/health" > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Backend is responding${NC}"
@@ -163,7 +193,7 @@ else
 fi
 
 echo -e "${YELLOW}Testing Frontend...${NC}"
-if curl -s --max-time 10 "http://localhost:3000" > /dev/null 2>&1; then
+if curl -s --max-time 10 "http://localhost:9002" > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Frontend is responding${NC}"
 else
     echo -e "${RED}❌ Frontend not responding${NC}"
@@ -184,24 +214,27 @@ echo -e "${GREEN}🎉 DealPal platform is now fully operational!${NC}"
 echo ""
 echo -e "${CYAN}📱 Application URLs:${NC}"
 echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
+echo -e "  🔐 Auth Service:   ${YELLOW}http://localhost:3001${NC}"
 echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000${NC}"
-echo -e "  📦 Frontend App:   ${YELLOW}http://localhost:3000${NC}"
+echo -e "  📦 Frontend App:   ${YELLOW}http://localhost:9002${NC}"
 echo -e "  📚 API Docs:       ${YELLOW}http://localhost:8001/docs${NC}"
 echo ""
 echo -e "${CYAN}📋 Service Information:${NC}"
 echo -e "  AI Service PID:    $AI_SERVICE_PID"
+echo -e "  Auth Service PID:  $AUTH_SERVICE_PID"
 echo -e "  Backend PID:       $BACKEND_PID"
 echo -e "  Frontend PID:      $FRONTEND_PID"
 echo ""
 echo -e "${CYAN}📄 Logs:${NC}"
 echo -e "  AI Service:        tail -f ai-service.log"
+echo -e "  Auth Service:      tail -f auth-service.log"
 echo -e "  Backend:           tail -f backend.log"
 echo -e "  Frontend:          tail -f frontend.log"
 echo ""
 echo -e "${CYAN}🔧 Management Commands:${NC}"
 echo -e "  Status Check:      ./scripts/status.sh"
 echo -e "  Run Tests:         ./scripts/test_all.sh"
-echo -e "  Stop Services:     Press Ctrl+C or run: kill $AI_SERVICE_PID $BACKEND_PID $FRONTEND_PID"
+echo -e "  Stop Services:     Press Ctrl+C or run: kill $AI_SERVICE_PID $AUTH_SERVICE_PID $BACKEND_PID $FRONTEND_PID"
 echo ""
 echo -e "${GREEN}🎯 Ready for browser extension testing!${NC}"
 echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
@@ -210,7 +243,7 @@ echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
 cleanup() {
     echo ""
     echo -e "${YELLOW}🛑 Shutting down DealPal platform...${NC}"
-    kill $AI_SERVICE_PID $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
+    kill $AI_SERVICE_PID $AUTH_SERVICE_PID $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
     echo -e "${GREEN}✅ All services stopped${NC}"
     echo -e "${BLUE}👋 Thank you for using DealPal!${NC}"
     exit 0

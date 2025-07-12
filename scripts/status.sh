@@ -3,6 +3,13 @@
 # DealPal Status and Health Check Script
 # Provides real-time status of all platform components
 
+# Load environment variables
+if [ -f "../.env" ]; then
+    set -a
+    source ../.env
+    set +a
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -14,8 +21,9 @@ NC='\033[0m' # No Color
 
 # Configuration
 BACKEND_URL="http://localhost:8000"
+AUTH_SERVICE_URL="http://localhost:3001"
 AI_SERVICE_URL="http://localhost:8001"
-FRONTEND_URL="http://localhost:3000"
+FRONTEND_URL="http://localhost:9002"
 
 clear
 echo -e "${BLUE}🔍 DealPal Platform Status${NC}"
@@ -69,9 +77,9 @@ check_build_status() {
     echo -e "${CYAN}Build Artifacts${NC}"
     
     # Frontend build
-    if [ -d "../frontend/.next" ]; then
+    if [ -d "../.next" ]; then
         echo -e "  Frontend Build: ${GREEN}✅ EXISTS${NC}"
-        local build_size=$(du -sh ../frontend/.next 2>/dev/null | cut -f1)
+        local build_size=$(du -sh ../.next 2>/dev/null | cut -f1)
         echo "  Size: $build_size"
     else
         echo -e "  Frontend Build: ${RED}❌ MISSING${NC}"
@@ -93,6 +101,13 @@ check_build_status() {
         echo "  Packages: $packages"
     else
         echo -e "  AI Service Env: ${RED}❌ MISSING${NC}"
+    fi
+    
+    # Auth Service dependencies
+    if [ -d "../backend/auth-service/node_modules" ]; then
+        echo -e "  Auth Service Deps: ${GREEN}✅ EXISTS${NC}"
+    else
+        echo -e "  Auth Service Deps: ${RED}❌ MISSING${NC}"
     fi
     
     echo ""
@@ -169,8 +184,9 @@ show_quick_actions() {
 
 # Run all checks
 check_service_detailed "$AI_SERVICE_URL" "🤖 AI Service" "8001"
+check_service_detailed "$AUTH_SERVICE_URL" "🔐 Auth Service" "3001"
 check_service_detailed "$BACKEND_URL" "🦀 Backend" "8000"
-check_service_detailed "$FRONTEND_URL" "📦 Frontend" "3000"
+check_service_detailed "$FRONTEND_URL" "📦 Frontend" "9002"
 
 check_build_status
 check_dependencies
@@ -179,10 +195,11 @@ show_quick_actions
 
 # Summary
 echo -e "${BLUE}💡 Platform URLs${NC}"
-echo "  🤖 AI Service:  http://localhost:8001"
-echo "  🦀 Backend:     http://localhost:8000" 
-echo "  📦 Frontend:    http://localhost:3000"
-echo "  📚 API Docs:    http://localhost:8001/docs"
+echo "  🤖 AI Service:    http://localhost:8001"
+echo "  🔐 Auth Service:  http://localhost:3001"
+echo "  🦀 Backend:       http://localhost:8000" 
+echo "  📦 Frontend:      http://localhost:9002"
+echo "  📚 API Docs:      http://localhost:8001/docs"
 echo ""
 
 echo -e "${GREEN}Status check complete!${NC}"

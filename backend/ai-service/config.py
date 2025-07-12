@@ -5,9 +5,12 @@ from dotenv import load_dotenv
 import logging
 import sys
 from typing import ClassVar, List
+from pathlib import Path
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from .env file in project root
+project_root = Path(__file__).parent.parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 # Configure logging
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -66,7 +69,9 @@ class Settings(BaseSettings):
         """
         Load environment variables from .env file.
         """
-        load_dotenv()
+        project_root = Path(__file__).parent.parent.parent
+        env_path = project_root / ".env"
+        load_dotenv(env_path)
         return values
 
     def __init__(self, **kwargs):

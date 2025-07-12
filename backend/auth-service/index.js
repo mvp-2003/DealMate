@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 const express = require('express');
 const cors = require('cors');
 const { auth } = require('express-oauth2-jwt-bearer');
@@ -148,7 +149,7 @@ app.post('/api/auth/login', checkInternalSecret, async (req, res) => {
 });
 
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.AUTH_SERVICE_PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

@@ -1,6 +1,7 @@
 import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  distDir: '../.next',
   // Hot reload configuration
   webpack: (config, { dev }) => {
     if (dev) {

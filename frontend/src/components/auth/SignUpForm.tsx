@@ -57,6 +57,23 @@ export default function SignUpForm() {
           {isLoading ? 'Creating Account...' : 'Sign Up'}
         </button>
       </div>
+
+      <div className="social-login">
+        <button
+          type="button"
+          className="social-button google"
+          onClick={() => loginWithRedirect({ authorizationParams: { connection: 'google-oauth2', screen_hint: 'signup' } })}
+        >
+          <img src="/google-logo.svg" alt="Google" /> Sign Up with Google
+        </button>
+        <button
+          type="button"
+          className="social-button microsoft"
+          onClick={() => loginWithRedirect({ authorizationParams: { connection: 'windowslive', screen_hint: 'signup' } })}
+        >
+          <img src="/microsoft-logo.svg" alt="Microsoft" /> Sign Up with Microsoft
+        </button>
+      </div>
       <div className="auth-form-footer">
         <span>Already have an <br /> account? <Link href="/auth">Login</Link></span>
       </div>

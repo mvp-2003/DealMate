@@ -5,7 +5,7 @@ echo "🚀 Building DealPal..."
 
 # Build Frontend
 echo "📦 Building Frontend..."
-npm install
+npm install --legacy-peer-deps
 npm run build
 
 # Build Backend
