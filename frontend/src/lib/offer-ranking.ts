@@ -1,10 +1,10 @@
 
-import type { Offer, UserCard, RankedOffer, UserPointsState, LoyaltyProgram, UserRewardGoal } from './types';
+import type { Offer, UserCard, RankedOffer, UserPointsState } from './types';
 
 const MIN_SPEND_FOR_PERK_CONSIDERATION = 100; // Don't consider tiny purchases for big perks
 
 export function calculateRankedOffers(offers: Offer[], userPointsState: UserPointsState): RankedOffer[] {
-  const rankedOffers: RankedOffer[] = offers.map((offer, index) => {
+  const rankedOffers: RankedOffer[] = offers.map((offer, _index) => {
     let priceAfterDirectDiscounts = offer.basePrice;
     let totalDiscountValue = 0; // Coupons, direct offer discounts
     let totalCashbackValue = 0; // Cashback expected post-purchase

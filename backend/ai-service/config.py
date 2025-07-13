@@ -1,16 +1,14 @@
 import os
 from pydantic_settings import BaseSettings
-from pydantic import Field, model_validator
-from dotenv import load_dotenv
+from pydantic import Field
 import logging
 import sys
-from typing import ClassVar, List
+from typing import Any, ClassVar, List
 from pathlib import Path
 
-# Load environment variables from .env file in project root
+# Define project root and .env path, which pydantic-settings will use
 project_root = Path(__file__).parent.parent.parent
 env_path = project_root / ".env"
-load_dotenv(env_path)
 
 # Configure logging
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -59,22 +57,12 @@ class Settings(BaseSettings):
     )
 
     model_config: ClassVar = {
-        "env_file": ".env",
+        "env_file": env_path,
         "env_file_encoding": "utf-8",
         "extra": "allow",
     }
 
-    @model_validator(mode='before')
-    def load_env_vars(cls, values):
-        """
-        Load environment variables from .env file.
-        """
-        project_root = Path(__file__).parent.parent.parent
-        env_path = project_root / ".env"
-        load_dotenv(env_path)
-        return values
-
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.log_settings()
 
@@ -84,7 +72,7 @@ class Settings(BaseSettings):
         """
         logger = logging.getLogger(__name__)
         logger.info("Application settings loaded:")
-        for key, value in self.dict().items():
+        for key, value in self.model_dump().items():
             if "key" in key.lower() or "token" in key.lower():
                 logger.info(f"  {key}: {'*' * 8}")
             else:

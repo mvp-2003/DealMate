@@ -14,7 +14,7 @@ let mockUserCards: UserCard[] = [
   { id: 'card2', userId: 'mockUserId', name: 'Axis Magnus', bank: 'Axis', cardType: 'Magnus', last4Digits: '5678', rewards_per_rupee: 0.048 , reward_value_inr: 1, current_points: 120000, next_reward_threshold: 100000, next_reward_value: 10000 }, // Approx 12 points per 200, 1 point = 0.2 INR (simplified to 4.8% value)
   { id: 'card3', userId: 'mockUserId', name: 'SBI Cashback', bank: 'SBI', cardType: 'Cashback', last4Digits: '9012', rewards_per_rupee: 0.05, reward_value_inr: 1 }, // Direct 5% cashback
 ];
-let mockLoyaltyPrograms: LoyaltyProgram[] = [
+const mockLoyaltyPrograms: LoyaltyProgram[] = [
     { id: 'lp1', userId: 'mockUserId', programName: 'Flipkart SuperCoins', currentPoints: 350, pointValueInRupees: 1},
     { id: 'lp2', userId: 'mockUserId', programName: 'Amazon Pay Rewards', currentPoints: 150, pointValueInRupees: 1},
 ];
