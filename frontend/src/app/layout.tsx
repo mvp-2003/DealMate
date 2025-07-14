@@ -13,6 +13,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'DealPal',
   description: 'Your smart shopping assistant for Indian e-commerce.',
+  icons: {
+    icon: '/Logo.ico',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

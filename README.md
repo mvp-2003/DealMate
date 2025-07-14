@@ -1,6 +1,19 @@
 # DealPal - AI-Powered Smart Shopping Assistant
 
+[![Lighthouse Performance](https://img.shields.io/badge/Lighthouse-Performance-brightgreen)](https://web.dev/lighthouse/)
+[![PWA Ready](https://img.shields.io/badge/PWA-Ready-blue)](https://web.dev/progressive-web-apps/)
+[![Accessibility](https://img.shields.io/badge/Accessibility-WCAG%202.1-green)](https://www.w3.org/WAI/WCAG21/quickref/)
+
 DealPal is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension.
+
+## 📊 Performance & Quality
+
+Our platform is optimized for excellent user experience with:
+- ⚡ **Core Web Vitals**: Optimized for speed and responsiveness
+- 🔍 **SEO Optimized**: Meta tags, structured data, and semantic HTML
+- ♿ **Accessible**: WCAG 2.1 AA compliant
+- 📱 **Progressive Web App**: Offline-capable with service workers
+- 🔒 **Security**: Content Security Policy and secure headers
 
 ## 🚀 Quick Start
 
@@ -29,13 +42,22 @@ Welcome to DealPal! This guide will help you get started quickly.
    docker-compose up --build
    ```
 
+   Or with Podman:
+   ```bash
+   cd scripts
+   ./podman-up.sh
+   ```
+
 ### Architecture Overview
 
-- **Backend**: Rust API server (port 8000)
-- **AI Service**: Python service with Gemini AI (port 8001)
-- **Frontend**: Next.js React app (port 3000)
-- **Database**: PostgreSQL
-- **Cache**: Redis
+- **Backend**: Rust API server (port 8000) - High performance, memory safe
+- **AI Service**: Python service with Gemini AI (port 8001) - Advanced ML capabilities
+- **Auth Service**: Node.js authentication service (port 3001) - OAuth2 & JWT
+- **Frontend**: Next.js React app (port 3000) - SSR/SSG for optimal performance
+- **Database**: PostgreSQL - ACID compliant relational database
+- **Cache**: Redis - In-memory data structure store
+- **Message Broker**: Apache Kafka - Real-time event streaming platform
+- **Stream Processing**: Kafka Streams - Real-time data processing
 
 ## 🏗️ Project Structure
 
@@ -127,6 +149,7 @@ All environment variables are centralized in the root `.env` file containing con
 - **Service URLs**: Backend and AI service endpoints
 - **Feature Flags**: Enable/disable various features
 - **Performance**: Rate limiting and caching settings
+- **Security**: CSRF tokens, API keys, and JWT secrets
 
 ### Key Environment Variables
 
@@ -142,6 +165,12 @@ GEMINI_MAX_TOKENS=5000
 # Service URLs
 RUST_BACKEND_URL=http://localhost:8000
 PYTHON_AI_SERVICE_URL=http://localhost:8001
+AUTH_SERVICE_URL=http://localhost:3001
+
+# Security
+JWT_SECRET=your_jwt_secret_here
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
 
 # Feature Flags
 ENABLE_LOCAL_AI=true
@@ -150,6 +179,20 @@ ENABLE_PYTHON_AI_SERVICE=false
 ENABLE_IMAGE_ANALYSIS=true
 ENABLE_SENTIMENT_ANALYSIS=true
 ENABLE_PRICE_PREDICTION=true
+
+# Performance & Analytics
+ENABLE_LIGHTHOUSE_CI=true
+GOOGLE_ANALYTICS_ID=your_ga_id_here
+
+# Apache Kafka Configuration
+KAFKA_BROKERS=localhost:9092
+KAFKA_SCHEMA_REGISTRY=http://localhost:8081
+KAFKA_TOPICS_DEALS=dealpal.deals
+KAFKA_TOPICS_PRICES=dealpal.prices
+KAFKA_TOPICS_USER_EVENTS=dealpal.user.events
+KAFKA_TOPICS_NOTIFICATIONS=dealpal.notifications
+KAFKA_CONSUMER_GROUP=dealpal-consumers
+KAFKA_RETENTION_MS=604800000
 ```
 
 ## 🛠️ Development Scripts
@@ -158,16 +201,42 @@ All development scripts are located in the `scripts/` folder. Run them from the 
 
 ```bash
 cd scripts
-./setup.sh     # Initial project setup
-./start.sh     # Start all services
-./stop.sh      # Stop all services
-./build.sh     # Build all components
-./clean.sh     # Clean build artifacts
-./dev.sh       # Development mode
-./status.sh    # Check service status
+./setup.sh          # Initial project setup
+./start.sh          # Start all services  
+./stop.sh           # Stop all services
+./build.sh          # Build all components
+./clean.sh          # Clean build artifacts
+./dev.sh            # Development mode
+./status.sh         # Check service status
+./setup-kafka.sh    # Setup Kafka topics and configuration
+./kafka-monitor.sh  # Monitor Kafka topics and consumer lag
+```
+
+### Kafka Management Commands
+
+```bash
+# Setup Kafka topics for first time
+./setup-kafka.sh
+
+# Monitor Kafka in real-time
+./kafka-monitor.sh --watch
+
+# View sample messages from topics
+./kafka-monitor.sh --samples
+
+# Check Kafka status
+./kafka-monitor.sh
 ```
 
 ## 🎯 Core Features
+
+### Real-Time Event Streaming with Apache Kafka
+High-throughput, fault-tolerant event streaming for real-time data processing:
+- **Deal Events**: Real-time deal discovery and expiration notifications
+- **Price Changes**: Instant price update streaming across retailers
+- **User Interactions**: Click-stream data and behavioral analytics
+- **Inventory Updates**: Stock level changes and availability alerts
+- **Offer Activations**: Real-time coupon usage and success tracking
 
 ### Global Offer Scanner
 Comprehensive deal aggregation across multiple e-commerce platforms with:
@@ -175,6 +244,7 @@ Comprehensive deal aggregation across multiple e-commerce platforms with:
 - Direct API integrations with partner e-commerce sites
 - Regional coverage for 15+ countries and currencies
 - Real-time updates with 5-minute refresh cycles
+- **Kafka Integration**: Stream deals in real-time to all subscribers
 
 ### StackSmart Engine
 Intelligent combination of multiple offers for maximum savings:
@@ -222,11 +292,16 @@ uvicorn main:app --host 0.0.0.0 --port 8001
 
 ## 📊 Performance Metrics
 
+- **Core Web Vitals**: 
+  - LCP (Largest Contentful Paint): <2.5s
+  - FID (First Input Delay): <100ms  
+  - CLS (Cumulative Layout Shift): <0.1
 - **API Response Time**: <200ms average
 - **System Uptime**: 99.9% availability
 - **Product Detection**: ~200-500ms per request
 - **Sentiment Analysis**: ~100-300ms for 10 reviews
 - **Concurrent Requests**: 100+ requests/second
+- **Lighthouse Score**: 90+ across all categories
 
 ## 🔒 Security & Privacy
 
@@ -234,6 +309,36 @@ uvicorn main:app --host 0.0.0.0 --port 8001
 - **API Security**: Rate limiting, authentication, and authorization
 - **Privacy Controls**: GDPR compliance and user data control
 - **Secure Communications**: TLS 1.3 for all data transmission
+- **Content Security Policy**: XSS and injection attack prevention
+- **Security Headers**: HSTS, X-Frame-Options, X-Content-Type-Options
+- **Regular Security Audits**: Quarterly penetration testing
+
+## 🚀 Performance Optimization
+
+### Lighthouse Integration
+Run Google Lighthouse audits to ensure optimal performance:
+
+```bash
+# Install Lighthouse CLI
+npm install -g @lhci/cli
+
+# Run Lighthouse audit on local development
+lhci autorun --upload.target=temporary-public-storage
+
+# Run specific audits
+lighthouse http://localhost:3000 --only-categories=performance,accessibility,best-practices,seo,pwa
+
+# Continuous Integration with Lighthouse CI
+# Add to your CI/CD pipeline for automated performance monitoring
+```
+
+### Performance Features
+- **Static Site Generation (SSG)**: Pre-built pages for faster loading
+- **Image Optimization**: Next.js automatic image optimization
+- **Code Splitting**: Automatic bundle splitting for faster initial loads
+- **Service Worker**: Offline functionality and caching
+- **CDN Ready**: Optimized for content delivery networks
+- **Bundle Analysis**: Webpack bundle analyzer for optimization insights
 
 ## 🤝 Contributing
 

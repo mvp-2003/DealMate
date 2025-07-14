@@ -1,0 +1,150 @@
+{
+  "namespace": "com.dealpal.events",
+  "type": "record",
+  "name": "UserEvent",
+  "doc": "Event representing user interactions with the platform",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "Unique identifier for this event"
+    },
+    {
+      "name": "timestamp",
+      "type": "long", 
+      "doc": "Event timestamp in Unix milliseconds"
+    },
+    {
+      "name": "userId",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "User identifier (null for anonymous users)"
+    },
+    {
+      "name": "sessionId",
+      "type": "string",
+      "doc": "Session identifier"
+    },
+    {
+      "name": "eventType",
+      "type": {
+        "type": "enum",
+        "name": "UserEventType",
+        "symbols": [
+          "PAGE_VIEW",
+          "DEAL_VIEW",
+          "DEAL_CLICK",
+          "DEAL_ACTIVATE",
+          "SEARCH",
+          "FILTER_APPLY",
+          "WISHLIST_ADD",
+          "WISHLIST_REMOVE",
+          "NOTIFICATION_CLICK",
+          "PURCHASE_COMPLETE",
+          "USER_SIGNUP",
+          "USER_LOGIN",
+          "USER_LOGOUT"
+        ]
+      },
+      "doc": "Type of user event"
+    },
+    {
+      "name": "platform",
+      "type": {
+        "type": "enum",
+        "name": "Platform",
+        "symbols": [
+          "WEB",
+          "MOBILE_APP",
+          "BROWSER_EXTENSION"
+        ]
+      },
+      "doc": "Platform where event occurred"
+    },
+    {
+      "name": "dealId",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Deal ID if event is deal-related"
+    },
+    {
+      "name": "productId",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Product ID if event is product-related"
+    },
+    {
+      "name": "searchQuery",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Search query if event is search-related"
+    },
+    {
+      "name": "category",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Category if event is category-related"
+    },
+    {
+      "name": "pageUrl",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "URL of the page where event occurred"
+    },
+    {
+      "name": "referrer",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Referrer URL"
+    },
+    {
+      "name": "userAgent",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "User agent string"
+    },
+    {
+      "name": "ipAddress",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "User IP address (hashed for privacy)"
+    },
+    {
+      "name": "location",
+      "type": ["null", {
+        "type": "record",
+        "name": "Location",
+        "fields": [
+          {"name": "country", "type": "string"},
+          {"name": "region", "type": ["null", "string"], "default": null},
+          {"name": "city", "type": ["null", "string"], "default": null}
+        ]
+      }],
+      "default": null,
+      "doc": "User location information"
+    },
+    {
+      "name": "deviceInfo",
+      "type": ["null", {
+        "type": "record", 
+        "name": "DeviceInfo",
+        "fields": [
+          {"name": "deviceType", "type": "string"},
+          {"name": "os", "type": "string"},
+          {"name": "browser", "type": ["null", "string"], "default": null}
+        ]
+      }],
+      "default": null,
+      "doc": "Device information"
+    },
+    {
+      "name": "metadata",
+      "type": {
+        "type": "map",
+        "values": "string"
+      },
+      "default": {},
+      "doc": "Additional event metadata"
+    }
+  ]
+}

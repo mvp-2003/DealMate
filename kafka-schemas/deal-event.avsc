@@ -1,0 +1,121 @@
+{
+  "namespace": "com.dealpal.events",
+  "type": "record",
+  "name": "DealEvent",
+  "doc": "Event representing a deal discovery, update, or expiration",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "Unique identifier for this event"
+    },
+    {
+      "name": "timestamp",
+      "type": "long",
+      "doc": "Event timestamp in Unix milliseconds"
+    },
+    {
+      "name": "eventType",
+      "type": {
+        "type": "enum",
+        "name": "DealEventType",
+        "symbols": [
+          "DEAL_CREATED",
+          "DEAL_UPDATED", 
+          "DEAL_EXPIRED",
+          "DEAL_ACTIVATED",
+          "DEAL_DEACTIVATED"
+        ]
+      },
+      "doc": "Type of deal event"
+    },
+    {
+      "name": "dealId",
+      "type": "string",
+      "doc": "Unique identifier for the deal"
+    },
+    {
+      "name": "productId",
+      "type": "string",
+      "doc": "Product identifier this deal applies to"
+    },
+    {
+      "name": "retailer",
+      "type": "string",
+      "doc": "Retailer offering this deal"
+    },
+    {
+      "name": "originalPrice",
+      "type": "double",
+      "doc": "Original price before discount"
+    },
+    {
+      "name": "discountedPrice",
+      "type": "double",
+      "doc": "Price after applying discount"
+    },
+    {
+      "name": "discountPercentage",
+      "type": "double",
+      "doc": "Discount percentage (0-100)"
+    },
+    {
+      "name": "currency",
+      "type": "string",
+      "default": "USD",
+      "doc": "Currency code (ISO 4217)"
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "doc": "Product category"
+    },
+    {
+      "name": "subcategory",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Product subcategory"
+    },
+    {
+      "name": "couponCode",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Coupon code if applicable"
+    },
+    {
+      "name": "expirationTime",
+      "type": ["null", "long"],
+      "default": null,
+      "doc": "Deal expiration timestamp in Unix milliseconds"
+    },
+    {
+      "name": "tags",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "default": [],
+      "doc": "Deal tags for categorization"
+    },
+    {
+      "name": "metadata",
+      "type": {
+        "type": "map",
+        "values": "string"
+      },
+      "default": {},
+      "doc": "Additional metadata as key-value pairs"
+    },
+    {
+      "name": "region",
+      "type": "string",
+      "default": "US",
+      "doc": "Geographic region for the deal"
+    },
+    {
+      "name": "source",
+      "type": "string",
+      "doc": "Source system that generated this event"
+    }
+  ]
+}

@@ -1,17 +1,66 @@
 # DealPal: Next-Generation Product Deals & Savings Platform
 ## Complete Feature Specification & Technical Architecture
 
+**Last Updated**: July 2025  
+**Version**: 2.0  
+**Status**: Active Development
+
 ---
 
 ## 1. Executive Summary
 
-DealPal is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension, ensuring users can access powerful savings features wherever they shop.
+DealPal is a comprehensive, AI-powered savings---
+
+## 5. Core Feature Specifications
+
+### 5.1 Real-Time Event Streaming Engine
+**Purpose**: Process and distribute real-time events across the DealPal ecosystem
+
+#### Event Types:
+- **Deal Discovery Events**: New deals found across e-commerce platforms
+- **Price Change Events**: Price updates with delta calculations
+- **User Interaction Events**: Clicks, views, and conversions
+- **Inventory Events**: Stock level changes and availability updates
+- **Notification Events**: Alert triggers and delivery confirmations
+
+#### Kafka Integration Features:
+- **High Throughput**: Process 100K+ events per second
+- **Fault Tolerance**: Automatic failover and data replication
+- **Exactly-Once Semantics**: Guaranteed message delivery
+- **Schema Evolution**: Backward compatible schema changes
+- **Real-Time Processing**: Sub-second event processing latency
+
+#### Implementation Example:
+```rust
+// Kafka producer in Rust backend
+use rdkafka::producer::{FutureProducer, FutureRecord};
+
+pub struct DealEventProducer {
+    producer: FutureProducer,
+}
+
+impl DealEventProducer {
+    pub async fn publish_deal_event(&self, deal: &Deal) -> Result<(), KafkaError> {
+        let event = DealEvent::from(deal);
+        let record = FutureRecord::to("dealpal.deals")
+            .key(&deal.id)
+            .payload(&serde_json::to_string(&event)?);
+        
+        self.producer.send(record, Duration::from_secs(5)).await?;
+        Ok(())
+    }
+}
+```
+
+### 5.2 Global Offer Scannerform designed to help users discover and maximize real savings through intelligent deal discovery, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension, ensuring users can access powerful savings features wherever they shop.
 
 ### Core Value Proposition
 - **Intelligent Deal Discovery**: AI-powered scanning across multiple e-commerce platforms
 - **Smart Offer Stacking**: Automated combination of multiple offers for maximum savings
 - **Personalized Value Optimization**: Recommendations based on individual spending patterns and reward programs
 - **Real-Time Price Intelligence**: Dynamic price comparison and trend analysis
+- **Performance Excellence**: Sub-second response times with 99.9% uptime
+- **Accessibility First**: WCAG 2.1 AA compliant for inclusive user experience
 
 ---
 
@@ -36,17 +85,244 @@ DealPal is a comprehensive, AI-powered savings platform designed to help users d
 ```
 
 ### 2.2 Technology Stack
-- **Frontend**: Next.js 14, TypeScript, Tailwind CSS
-- **Backend**: Rust (Axum), Python (FastAPI for AI)
-- **Database**: PostgreSQL with Redis caching
-- **AI/ML**: Google Gemini, Custom ML models
-- **Browser Extension**: Vanilla JavaScript with AI integration
+- **Frontend**: Next.js 15, TypeScript 5, Tailwind CSS 3
+  - SSR/SSG for optimal SEO and performance
+  - Progressive Web App (PWA) capabilities
+  - Advanced image optimization and lazy loading
+  - Automatic code splitting and tree shaking
+- **Backend**: Rust (Axum), Python (FastAPI for AI), Node.js (Auth)
+  - High-performance, memory-safe architecture
+  - Microservices with async/await patterns
+  - Auto-scaling and load balancing ready
+- **Database**: PostgreSQL 15 with Redis 7 caching
+  - Optimized queries with connection pooling
+  - Read replicas for improved performance
+  - Automated backup and disaster recovery
+- **Message Streaming**: Apache Kafka 3.5 with Schema Registry
+  - Real-time event streaming architecture
+  - High-throughput, fault-tolerant messaging
+  - Event sourcing and CQRS patterns
+  - Stream processing with Kafka Streams
+- **AI/ML**: Google Gemini 1.5, Custom ML models
+  - Edge computing for reduced latency
+  - Model optimization and quantization
+  - Real-time inference with caching
+- **Browser Extension**: Vanilla JavaScript with Web Extensions API
+  - Manifest V3 compliance for security
+  - Content Script optimization
+  - Service Worker for background processing
+- **Infrastructure**: Docker/Podman containers, Kubernetes ready
+  - Multi-stage builds for minimal image sizes
+  - Health checks and graceful shutdowns
+  - Horizontal pod autoscaling
+- **Monitoring**: Prometheus, Grafana, Lighthouse CI, Kafka UI
+  - Real-time performance monitoring
+  - Automated alerts and incident response
+  - Continuous performance optimization
 
 ---
 
-## 3. Core Feature Specifications
+## 3. Real-Time Event Streaming Architecture
 
-### 3.1 Global Offer Scanner
+### 3.1 Apache Kafka Integration
+**Purpose**: Enable real-time data streaming for immediate deal discovery and user notifications
+
+#### Event-Driven Architecture:
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Data Sources  │───▶│  Apache Kafka   │───▶│   Consumers     │
+│                 │    │                 │    │                 │
+│ • E-commerce    │    │ ┌─────────────┐ │    │ • Frontend      │
+│   APIs          │    │ │Deal Events  │ │    │ • Notifications │
+│ • Web Scrapers  │    │ │Price Changes│ │    │ • Analytics     │
+│ • User Actions  │    │ │User Events  │ │    │ • ML Models     │
+│ • Price Feeds   │    │ │Inventory    │ │    │ • Dashboards    │
+└─────────────────┘    │ └─────────────┘ │    └─────────────────┘
+                       └─────────────────┘
+```
+
+#### Kafka Topics Structure:
+- **`dealpal.deals`**: New deal discoveries and updates
+- **`dealpal.prices`**: Price change events across retailers
+- **`dealpal.user.events`**: User interactions and behaviors
+- **`dealpal.notifications`**: Real-time alerts and notifications
+- **`dealpal.inventory`**: Stock level changes and availability
+- **`dealpal.analytics`**: Aggregated metrics and insights
+
+#### Event Schema (Avro):
+```json
+{
+  "namespace": "com.dealpal.events",
+  "type": "record",
+  "name": "DealEvent",
+  "fields": [
+    {"name": "eventId", "type": "string"},
+    {"name": "timestamp", "type": "long"},
+    {"name": "eventType", "type": "enum", "symbols": ["DEAL_CREATED", "DEAL_UPDATED", "DEAL_EXPIRED"]},
+    {"name": "dealId", "type": "string"},
+    {"name": "productId", "type": "string"},
+    {"name": "retailer", "type": "string"},
+    {"name": "originalPrice", "type": "double"},
+    {"name": "discountedPrice", "type": "double"},
+    {"name": "discountPercentage", "type": "double"},
+    {"name": "category", "type": "string"},
+    {"name": "expirationTime", "type": ["null", "long"], "default": null},
+    {"name": "metadata", "type": "map", "values": "string"}
+  ]
+}
+```
+
+### 3.2 Stream Processing with Kafka Streams
+**Purpose**: Real-time data processing and enrichment
+
+#### Processing Topologies:
+- **Deal Enrichment**: Enhance deals with historical price data
+- **Price Trend Analysis**: Calculate moving averages and volatility
+- **User Personalization**: Real-time recommendation updates
+- **Fraud Detection**: Identify suspicious deal patterns
+- **Inventory Correlation**: Match deals with stock levels
+
+#### Example Stream Processing:
+```java
+StreamsBuilder builder = new StreamsBuilder();
+
+// Deal enrichment stream
+KStream<String, DealEvent> dealStream = builder.stream("dealpal.deals");
+KTable<String, ProductInfo> productTable = builder.table("dealpal.products");
+
+KStream<String, EnrichedDeal> enrichedDeals = dealStream
+    .join(productTable, (deal, product) -> new EnrichedDeal(deal, product))
+    .filter((key, enrichedDeal) -> enrichedDeal.getDiscountPercentage() > 10.0)
+    .mapValues(deal -> calculateSavingsMetrics(deal));
+
+enrichedDeals.to("dealpal.enriched.deals");
+```
+
+### 3.3 Real-Time Analytics Dashboard
+**Purpose**: Live monitoring of deal performance and user engagement
+
+#### Key Metrics:
+- **Deal Velocity**: Deals discovered per minute
+- **Price Change Frequency**: Updates per product per hour
+- **User Engagement**: Click-through rates in real-time
+- **Conversion Rates**: Deal activation success rates
+- **System Performance**: Kafka lag and throughput metrics
+
+---
+
+## 4. Web Performance & Quality Standards
+
+### 4.1 Core Web Vitals Optimization
+**Purpose**: Ensure excellent user experience with Google's Core Web Vitals standards
+
+#### Performance Targets:
+- **Largest Contentful Paint (LCP)**: <2.5s (Target: <1.5s)
+- **First Input Delay (FID)**: <100ms (Target: <50ms)
+- **Cumulative Layout Shift (CLS)**: <0.1 (Target: <0.05)
+- **First Contentful Paint (FCP)**: <1.8s (Target: <1.2s)
+- **Time to Interactive (TTI)**: <3.8s (Target: <2.5s)
+
+#### Implementation Strategies:
+- **Critical Resource Prioritization**: Inline critical CSS, defer non-critical JavaScript
+- **Image Optimization**: WebP/AVIF formats, responsive images, lazy loading
+- **Code Splitting**: Route-based and component-based splitting
+- **Service Worker**: Precaching, runtime caching, offline functionality
+- **Resource Hints**: Preload, prefetch, and DNS prefetch optimization
+
+### 4.2 Progressive Web App (PWA) Features
+**Purpose**: Provide native-app-like experience on the web
+
+#### PWA Capabilities:
+- **Offline Functionality**: Service worker with cache-first strategies
+- **App Shell Architecture**: Instant loading with cached shell
+- **Push Notifications**: Real-time deal alerts and price drops
+- **Add to Home Screen**: Native app experience on mobile
+- **Background Sync**: Queue actions when offline, sync when online
+
+#### Technical Implementation:
+```javascript
+// Service Worker registration with advanced caching
+const CACHE_NAME = 'dealpal-v1';
+const urlsToCache = [
+  '/',
+  '/styles/main.css',
+  '/scripts/app.js',
+  '/api/deals',
+  '/offline.html'
+];
+
+// Stale-while-revalidate strategy for dynamic content
+workbox.routing.registerRoute(
+  /^https:\/\/api\.dealpal\.com/,
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: 'api-cache',
+    plugins: [{
+      cacheKeyWillBeUsed: async ({request}) => 
+        request.url + '?timestamp=' + Math.floor(Date.now() / 60000)
+    }]
+  })
+);
+```
+
+### 4.3 Accessibility (WCAG 2.1 AA Compliance)
+**Purpose**: Ensure inclusive design for users with disabilities
+
+#### Accessibility Features:
+- **Semantic HTML**: Proper heading structure, landmark regions
+- **Keyboard Navigation**: Full keyboard accessibility with focus management
+- **Screen Reader Support**: ARIA labels, descriptions, and live regions
+- **Color Contrast**: 4.5:1 ratio for normal text, 3:1 for large text
+- **Alternative Text**: Descriptive alt text for all images
+- **Responsive Design**: Zoom support up to 200% without horizontal scrolling
+
+#### Implementation Examples:
+```html
+<!-- Semantic deal card structure -->
+<article role="article" aria-labelledby="deal-123-title">
+  <h3 id="deal-123-title">50% off Electronics</h3>
+  <p aria-describedby="deal-123-desc">
+    Save big on laptops, phones, and tablets
+  </p>
+  <button aria-label="Apply coupon code SAVE50 for 50% off Electronics">
+    Apply Deal
+  </button>
+</article>
+```
+
+### 4.4 SEO Optimization
+**Purpose**: Maximize search engine visibility and organic traffic
+
+#### SEO Features:
+- **Structured Data**: JSON-LD for products, offers, and reviews
+- **Meta Tags**: Dynamic Open Graph and Twitter Card metadata
+- **Sitemap Generation**: Automated XML sitemap with priority and change frequency
+- **Canonical URLs**: Prevent duplicate content issues
+- **Performance**: Fast loading times improve search rankings
+
+#### Structured Data Example:
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Offer",
+  "name": "50% off Samsung Galaxy S24",
+  "description": "Limited time offer on flagship smartphone",
+  "price": "599.99",
+  "priceCurrency": "USD",
+  "availability": "https://schema.org/InStock",
+  "validFrom": "2025-07-14",
+  "validThrough": "2025-07-21",
+  "seller": {
+    "@type": "Organization",
+    "name": "DealPal"
+  }
+}
+```
+
+---
+
+## 4. Core Feature Specifications
+
+### 4.1 Global Offer Scanner
 **Purpose**: Comprehensive deal aggregation across multiple e-commerce platforms and regions
 
 #### Technical Implementation:
@@ -70,7 +346,7 @@ DealPal is a comprehensive, AI-powered savings platform designed to help users d
 - **Bank Partnerships**: ICICI, HDFC, SBI card offers
 - **Wallet Integrations**: Paytm, PhonePe, Google Pay
 
-### 3.2 StackSmart Engine
+### 4.2 StackSmart Engine
 **Purpose**: Intelligent combination of multiple offers for maximum savings optimization
 
 #### Core Algorithm:
@@ -97,7 +373,7 @@ def optimize_deal_stack(base_price, available_offers):
 - Referral credits + Payment offers + Loyalty points
 - Bank offers + Wallet cashback + Membership discounts
 
-### 3.3 Real-Time Price Comparison
+### 4.3 Real-Time Price Comparison
 **Purpose**: Comprehensive price analysis across retailers with total cost calculation
 
 #### Comparison Factors:
@@ -113,7 +389,7 @@ def optimize_deal_stack(base_price, available_offers):
 - **Tax Calculator**: Automated tax calculation based on location
 - **Total Cost Ranking**: Final price comparison with all factors
 
-### 3.4 Price History Tracker
+### 4.4 Price History Tracker
 **Purpose**: Historical price analysis for informed purchasing decisions
 
 #### Data Collection:
@@ -128,7 +404,7 @@ def optimize_deal_stack(base_price, available_offers):
 - **Best Time to Buy**: AI-recommended purchase timing
 - **Price Volatility Index**: Product price stability metrics
 
-### 3.5 Card-Linked Offer Integration
+### 4.5 Card-Linked Offer Integration
 **Purpose**: Secure integration with user's financial accounts for automatic offer activation
 
 #### Security Framework:
@@ -143,7 +419,7 @@ def optimize_deal_stack(base_price, available_offers):
 - **Reward Tracking**: Points and cashback monitoring
 - **Spending Analytics**: Purchase pattern analysis
 
-### 3.6 Reward Intelligence Engine
+### 4.6 Reward Intelligence Engine
 **Purpose**: Intelligent calculation of reward point values and optimization recommendations
 
 #### Value Calculation Algorithm:
@@ -165,7 +441,7 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 - **Redemption Optimization**: Best value redemption recommendations
 - **Cross-Program Comparison**: Multi-card reward comparison
 
-### 3.7 Value-Based Offer Sorting (VBOR)
+### 4.7 Value-Based Offer Sorting (VBOR)
 **Purpose**: Personalized offer ranking based on individual user value
 
 #### Sorting Criteria:
@@ -181,7 +457,7 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 - **Payment Methods**: Preferred cards and wallets
 - **Geographic Location**: Local deals and offers
 
-### 3.8 Local & In-Store Deals
+### 4.8 Local & In-Store Deals
 **Purpose**: Bridge online and offline shopping with location-based deals
 
 #### Mobile Features:
@@ -196,7 +472,7 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 - **Price Matching**: Online vs. in-store price comparison
 - **Inventory Checking**: Real-time stock availability
 
-### 3.9 Wishlist & Price-Drop Alerts
+### 4.9 Wishlist & Price-Drop Alerts
 **Purpose**: Proactive deal monitoring and intelligent notifications
 
 #### Alert Types:
@@ -214,7 +490,7 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 
 ---
 
-## 4. AI & Machine Learning Integration
+## 5. AI & Machine Learning Integration
 
 ### 4.1 AI-Powered Product Detection
 - **Computer Vision**: Product image recognition and categorization
@@ -236,7 +512,7 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 
 ---
 
-## 5. Platform-Specific Features
+## 6. Platform-Specific Features
 
 ### 5.1 Web Application Features
 - **Comprehensive Dashboard**: Full-featured deal management interface
@@ -261,7 +537,7 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 
 ---
 
-## 6. Technical Architecture Details
+## 7. Technical Architecture Details
 
 ### 6.1 Backend Services
 - **API Gateway**: The Rust backend acts as a central API gateway, routing requests to the appropriate microservices. It provides a single entry point for the frontend, simplifying the client-side code and centralizing concerns like authentication and logging.
@@ -297,29 +573,43 @@ For local development, the project uses a `.env` file in the root directory. For
 
 ---
 
-## 7. Success Metrics & KPIs
+## 8. Success Metrics & KPIs
 
-### 7.1 User Engagement Metrics
+### 8.1 User Engagement Metrics
 - **Daily Active Users (DAU)**: Target 100K+ daily users
 - **Session Duration**: Average 8+ minutes per session
 - **Feature Adoption Rate**: 70%+ feature utilization
 - **User Retention**: 80%+ monthly retention rate
+- **Bounce Rate**: <30% (improved by performance optimization)
 
-### 7.2 Business Impact Metrics
+### 8.2 Business Impact Metrics
 - **Total Savings Generated**: $10M+ annual user savings
 - **Deal Success Rate**: 85%+ successful deal applications
 - **Price Prediction Accuracy**: 90%+ accuracy rate
 - **User Satisfaction Score**: 4.5+ star rating
+- **Conversion Rate**: 5%+ deal activation rate
 
-### 7.3 Technical Performance Metrics
+### 8.3 Technical Performance Metrics
+- **Core Web Vitals**:
+  - Largest Contentful Paint (LCP): <1.5s
+  - First Input Delay (FID): <50ms
+  - Cumulative Layout Shift (CLS): <0.05
 - **API Response Time**: <200ms average response time
 - **System Uptime**: 99.9% availability
 - **Data Accuracy**: 95%+ price and deal accuracy
 - **Processing Speed**: Real-time deal detection and updates
+- **Lighthouse Score**: 95+ across all categories (Performance, Accessibility, Best Practices, SEO)
+
+### 8.4 Quality Assurance Metrics
+- **Accessibility Compliance**: WCAG 2.1 AA standards
+- **Security Score**: A+ rating on security headers
+- **SEO Performance**: Top 3 ranking for key search terms
+- **Progressive Web App**: PWA lighthouse audit score >90
+- **Browser Compatibility**: 95%+ compatibility across modern browsers
 
 ---
 
-## 8. Implementation Roadmap
+## 9. Implementation Roadmap
 
 ### Phase 1: Core Platform (Months 1-3)
 - Basic web application and browser extension

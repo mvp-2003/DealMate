@@ -1,0 +1,121 @@
+{
+  "namespace": "com.dealpal.events",
+  "type": "record",
+  "name": "PriceChangeEvent",
+  "doc": "Event representing a price change for a product",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "Unique identifier for this event"
+    },
+    {
+      "name": "timestamp",
+      "type": "long",
+      "doc": "Event timestamp in Unix milliseconds"
+    },
+    {
+      "name": "productId",
+      "type": "string",
+      "doc": "Product identifier"
+    },
+    {
+      "name": "retailer",
+      "type": "string",
+      "doc": "Retailer selling the product"
+    },
+    {
+      "name": "previousPrice",
+      "type": "double",
+      "doc": "Previous price"
+    },
+    {
+      "name": "currentPrice",
+      "type": "double",
+      "doc": "Current price after change"
+    },
+    {
+      "name": "priceChange",
+      "type": "double",
+      "doc": "Price change amount (positive = increase, negative = decrease)"
+    },
+    {
+      "name": "priceChangePercentage",
+      "type": "double",
+      "doc": "Price change percentage"
+    },
+    {
+      "name": "currency",
+      "type": "string",
+      "default": "USD",
+      "doc": "Currency code (ISO 4217)"
+    },
+    {
+      "name": "changeType",
+      "type": {
+        "type": "enum",
+        "name": "PriceChangeType",
+        "symbols": [
+          "INCREASE",
+          "DECREASE",
+          "FLASH_SALE",
+          "REGULAR_PRICE_RESTORED"
+        ]
+      },
+      "doc": "Type of price change"
+    },
+    {
+      "name": "isSignificant",
+      "type": "boolean",
+      "default": false,
+      "doc": "Whether this price change is significant (>5%)"
+    },
+    {
+      "name": "availability",
+      "type": {
+        "type": "enum", 
+        "name": "AvailabilityStatus",
+        "symbols": [
+          "IN_STOCK",
+          "LOW_STOCK",
+          "OUT_OF_STOCK",
+          "BACKORDER",
+          "DISCONTINUED"
+        ]
+      },
+      "default": "IN_STOCK",
+      "doc": "Product availability status"
+    },
+    {
+      "name": "stockLevel",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Current stock level if known"
+    },
+    {
+      "name": "priceHistory",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "PricePoint",
+          "fields": [
+            {"name": "price", "type": "double"},
+            {"name": "timestamp", "type": "long"}
+          ]
+        }
+      },
+      "default": [],
+      "doc": "Recent price history (last 30 days)"
+    },
+    {
+      "name": "metadata",
+      "type": {
+        "type": "map",
+        "values": "string"
+      },
+      "default": {},
+      "doc": "Additional metadata"
+    }
+  ]
+}

@@ -3,11 +3,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
-import asyncio
 
 # Local module imports
 try:
-    from config import settings, ModelConfig
+    from config import settings
     from models import ProductURL, PricePredictionRequest, DealStackRequest, ValidationRequest, ProductAnalysisRequest
     from services import (
         get_product_details,
@@ -164,7 +163,7 @@ def health_check():
 
 if __name__ == "__main__":
     # Run the FastAPI server
-    uvicorn.run(
+    uvicorn.run(  # type: ignore
         "main:app",
         host="0.0.0.0",
         port=8001,

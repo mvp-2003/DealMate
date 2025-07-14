@@ -10,6 +10,7 @@ pub mod auth;
 pub mod coupon_aggregator;
 pub mod db;
 pub mod error;
+pub mod kafka;  // Add Kafka producer module
 pub mod middleware;
 pub mod models;
 pub mod routes;
