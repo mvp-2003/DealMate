@@ -2,7 +2,7 @@
 
 # DealPal Master Run Script
 # This is the ONE SCRIPT to run everything - build, start, test, and monitor
-# Usage: ./run_app.sh
+# Usage: ./run_prod.sh
 
 set -e
 
@@ -22,10 +22,10 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 DealPal Master Application Runner${NC}"
+echo -e "${BLUE}🚀 DealPal Master Application Runner (Production Mode)${NC}"
 echo "====================================="
 echo -e "${CYAN}This script will:${NC}"
-echo "1. 🔧 Build all components"
+echo "1. 🔧 Build all components for production"
 echo "2. 🚀 Start all services"
 echo "3. 🧪 Run health checks"
 echo "4. 📊 Show platform status"
@@ -99,13 +99,13 @@ if check_services_running; then
 fi
 
 # Step 1: Build everything
-echo -e "${BLUE}📦 Step 1: Building All Components${NC}"
+echo -e "${BLUE}📦 Step 1: Building All Components for Production${NC}"
 echo "=================================="
-./scripts/build.sh
+./scripts/build_prod.sh
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ Build completed successfully${NC}"
+    echo -e "${GREEN}✅ Production build completed successfully${NC}"
 else
-    echo -e "${RED}❌ Build failed! Exiting...${NC}"
+    echo -e "${RED}❌ Production build failed! Exiting...${NC}"
     exit 1
 fi
 echo ""
@@ -117,19 +117,6 @@ echo "================================="
 # Start AI Service
 echo -e "${YELLOW}🤖 Starting AI Service...${NC}"
 cd backend/ai-service
-
-# Create virtual environment if it doesn't exist
-if [ ! -d ".venv" ]; then
-    echo -e "${YELLOW}📦 Creating Python virtual environment...${NC}"
-    python3 -m venv .venv
-fi
-
-# Activate virtual environment and install dependencies
-echo -e "${YELLOW}🔧 Activating virtual environment and installing dependencies...${NC}"
-source .venv/bin/activate
-pip install -r requirements.txt
-
-# Start the AI service
 nohup python main.py > ../../ai-service.log 2>&1 &
 AI_SERVICE_PID=$!
 cd ../../
@@ -164,7 +151,7 @@ sleep 3
 # Start Frontend
 echo -e "${YELLOW}📦 Starting Frontend...${NC}"
 cd frontend
-nohup npm run dev > ../frontend.log 2>&1 &
+nohup npm run start > ../frontend.log 2>&1 &
 FRONTEND_PID=$!
 cd ..
 echo "Frontend PID: $FRONTEND_PID"

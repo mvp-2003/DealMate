@@ -1,12 +1,13 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Building DealPal..."
+echo "🚀 Building DealPal for Production..."
 
 # Build Frontend
-echo "📦 Building Frontend..."
+echo "📦 Building Frontend for Production..."
 npm install --legacy-peer-deps
-echo "✅ Frontend dependencies installed (skipping production build)"
+npm run build
+echo "✅ Frontend production build complete"
 
 # Build Backend
 echo "🦀 Building Backend..."
@@ -32,7 +33,7 @@ else
 fi
 cd ../../
 
-echo "✅ Build Complete!"
+echo "✅ Production Build Complete!"
 echo "Frontend: frontend/.next"
 echo "Backend: backend/target/release/dealpal-backend"
 echo "AI Service: backend/ai-service/.venv"
