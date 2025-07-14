@@ -132,3 +132,6 @@ __pycache__/
 #IDE essentials
 .vscode
 .idx
+
+# Feature toggles (sensitive configuration)
+feature-toggles.json
