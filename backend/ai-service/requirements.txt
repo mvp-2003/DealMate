@@ -49,6 +49,7 @@ lxml>=4.9.0
 # Apache Kafka integration
 kafka-python>=2.0.2
 confluent-kafka>=2.3.0
+confluent-kafka-stubs>=0.0.1a0
 avro>=1.11.0
 confluent-kafka[avro]>=2.3.0
 fastavro>=1.9.0

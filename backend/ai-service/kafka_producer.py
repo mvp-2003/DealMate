@@ -7,15 +7,13 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 
 from confluent_kafka import Producer
-from confluent_kafka.serialization import StringSerializer
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka.schema_registry.avro import AvroSerializer
+from confluent_kafka.cimpl import Message
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +38,10 @@ class AnalysisResult(Enum):
 class AIEvent:
     """Base AI event structure"""
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: int = field(default_factory=lambda: int(datetime.utcnow().timestamp() * 1000))
+    timestamp: int = field(default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000))
     event_type: AIEventType = AIEventType.PRODUCT_DETECTED
     source: str = "dealpal-ai-service"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=lambda: {})
 
 
 @dataclass
@@ -59,7 +57,7 @@ class ProductDetectionEvent(AIEvent):
     category: str = ""
     subcategory: Optional[str] = None
     brand: Optional[str] = None
-    image_urls: List[str] = field(default_factory=list)
+    image_urls: List[str] = field(default_factory=lambda: [])
     confidence_score: float = 0.0
     analysis_result: AnalysisResult = AnalysisResult.SUCCESS
     processing_time_ms: int = 0
@@ -74,7 +72,7 @@ class SentimentAnalysisEvent(AIEvent):
     positive_reviews: int = 0
     negative_reviews: int = 0
     neutral_reviews: int = 0
-    key_aspects: List[str] = field(default_factory=list)
+    key_aspects: List[str] = field(default_factory=lambda: [])
     sentiment_summary: str = ""
     confidence_score: float = 0.0
     analysis_result: AnalysisResult = AnalysisResult.SUCCESS
@@ -86,12 +84,13 @@ class PricePredictionEvent(AIEvent):
     """Event for price prediction results"""
     product_id: str = ""
     current_price: float = 0.0
-    predicted_prices: Dict[str, float] = field(default_factory=dict)  # timeframe -> price
+    predicted_prices: Dict[str, float] = field(default_factory=lambda: {})  # timeframe -> price
     price_trend: str = "STABLE"  # INCREASING, DECREASING, STABLE
     best_time_to_buy: str = ""  # e.g., "next_week", "wait_for_sale"
     confidence_score: float = 0.0
     model_version: str = "v1.0"
     analysis_result: AnalysisResult = AnalysisResult.SUCCESS
+    processing_time_ms: int = 0
 
 
 @dataclass
@@ -99,11 +98,11 @@ class RecommendationEvent(AIEvent):
     """Event for recommendation generation"""
     user_id: Optional[str] = None
     session_id: str = ""
-    recommendations: List[Dict[str, Any]] = field(default_factory=list)
+    recommendations: List[Dict[str, Any]] = field(default_factory=lambda: [])
     recommendation_type: str = "DEAL_RECOMMENDATION"
     algorithm_used: str = "collaborative_filtering"
     confidence_score: float = 0.0
-    personalization_factors: List[str] = field(default_factory=list)
+    personalization_factors: List[str] = field(default_factory=lambda: [])
 
 
 class KafkaAIProducer:
@@ -114,7 +113,7 @@ class KafkaAIProducer:
         self.schema_registry_url = os.getenv("KAFKA_SCHEMA_REGISTRY", "http://localhost:8081")
         
         # Kafka producer configuration
-        producer_config = {
+        producer_config: Dict[str, Any] = {
             'bootstrap.servers': self.brokers,
             'client.id': 'dealpal-ai-service',
             'acks': '1',
@@ -126,7 +125,7 @@ class KafkaAIProducer:
             'message.timeout.ms': 5000,
         }
         
-        self.producer = Producer(producer_config)
+        self.producer: Producer = Producer(producer_config)
         
         # Topic names
         self.topics = {
@@ -139,11 +138,11 @@ class KafkaAIProducer:
         
         logger.info(f"Kafka AI Producer initialized with brokers: {self.brokers}")
     
-    def _delivery_callback(self, err, msg):
+    def _delivery_callback(self, err: Optional[Exception], msg: Optional[Message]):
         """Callback for message delivery reports"""
         if err is not None:
             logger.error(f"Message delivery failed: {err}")
-        else:
+        elif msg is not None:
             logger.info(f"Message delivered to topic {msg.topic()} partition {msg.partition()} offset {msg.offset()}")
     
     async def publish_product_detection_event(self, event: ProductDetectionEvent) -> bool:
@@ -152,11 +151,11 @@ class KafkaAIProducer:
             event.event_type = AIEventType.PRODUCT_DETECTED
             message_data = json.dumps(asdict(event), default=str)
             
-            self.producer.produce(
+            self.producer.produce(  # type: ignore
                 topic=self.topics['product_detection'],
                 key=event.product_id,
                 value=message_data,
-                callback=self._delivery_callback
+                on_delivery=self._delivery_callback
             )
             
             self.producer.poll(0)  # Trigger delivery callback
@@ -173,11 +172,11 @@ class KafkaAIProducer:
             event.event_type = AIEventType.SENTIMENT_ANALYZED
             message_data = json.dumps(asdict(event), default=str)
             
-            self.producer.produce(
+            self.producer.produce(  # type: ignore
                 topic=self.topics['sentiment_analysis'],
                 key=event.product_id,
                 value=message_data,
-                callback=self._delivery_callback
+                on_delivery=self._delivery_callback
             )
             
             self.producer.poll(0)
@@ -194,11 +193,11 @@ class KafkaAIProducer:
             event.event_type = AIEventType.PRICE_PREDICTED
             message_data = json.dumps(asdict(event), default=str)
             
-            self.producer.produce(
+            self.producer.produce(  # type: ignore
                 topic=self.topics['price_prediction'],
                 key=event.product_id,
                 value=message_data,
-                callback=self._delivery_callback
+                on_delivery=self._delivery_callback
             )
             
             self.producer.poll(0)
@@ -216,11 +215,11 @@ class KafkaAIProducer:
             message_data = json.dumps(asdict(event), default=str)
             
             key = event.user_id or event.session_id
-            self.producer.produce(
+            self.producer.produce(  # type: ignore
                 topic=self.topics['recommendations'],
                 key=key,
                 value=message_data,
-                callback=self._delivery_callback
+                on_delivery=self._delivery_callback
             )
             
             self.producer.poll(0)
@@ -255,7 +254,7 @@ class KafkaAIProducer:
         """Health check for Kafka connectivity"""
         try:
             # Get cluster metadata as a health check
-            metadata = self.producer.list_topics(timeout=5)
+            self.producer.list_topics(timeout=5)
             logger.info("Kafka AI Producer health check: OK")
             return True
         except Exception as e:

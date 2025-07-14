@@ -91,7 +91,7 @@
     "inflight": "^1.0.7"
   },
   "devDependencies": {
-    "@lhci/cli": "^0.12.0",
+    "@lhci/cli": "^0.15.1",
     "@next/bundle-analyzer": "^15.3.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^20",

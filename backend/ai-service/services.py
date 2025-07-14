@@ -6,9 +6,7 @@ from kafka_producer import (
     get_kafka_producer, 
     close_kafka_producer, 
     ProductDetectionEvent, 
-    SentimentAnalysisEvent,
-    PricePredictionEvent, 
-    RecommendationEvent,
+    PricePredictionEvent,
     AnalysisResult
 )
 
@@ -23,9 +21,9 @@ async def get_product_details(url: str) -> Dict[str, Any]:
     
     try:
         # Mock product extraction (in real implementation, this would scrape/analyze the URL)
-        product_data = {
-            "url": url, 
-            "name": "AI-Detected Product", 
+        product_data: Dict[str, Any] = {
+            "url": url,
+            "name": "AI-Detected Product",
             "price": 99.99,
             "currency": "USD",
             "retailer": "example.com",
@@ -71,7 +69,7 @@ async def get_product_details(url: str) -> Dict[str, Any]:
         await kafka_producer.publish_product_detection_event(failed_event)
         raise e
 
-async def predict_price_service(request) -> Dict[str, Any]:
+async def predict_price_service(request: Any) -> Dict[str, Any]:
     """
     Predicts future price and publishes prediction event.
     """
@@ -84,8 +82,8 @@ async def predict_price_service(request) -> Dict[str, Any]:
         predicted_price = current_price * 0.9  # Mock 10% decrease prediction
         
         # Generate prediction data
-        prediction_data = {
-            "product_id": request.product_id, 
+        prediction_data: Dict[str, Any] = {
+            "product_id": request.product_id,
             "current_price": current_price,
             "predicted_price": predicted_price,
             "price_trend": "DECREASING",
@@ -107,7 +105,8 @@ async def predict_price_service(request) -> Dict[str, Any]:
             best_time_to_buy="next_week",
             confidence_score=0.87,
             model_version="v1.0",
-            analysis_result=AnalysisResult.SUCCESS
+            analysis_result=AnalysisResult.SUCCESS,
+            processing_time_ms=processing_time
         )
         
         await kafka_producer.publish_price_prediction_event(prediction_event)
@@ -127,21 +126,21 @@ async def predict_price_service(request) -> Dict[str, Any]:
         await kafka_producer.publish_price_prediction_event(failed_event)
         raise e
 
-async def stack_deals_service(request):
+async def stack_deals_service(request: Any) -> Dict[str, Any]:
     """
     Placeholder for stack_deals_service.
     """
     logger.info("Stacking deals")
     return {"best_stack": [], "final_price": request.product_price}
 
-async def validate_stack_service(request):
+async def validate_stack_service(request: Any) -> Dict[str, Any]:
     """
     Placeholder for validate_stack_service.
     """
     logger.info("Validating deal stack")
     return {"is_valid": True}
 
-async def analyze_product_service(request):
+async def analyze_product_service(request: Any) -> Dict[str, Any]:
     """
     Placeholder for analyze_product_service.
     """
@@ -174,7 +173,7 @@ async def detect_product_details(url: str) -> Dict[str, Any]:
         },
     }
 
-async def optimize_deals_service(request) -> Dict[str, Any]:
+async def optimize_deals_service(request: Any) -> Dict[str, Any]:
     """
     Optimizes deals to find the best stack.
     """
