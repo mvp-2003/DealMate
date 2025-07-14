@@ -11,9 +11,8 @@ import aiohttp
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-import json
 import re
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 import hashlib
 
 logger = logging.getLogger(__name__)
@@ -55,7 +54,7 @@ class PriceComparisonService:
     
     def __init__(self):
         self.platform_configs = self._load_platform_configs()
-        self.cache = {}
+        self.cache: Dict[str, Tuple[Any, Any]] = {}
         self.cache_duration = timedelta(minutes=10)
         
     def _load_platform_configs(self) -> Dict[str, Dict[str, Any]]:
@@ -144,18 +143,18 @@ class PriceComparisonService:
                     return cached_result
             
             # Fetch prices from all platforms
-            price_tasks = []
+            price_tasks: List[asyncio.Task[Any]] = []
             for url in product_urls:
                 platform = self._identify_platform(url)
                 if platform:
-                    task = self._fetch_platform_price(url, platform, user_location)
+                    task = asyncio.create_task(self._fetch_platform_price(url, platform, user_location))
                     price_tasks.append(task)
             
             # Execute all price fetching tasks concurrently
             platform_prices = await asyncio.gather(*price_tasks, return_exceptions=True)
             
             # Filter successful results
-            valid_prices = []
+            valid_prices: List[PlatformPrice] = []
             for result in platform_prices:
                 if isinstance(result, PlatformPrice):
                     valid_prices.append(result)
@@ -458,7 +457,7 @@ class PriceComparisonService:
         # This would fetch from a database in production
         # For now, return mock historical data
         
-        history = []
+        history: List[Dict[str, Any]] = []
         base_price = 1000.0
         
         for i in range(days):

@@ -1,20 +1,20 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
+from pydantic import BaseModel
+from typing import List, Optional, Dict, Any
 
 class ProductURL(BaseModel):
     url: str
 
 class PricePredictionRequest(BaseModel):
     product_id: str
-    historical_data: List[dict]
+    historical_data: List[Dict[Any, Any]]
 
 class DealStackRequest(BaseModel):
     product_price: float
-    available_coupons: List[dict]
-    user_preferences: Optional[dict] = None
+    available_coupons: List[Dict[Any, Any]]
+    user_preferences: Optional[Dict[Any, Any]] = None
 
 class ValidationRequest(BaseModel):
-    deal_stack: List[dict]
+    deal_stack: List[Dict[Any, Any]]
     product_url: str
 
 class ProductAnalysisRequest(BaseModel):

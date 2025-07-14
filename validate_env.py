@@ -7,12 +7,15 @@ Validates Railway and Gemini configuration
 import os
 import sys
 import asyncio
-import aiohttp
 from urllib.parse import urlparse
+from typing import Optional, TYPE_CHECKING
 
-def check_env_var(name, required=True):
+if TYPE_CHECKING:
+    import asyncpg # type: ignore
+
+def check_env_var(name: str, required: bool = True) -> bool:
     """Check if environment variable exists"""
-    value = os.getenv(name)
+    value: Optional[str] = os.getenv(name)
     if required and not value:
         print(f"❌ Missing required environment variable: {name}")
         return False
@@ -23,10 +26,10 @@ def check_env_var(name, required=True):
         print(f"⚠️  Optional environment variable not set: {name}")
         return True
 
-def validate_database_url(url):
+def validate_database_url(url: str) -> bool:
     """Validate database URL format"""
     try:
-        parsed = urlparse(url)
+        parsed = urlparse(str(url))
         if parsed.scheme != 'postgresql':
             print(f"❌ Invalid database scheme: {parsed.scheme}")
             return False
@@ -42,15 +45,15 @@ def validate_database_url(url):
         print(f"❌ Invalid database URL: {e}")
         return False
 
-async def test_gemini_api(api_key):
+async def test_gemini_api(api_key: str) -> bool:
     """Test Gemini API connectivity"""
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        import google.generativeai as genai  # type: ignore
+        genai.configure(api_key=api_key) # type: ignore
+        model = genai.GenerativeModel('gemini-1.5-flash') # type: ignore
         
         # Simple test
-        response = await model.generate_content_async("Hello, respond with 'OK'")
+        response = await model.generate_content_async("Hello, respond with 'OK'") # type: ignore
         if response and response.text:
             print("✅ Gemini API working")
             return True
@@ -61,13 +64,13 @@ async def test_gemini_api(api_key):
         print(f"❌ Gemini API test failed: {e}")
         return False
 
-async def test_railway_database(db_url):
+async def test_railway_database(db_url: str) -> bool:
     """Test Railway database connectivity"""
     try:
-        import asyncpg
-        conn = await asyncpg.connect(db_url)
-        result = await conn.fetchval('SELECT 1')
-        await conn.close()
+        import asyncpg  # type: ignore
+        conn: "asyncpg.Connection" = await asyncpg.connect(db_url) # type: ignore
+        result = await conn.fetchval('SELECT 1') # type: ignore
+        await conn.close() # type: ignore
         if result == 1:
             print("✅ Railway database connection successful")
             return True

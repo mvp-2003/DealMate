@@ -6,13 +6,10 @@ stackable offers from various sources to create the most optimized deal for user
 """
 
 import logging
-import asyncio
 from typing import List, Dict, Any, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-import json
 from datetime import datetime, timedelta
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -50,12 +47,8 @@ class Deal:
     platform: str = ""
     confidence: float = 1.0
     stackable: bool = True
-    terms: List[str] = None
+    terms: List[str] = field(default_factory=lambda: [])
     priority: int = 0
-    
-    def __post_init__(self):
-        if self.terms is None:
-            self.terms = []
 
 
 @dataclass
@@ -81,7 +74,7 @@ class StackSmartEngine:
         
     def _build_compatibility_matrix(self) -> Dict[Tuple[DealType, DealType], CompatibilityRule]:
         """Build compatibility matrix for different deal types"""
-        matrix = {}
+        matrix: Dict[Tuple[DealType, DealType], CompatibilityRule] = {}
         
         # Define stackable combinations
         stackable_pairs = [
@@ -183,7 +176,7 @@ class StackSmartEngine:
     
     def _parse_deals(self, deal_data: List[Dict[str, Any]]) -> List[Deal]:
         """Parse input deal data into Deal objects"""
-        deals = []
+        deals: List[Deal] = []
         
         for data in deal_data:
             try:
@@ -216,7 +209,7 @@ class StackSmartEngine:
         user_context: Optional[Dict[str, Any]]
     ) -> List[Deal]:
         """Filter deals based on validity and user context"""
-        valid_deals = []
+        valid_deals: List[Deal] = []
         
         for deal in deals:
             # Check minimum purchase requirement
@@ -265,7 +258,7 @@ class StackSmartEngine:
     
     def _generate_combinations(self, deals: List[Deal]) -> List[List[Deal]]:
         """Generate all valid deal combinations"""
-        combinations = []
+        combinations: List[List[Deal]] = []
         max_size = min(len(deals), self.optimization_rules["max_stack_size"])
         
         # Single deals
@@ -282,7 +275,7 @@ class StackSmartEngine:
         """Get all valid combinations of specific size"""
         from itertools import combinations
         
-        valid_combinations = []
+        valid_combinations: List[List[Deal]] = []
         
         for combo in combinations(deals, size):
             if self._is_valid_combination(list(combo)):
@@ -293,7 +286,7 @@ class StackSmartEngine:
     def _is_valid_combination(self, deals: List[Deal]) -> bool:
         """Check if a combination of deals is valid (stackable)"""
         for i, deal1 in enumerate(deals):
-            for j, deal2 in enumerate(deals[i+1:], i+1):
+            for deal2 in deals[i+1:]:
                 compatibility = self.compatibility_matrix.get(
                     (deal1.deal_type, deal2.deal_type),
                     CompatibilityRule.CONDITIONAL
@@ -311,14 +304,13 @@ class StackSmartEngine:
         user_context: Optional[Dict[str, Any]]
     ) -> List[Deal]:
         """Evaluate all combinations and return the best one"""
-        best_combination = []
-        best_savings = 0.0
+        best_combination: List[Deal] = []
         best_score = 0.0
         
         for combination in combinations:
             try:
                 # Calculate savings for this combination
-                savings, final_price = self._calculate_combination_savings(
+                savings, _ = self._calculate_combination_savings(
                     combination, base_price
                 )
                 
@@ -337,7 +329,6 @@ class StackSmartEngine:
                 
                 if score > best_score:
                     best_score = score
-                    best_savings = savings
                     best_combination = combination
                     
             except Exception as e:
@@ -444,7 +435,7 @@ class StackSmartEngine:
         application_order = [f"{deal.deal_type.value}: {deal.title}" for deal in sorted_deals]
         
         # Generate warnings
-        warnings = []
+        warnings: List[str] = []
         if len(best_combination) > 3:
             warnings.append("Complex deal stack - verify all terms apply")
         if confidence < 0.8:
@@ -497,7 +488,7 @@ class StackSmartEngine:
     
     def _generate_stack_warnings(self, deals: List[Deal]) -> List[str]:
         """Generate warnings for a deal stack"""
-        warnings = []
+        warnings: List[str] = []
         
         # Check for expiring deals
         now = datetime.now()
