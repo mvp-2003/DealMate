@@ -6,10 +6,23 @@ const { auth } = require('express-oauth2-jwt-bearer');
 const pg = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const winston = require('winston');
+const morgan = require('morgan');
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.Console({ format: winston.format.simple() }),
+    new winston.transports.File({ filename: 'auth-service-error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'auth-service-combined.log' }),
+  ],
+});
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
 const checkInternalSecret = (req, res, next) => {
     const secret = req.headers['x-internal-secret'];
@@ -51,7 +64,7 @@ const syncUser = async (req, res, next) => {
         }
         next();
     } catch (error) {
-        console.error('Error syncing user:', error);
+        logger.error('Error syncing user:', error);
         res.status(500).json({ message: 'Error syncing user' });
     }
 };
@@ -100,7 +113,7 @@ app.post('/api/auth/register', checkInternalSecret, async (req, res) => {
 
         res.status(201).json(newUserResult.rows[0]);
     } catch (error) {
-        console.error('Error registering user:', error);
+        logger.error('Error registering user:', error);
         if (error.code === '23505') { // Unique violation
             return res.status(409).json({ message: 'User with this email already exists' });
         }
@@ -143,7 +156,7 @@ app.post('/api/auth/login', checkInternalSecret, async (req, res) => {
 
         res.json({ token });
     } catch (error) {
-        console.error('Error logging in user:', error);
+        logger.error('Error logging in user:', error);
         res.status(500).json({ message: 'Error logging in user' });
     }
 });
@@ -152,5 +165,5 @@ app.post('/api/auth/login', checkInternalSecret, async (req, res) => {
 const PORT = process.env.AUTH_SERVICE_PORT || 3001;
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  logger.info(`Server listening on port ${PORT}`);
 });
