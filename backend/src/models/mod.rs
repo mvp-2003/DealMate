@@ -1,5 +1,6 @@
 // backend/src/models/mod.rs
 
+pub mod coupon;
 pub mod partnership;
 pub mod purchase;
 pub mod reward;

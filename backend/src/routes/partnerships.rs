@@ -7,11 +7,11 @@ use axum::{
 };
 use serde::Deserialize;
 use sqlx::PgPool;
-use bigdecimal::{BigDecimal, ToPrimitive, FromPrimitive};
+use bigdecimal::ToPrimitive;
 
 use crate::models::partnership::{
     CreatePartnershipRequest, Partnership, PartnershipResponse, PartnershipStats,
-    PartnershipStatus, UpdatePartnershipRequest,
+    UpdatePartnershipRequest,
 };
 
 pub fn create_router() -> Router<PgPool> {
@@ -26,7 +26,7 @@ pub fn create_router() -> Router<PgPool> {
 
 #[derive(Deserialize)]
 struct ListQuery {
-    status: Option<PartnershipStatus>,
+    status: Option<String>,
     page: Option<i32>,
     limit: Option<i32>,
 }
@@ -54,12 +54,8 @@ async fn create_partnership_application(
             business_type, monthly_revenue, cashback_rate, description,
             average_order_value, monthly_orders, status, created_at, updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
-        RETURNING id, business_name, website, contact_email, contact_name, phone,
-                  business_type, monthly_revenue, cashback_rate, description,
-                  average_order_value, monthly_orders, 
-                  status as "status: PartnershipStatus",
-                  created_at, updated_at, reviewed_at, reviewer_notes
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::partnership_status, NOW(), NOW())
+        RETURNING id, business_name, website, contact_email, contact_name, phone, business_type, monthly_revenue, cashback_rate, description, average_order_value, monthly_orders, status::text as "status: String", created_at, updated_at, reviewed_at, reviewer_notes
         "#,
         request.business_name,
         request.website,
@@ -72,7 +68,7 @@ async fn create_partnership_application(
         request.description,
         request.average_order_value.and_then(|val| BigDecimal::from_f64(val)),
         request.monthly_orders,
-        PartnershipStatus::Pending as PartnershipStatus
+"pending"
     )
     .fetch_one(&pool)
     .await
@@ -105,17 +101,13 @@ async fn list_partnership_applications(
             sqlx::query_as!(
                 Partnership,
                 r#"
-                SELECT id, business_name, website, contact_email, contact_name, phone,
-                       business_type, monthly_revenue, cashback_rate, description,
-                       average_order_value, monthly_orders,
-                       status as "status: PartnershipStatus",
-                       created_at, updated_at, reviewed_at, reviewer_notes
+                SELECT id, business_name, website, contact_email, contact_name, phone, business_type, monthly_revenue, cashback_rate, description, average_order_value, monthly_orders, status::text as "status: String", created_at, updated_at, reviewed_at, reviewer_notes
                 FROM partnerships 
-                WHERE status = $1
+                WHERE status = $1::partnership_status
                 ORDER BY created_at DESC
                 LIMIT $2 OFFSET $3
                 "#,
-                status as PartnershipStatus,
+                status.as_str(),
                 limit as i64,
                 offset as i64
             )
@@ -126,11 +118,7 @@ async fn list_partnership_applications(
             sqlx::query_as!(
                 Partnership,
                 r#"
-                SELECT id, business_name, website, contact_email, contact_name, phone,
-                       business_type, monthly_revenue, cashback_rate, description,
-                       average_order_value, monthly_orders,
-                       status as "status: PartnershipStatus",
-                       created_at, updated_at, reviewed_at, reviewer_notes
+                SELECT id, business_name, website, contact_email, contact_name, phone, business_type, monthly_revenue, cashback_rate, description, average_order_value, monthly_orders, status as "status: String", created_at, updated_at, reviewed_at, reviewer_notes
                 FROM partnerships 
                 ORDER BY created_at DESC
                 LIMIT $1 OFFSET $2
@@ -159,11 +147,7 @@ async fn get_partnership_application(
     let partnership = sqlx::query_as!(
         Partnership,
         r#"
-        SELECT id, business_name, website, contact_email, contact_name, phone,
-               business_type, monthly_revenue, cashback_rate, description,
-               average_order_value, monthly_orders,
-               status as "status: PartnershipStatus",
-               created_at, updated_at, reviewed_at, reviewer_notes
+        SELECT id, business_name, website, contact_email, contact_name, phone, business_type, monthly_revenue, cashback_rate, description, average_order_value, monthly_orders, status as "status: String", created_at, updated_at, reviewed_at, reviewer_notes
         FROM partnerships 
         WHERE id = $1
         "#,
@@ -188,20 +172,16 @@ async fn update_partnership_application(
         Partnership,
         r#"
         UPDATE partnerships 
-        SET status = COALESCE($2, status),
+        SET status = COALESCE($2::partnership_status, status),
             cashback_rate = COALESCE($3, cashback_rate),
             reviewer_notes = COALESCE($4, reviewer_notes),
             reviewed_at = CASE WHEN $2 IS NOT NULL THEN NOW() ELSE reviewed_at END,
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, business_name, website, contact_email, contact_name, phone,
-                  business_type, monthly_revenue, cashback_rate, description,
-                  average_order_value, monthly_orders,
-                  status as "status: PartnershipStatus",
-                  created_at, updated_at, reviewed_at, reviewer_notes
+        RETURNING id, business_name, website, contact_email, contact_name, phone, business_type, monthly_revenue, cashback_rate, description, average_order_value, monthly_orders, status::text as "status: String", created_at, updated_at, reviewed_at, reviewer_notes
         "#,
         id,
-        request.status as Option<PartnershipStatus>,
+        request.status.as_deref(),
         request.cashback_rate.and_then(|rate| BigDecimal::from_f64(rate)),
         request.reviewer_notes
     )
@@ -283,11 +263,7 @@ async fn list_active_partnerships(
     let partnerships = sqlx::query_as!(
         Partnership,
         r#"
-        SELECT id, business_name, website, contact_email, contact_name, phone,
-               business_type, monthly_revenue, cashback_rate, description,
-               average_order_value, monthly_orders,
-               status as "status: PartnershipStatus",
-               created_at, updated_at, reviewed_at, reviewer_notes
+        SELECT id, business_name, website, contact_email, contact_name, phone, business_type, monthly_revenue, cashback_rate, description, average_order_value, monthly_orders, status as "status: String", created_at, updated_at, reviewed_at, reviewer_notes
         FROM partnerships 
         WHERE status = 'active'
         ORDER BY business_name ASC

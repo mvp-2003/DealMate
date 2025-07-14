@@ -4,7 +4,7 @@ use axum::{
     response::IntoResponse,
     Json,
 };
-use bigdecimal::BigDecimal;
+
 use serde_json::json;
 use sqlx::PgPool;
 use uuid::Uuid;
@@ -44,7 +44,7 @@ pub async fn get_wallet(
 ) -> Result<Json<Wallet>, WalletError> {
     let wallet = sqlx::query_as!(
         Wallet,
-        r#"SELECT id, user_id, balance as "balance: BigDecimal", created_at, updated_at FROM wallets WHERE id = $1"#,
+        r#"SELECT * FROM wallets WHERE id = $1"#,
         wallet_id
     )
     .fetch_one(&pool)
@@ -64,7 +64,7 @@ pub async fn create_wallet(
 ) -> Result<impl IntoResponse, WalletError> {
     let wallet = sqlx::query_as!(
         Wallet,
-        r#"INSERT INTO wallets (user_id, balance) VALUES ($1, $2) RETURNING id, user_id, balance as "balance: BigDecimal", created_at, updated_at"#,
+        r#"INSERT INTO wallets (user_id, balance) VALUES ($1, $2) RETURNING *"#,
         payload.user_id,
         payload.balance
     )
@@ -82,7 +82,7 @@ pub async fn update_wallet(
 ) -> Result<Json<Wallet>, WalletError> {
     let wallet = sqlx::query_as!(
         Wallet,
-        r#"UPDATE wallets SET balance = $1, updated_at = NOW() WHERE id = $2 RETURNING id, user_id, balance as "balance: BigDecimal", created_at, updated_at"#,
+        r#"UPDATE wallets SET balance = $1, updated_at = NOW() WHERE id = $2 RETURNING *"#,
         payload.balance,
         wallet_id
     )

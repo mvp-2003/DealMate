@@ -5,7 +5,7 @@ use axum::{
 };
 use serde::Deserialize;
 use sqlx::PgPool;
-use time::{OffsetDateTime, PrimitiveDateTime};
+use chrono::Utc;
 use uuid::Uuid;
 
 use crate::models::user::User;
@@ -21,18 +21,17 @@ pub async fn create_user(
     State(pool): State<PgPool>,
     Json(payload): Json<CreateUser>,
 ) -> Result<(StatusCode, Json<User>), StatusCode> {
-    let now = OffsetDateTime::now_utc();
-    let primitive_now = PrimitiveDateTime::new(now.date(), now.time());
+    let now = Utc::now().naive_utc();
 
     let user = sqlx::query_as!(
         User,
-        "INSERT INTO users (id, auth0_id, username, email, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, auth0_id, username, email, created_at, updated_at",
+        "INSERT INTO users (id, auth0_id, username, email, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
         Uuid::new_v4(),
         payload.auth0_id,
         payload.username,
         payload.email,
-        primitive_now,
-        primitive_now,
+        now,
+        now,
     )
     .fetch_one(&pool)
     .await
@@ -47,7 +46,7 @@ pub async fn get_user(
 ) -> Result<Json<User>, StatusCode> {
     let user = sqlx::query_as!(
         User,
-        "SELECT id, auth0_id, username, email, created_at, updated_at FROM users WHERE id = $1",
+        "SELECT * FROM users WHERE id = $1",
         user_id
     )
     .fetch_one(&pool)
@@ -68,14 +67,13 @@ pub async fn update_user(
     Path(user_id): Path<Uuid>,
     Json(payload): Json<UpdateUser>,
 ) -> Result<Json<User>, StatusCode> {
-    let now = OffsetDateTime::now_utc();
-    let primitive_now = PrimitiveDateTime::new(now.date(), now.time());
+    let now = Utc::now().naive_utc();
     let user = sqlx::query_as!(
         User,
-        "UPDATE users SET username = $1, email = $2, updated_at = $3 WHERE id = $4 RETURNING id, auth0_id, username, email, created_at, updated_at",
+        "UPDATE users SET username = $1, email = $2, updated_at = $3 WHERE id = $4 RETURNING *",
         payload.username,
         payload.email,
-        primitive_now,
+        now,
         user_id,
     )
     .fetch_one(&pool)

@@ -17,7 +17,7 @@ pub async fn get_settings(
 ) -> Result<Json<Settings>, StatusCode> {
     let settings = sqlx::query_as!(
         Settings,
-        "SELECT id, user_id, theme, notifications_enabled, created_at, updated_at FROM settings WHERE user_id = $1",
+        "SELECT * FROM settings WHERE user_id = $1",
         user_id
     )
     .fetch_one(&pool)
@@ -46,7 +46,7 @@ pub async fn update_settings(
     // Fetch the current settings
     let mut current_settings = sqlx::query_as!(
         Settings,
-        "SELECT id, user_id, theme, notifications_enabled, created_at, updated_at FROM settings WHERE user_id = $1",
+        "SELECT * FROM settings WHERE user_id = $1",
         user_id
     )
     .fetch_one(&pool)
@@ -64,7 +64,7 @@ pub async fn update_settings(
     // Save the updated settings
     let updated_settings = sqlx::query_as!(
         Settings,
-        "UPDATE settings SET theme = $1, notifications_enabled = $2 WHERE user_id = $3 RETURNING id, user_id, theme, notifications_enabled, created_at, updated_at",
+        "UPDATE settings SET theme = $1, notifications_enabled = $2 WHERE user_id = $3 RETURNING *",
         current_settings.theme,
         current_settings.notifications_enabled,
         user_id,
