@@ -14,8 +14,8 @@ const logger = winston.createLogger({
   format: winston.format.json(),
   transports: [
     new winston.transports.Console({ format: winston.format.simple() }),
-    new winston.transports.File({ filename: 'auth-service-error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'auth-service-combined.log' }),
+    new winston.transports.File({ filename: '../../logs/auth-service-error.log', level: 'error' }),
+    new winston.transports.File({ filename: '../../logs/auth-service-combined.log' }),
   ],
 });
 

@@ -117,7 +117,7 @@ echo "================================="
 # Start AI Service
 echo -e "${YELLOW}🤖 Starting AI Service...${NC}"
 cd backend/ai-service
-nohup python main.py > ../../ai-service.log 2>&1 &
+nohup python main.py > ../../logs/ai-service.log 2>&1 &
 AI_SERVICE_PID=$!
 cd ../../
 echo "AI Service PID: $AI_SERVICE_PID"
@@ -128,7 +128,7 @@ sleep 5
 
 # Start Auth Service
 echo -e "${YELLOW}🔐 Starting Auth Service...${NC}"
-nohup node backend/auth-service/index.js > auth-service.log 2>&1 &
+nohup node backend/auth-service/index.js > logs/auth-service.log 2>&1 &
 AUTH_SERVICE_PID=$!
 echo "Auth Service PID: $AUTH_SERVICE_PID"
 
@@ -151,7 +151,7 @@ sleep 3
 # Start Frontend
 echo -e "${YELLOW}📦 Starting Frontend...${NC}"
 cd frontend
-nohup npm run start > ../frontend.log 2>&1 &
+nohup npm run start > ../logs/frontend.log 2>&1 &
 FRONTEND_PID=$!
 cd ..
 echo "Frontend PID: $FRONTEND_PID"
@@ -227,10 +227,10 @@ echo -e "  Backend PID:       $BACKEND_PID"
 echo -e "  Frontend PID:      $FRONTEND_PID"
 echo ""
 echo -e "${CYAN}📄 Logs:${NC}"
-echo -e "  AI Service:        tail -f ai-service.log"
-echo -e "  Auth Service:      tail -f auth-service.log"
-echo -e "  Backend:           tail -f backend.log"
-echo -e "  Frontend:          tail -f frontend.log"
+echo -e "  AI Service:        tail -f logs/ai-service.log"
+echo -e "  Auth Service:      tail -f logs/auth-service.log"
+echo -e "  Backend:           tail -f logs/backend.log"
+echo -e "  Frontend:          tail -f logs/frontend.log"
 echo ""
 echo -e "${CYAN}🔧 Management Commands:${NC}"
 echo -e "  Status Check:      ./scripts/status.sh"
