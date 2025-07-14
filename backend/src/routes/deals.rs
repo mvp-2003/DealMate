@@ -9,6 +9,7 @@ use sqlx::PgPool;
 use shared::models::deal::{
     CreateDealRequest, Deal, DealSearchRequest, DealSearchResponse,
 };
+use crate::kafka::{KafkaProducer, DealEvent, DealEventType};
 
 pub fn deals_routes(pool: PgPool) -> Router {
     Router::new()
@@ -24,7 +25,28 @@ async fn create_deal(
     Json(payload): Json<CreateDealRequest>,
 ) -> Result<Json<Deal>, StatusCode> {
     match Deal::create(&pool, payload).await {
-        Ok(deal) => Ok(Json(deal)),
+        Ok(deal) => {
+            // Publish deal created event to Kafka
+            if let Ok(kafka_producer) = KafkaProducer::new() {
+                let deal_event = DealEvent {
+                    deal_id: deal.id.to_string(),
+                    event_type: DealEventType::DealCreated,
+                    product_id: deal.external_id.clone(),
+                    retailer: deal.merchant.clone(),
+                    category: deal.category.clone().unwrap_or_else(|| "general".to_string()),
+                    original_price: deal.original_price.to_string().parse().unwrap_or(0.0),
+                    discounted_price: deal.discounted_price.as_ref()
+                        .map(|d| d.to_string().parse().unwrap_or(0.0))
+                        .unwrap_or(deal.original_price.to_string().parse().unwrap_or(0.0)),
+                    currency: deal.currency.clone(),
+                    ..Default::default()
+                };
+                
+                let _ = kafka_producer.publish_deal_event(deal_event).await;
+            }
+            
+            Ok(Json(deal))
+        },
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
@@ -81,7 +103,29 @@ async fn submit_coupon(
     // For example, you might want to check if the user is logged in,
     // and you might want to have a system to prevent spam.
     match Deal::create(&pool, payload).await {
-        Ok(deal) => Ok(Json(deal)),
+        Ok(deal) => {
+            // Publish user-submitted deal event to Kafka
+            if let Ok(kafka_producer) = KafkaProducer::new() {
+                let deal_event = DealEvent {
+                    deal_id: deal.id.to_string(),
+                    event_type: DealEventType::UserSubmitted,
+                    product_id: deal.external_id.clone(),
+                    retailer: deal.merchant.clone(),
+                    category: deal.category.clone().unwrap_or_else(|| "general".to_string()),
+                    original_price: deal.original_price.to_string().parse().unwrap_or(0.0),
+                    discounted_price: deal.discounted_price.as_ref()
+                        .map(|d| d.to_string().parse().unwrap_or(0.0))
+                        .unwrap_or(deal.original_price.to_string().parse().unwrap_or(0.0)),
+                    currency: deal.currency.clone(),
+                    source: "user_submission".to_string(),
+                    ..Default::default()
+                };
+                
+                let _ = kafka_producer.publish_deal_event(deal_event).await;
+            }
+            
+            Ok(Json(deal))
+        },
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }

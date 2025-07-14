@@ -45,3 +45,10 @@ flake8>=6.0.0
 # Web scraping and parsing
 beautifulsoup4>=4.12.0
 lxml>=4.9.0
+
+# Apache Kafka integration
+kafka-python>=2.0.2
+confluent-kafka>=2.3.0
+avro>=1.11.0
+confluent-kafka[avro]>=2.3.0
+fastavro>=1.9.0

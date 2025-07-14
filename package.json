@@ -12,12 +12,22 @@
     "genkit:watch": "cd frontend && genkit start -- tsx --watch src/ai/dev.ts",
     "build": "cd frontend && next build",
     "build:dev": "cd frontend && NODE_ENV=development next build",
+    "build:analyze": "cd frontend && ANALYZE=true next build",
     "start": "cd frontend && next start",
     "lint": "cd frontend && next lint",
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "start:auth": "node backend/auth-service/index.js",
-    "dev:auth": "nodemon backend/auth-service/index.js"
+    "dev:auth": "nodemon backend/auth-service/index.js",
+    "lighthouse": "./scripts/lighthouse-audit.sh",
+    "lighthouse:ci": "lhci autorun",
+    "performance:audit": "npm run lighthouse && npm run bundle:analyze",
+    "bundle:analyze": "cd frontend && npx @next/bundle-analyzer",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "podman:build": "./scripts/podman-build.sh",
+    "podman:up": "./scripts/podman-up.sh"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
@@ -81,6 +91,8 @@
     "inflight": "^1.0.7"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.12.0",
+    "@next/bundle-analyzer": "^15.3.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^20",
     "@types/react": "^18",
@@ -90,10 +102,12 @@
     "eslint": "^9.30.1",
     "eslint-config-next": "15.3.3",
     "jest": "^29.7.0",
+    "lighthouse": "^12.0.0",
     "nodemon": "^3.1.10",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.1.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack-bundle-analyzer": "^4.10.1"
   }
 }
