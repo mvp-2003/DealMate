@@ -3,6 +3,10 @@ name = "dealpal-backend"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "coupon_aggregator"
+path = "src/bin/coupon_aggregator.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

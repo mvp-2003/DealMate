@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
-use chrono::{DateTime, Utc};
-use bigdecimal::BigDecimal;
+use sqlx::{FromRow, types::chrono::{DateTime, Utc}, types::BigDecimal};
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct Deal {
@@ -17,7 +15,7 @@ pub struct Deal {
     pub image_url: Option<String>,
     pub merchant: String,
     pub category: Option<String>,
-    pub deal_type: DealType,
+    pub deal_type: Option<String>,
     pub coupon_code: Option<String>,
     pub cashback_rate: Option<BigDecimal>,
     pub minimum_order_value: Option<BigDecimal>,
@@ -34,21 +32,6 @@ pub struct Deal {
     pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Serialize, Deserialize, sqlx::Type)]
-#[sqlx(type_name = "deal_type", rename_all = "lowercase")]
-pub enum DealType {
-    Coupon,
-    Cashback,
-    PriceDiscount,
-    BankOffer,
-    WalletOffer,
-    FlashSale,
-    BuyOneGetOne,
-    FreeShipping,
-    GiftCard,
-    Referral,
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateDealRequest {
     pub external_id: String,
@@ -62,7 +45,7 @@ pub struct CreateDealRequest {
     pub image_url: Option<String>,
     pub merchant: String,
     pub category: Option<String>,
-    pub deal_type: DealType,
+    // pub deal_type: Option<String>,
     pub coupon_code: Option<String>,
     pub cashback_rate: Option<BigDecimal>,
     pub minimum_order_value: Option<BigDecimal>,
@@ -77,7 +60,6 @@ pub struct DealSearchRequest {
     pub query: Option<String>,
     pub category: Option<String>,
     pub merchant: Option<String>,
-    pub deal_type: Option<DealType>,
     pub min_discount: Option<f64>,
     pub max_price: Option<f64>,
     pub currency: Option<String>,
@@ -128,33 +110,24 @@ pub struct DealAggregationResponse {
 
 impl Deal {
     pub fn calculate_savings(&self) -> BigDecimal {
-        use std::str::FromStr;
-        
         match &self.discounted_price {
             Some(discounted) => &self.original_price - discounted,
             None => match &self.discount_percentage {
-                Some(percentage) => {
-                    let hundred = BigDecimal::from_str("100").unwrap();
-                    &self.original_price * (percentage / &hundred)
-                }
-                None => BigDecimal::from_str("0").unwrap(),
-            }
+                Some(percentage) => &self.original_price * (percentage / BigDecimal::from(100)),
+                None => BigDecimal::from(0),
+            },
         }
     }
 
     pub fn get_final_price(&self) -> BigDecimal {
-        use std::str::FromStr;
-        
         match &self.discounted_price {
             Some(discounted) => discounted.clone(),
             None => match &self.discount_percentage {
                 Some(percentage) => {
-                    let hundred = BigDecimal::from_str("100").unwrap();
-                    let one = BigDecimal::from_str("1").unwrap();
-                    &self.original_price * (&one - (percentage / &hundred))
+                    &self.original_price * (BigDecimal::from(1) - (percentage / BigDecimal::from(100)))
                 }
                 None => self.original_price.clone(),
-            }
+            },
         }
     }
 
@@ -188,11 +161,11 @@ impl Deal {
             INSERT INTO deals (
                 external_id, title, description, original_price, discounted_price,
                 discount_percentage, currency, product_url, image_url, merchant,
-                category, deal_type, coupon_code, cashback_rate, minimum_order_value,
+                category, coupon_code, cashback_rate, minimum_order_value,
                 maximum_discount, valid_from, valid_until, tags, created_at, updated_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
-            RETURNING *
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+            RETURNING id, external_id, title, description, original_price, discounted_price, discount_percentage, currency, product_url, image_url, merchant, category, NULL as deal_type, coupon_code, cashback_rate, minimum_order_value, maximum_discount, valid_from, valid_until, is_active, is_verified, verification_date, usage_count, success_rate, tags, created_at, updated_at
             "#,
             request.external_id,
             request.title,
@@ -205,7 +178,6 @@ impl Deal {
             request.image_url,
             request.merchant,
             request.category,
-            request.deal_type as DealType,
             request.coupon_code,
             request.cashback_rate,
             request.minimum_order_value,
@@ -223,7 +195,7 @@ impl Deal {
     }
 
     pub async fn find_by_id(pool: &sqlx::PgPool, id: i32) -> Result<Option<Deal>, sqlx::Error> {
-        let deal = sqlx::query_as!(Deal, "SELECT * FROM deals WHERE id = $1", id)
+        let deal = sqlx::query_as!(Deal, "SELECT id, external_id, title, description, original_price, discounted_price, discount_percentage, currency, product_url, image_url, merchant, category, deal_type::TEXT as deal_type, coupon_code, cashback_rate, minimum_order_value, maximum_discount, valid_from, valid_until, is_active, is_verified, verification_date, usage_count, success_rate, tags, created_at, updated_at FROM deals WHERE id = $1", id)
             .fetch_optional(pool)
             .await?;
 
@@ -234,8 +206,8 @@ impl Deal {
         pool: &sqlx::PgPool,
         request: DealSearchRequest,
     ) -> Result<DealSearchResponse, sqlx::Error> {
-        let limit = request.limit.unwrap_or(20).min(100);
-        let offset = request.offset.unwrap_or(0);
+        let limit = request.limit.unwrap_or(20).min(100) as i64;
+        let offset = request.offset.unwrap_or(0) as i64;
 
         // For now, implement a simplified search that works with sqlx compile-time checks
         // In a production system, you'd want to use a query builder or dynamic SQL library
@@ -243,7 +215,7 @@ impl Deal {
         let deals = if let Some(query_text) = &request.query {
             sqlx::query_as!(
                 Deal,
-                "SELECT * FROM deals WHERE (title ILIKE $1 OR description ILIKE $1) AND is_active = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4",
+                "SELECT id, external_id, title, description, original_price, discounted_price, discount_percentage, currency, product_url, image_url, merchant, category, deal_type::TEXT as deal_type, coupon_code, cashback_rate, minimum_order_value, maximum_discount, valid_from, valid_until, is_active, is_verified, verification_date, usage_count, success_rate, tags, created_at, updated_at FROM deals WHERE (title ILIKE $1 OR description ILIKE $1) AND is_active = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4",
                 format!("%{}%", query_text),
                 request.only_active.unwrap_or(true),
                 limit,
@@ -254,7 +226,7 @@ impl Deal {
         } else if let Some(category) = &request.category {
             sqlx::query_as!(
                 Deal,
-                "SELECT * FROM deals WHERE category = $1 AND is_active = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4",
+                "SELECT id, external_id, title, description, original_price, discounted_price, discount_percentage, currency, product_url, image_url, merchant, category, deal_type::TEXT as deal_type, coupon_code, cashback_rate, minimum_order_value, maximum_discount, valid_from, valid_until, is_active, is_verified, verification_date, usage_count, success_rate, tags, created_at, updated_at FROM deals WHERE category = $1 AND is_active = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4",
                 category,
                 request.only_active.unwrap_or(true),
                 limit,
@@ -265,7 +237,7 @@ impl Deal {
         } else if let Some(merchant) = &request.merchant {
             sqlx::query_as!(
                 Deal,
-                "SELECT * FROM deals WHERE merchant = $1 AND is_active = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4",
+                "SELECT id, external_id, title, description, original_price, discounted_price, discount_percentage, currency, product_url, image_url, merchant, category, deal_type::TEXT as deal_type, coupon_code, cashback_rate, minimum_order_value, maximum_discount, valid_from, valid_until, is_active, is_verified, verification_date, usage_count, success_rate, tags, created_at, updated_at FROM deals WHERE merchant = $1 AND is_active = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4",
                 merchant,
                 request.only_active.unwrap_or(true),
                 limit,
@@ -273,10 +245,11 @@ impl Deal {
             )
             .fetch_all(pool)
             .await?
-        } else {
+        }
+        else {
             sqlx::query_as!(
                 Deal,
-                "SELECT * FROM deals WHERE is_active = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
+                "SELECT id, external_id, title, description, original_price, discounted_price, discount_percentage, currency, product_url, image_url, merchant, category, deal_type::TEXT as deal_type, coupon_code, cashback_rate, minimum_order_value, maximum_discount, valid_from, valid_until, is_active, is_verified, verification_date, usage_count, success_rate, tags, created_at, updated_at FROM deals WHERE is_active = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
                 request.only_active.unwrap_or(true),
                 limit,
                 offset
@@ -290,9 +263,10 @@ impl Deal {
             request.only_active.unwrap_or(true)
         )
         .fetch_one(pool)
-        .await?;
+        .await?
+        .unwrap_or(0);
 
-        let has_more = (offset + limit as i32) < total_count as i32;
+        let has_more = (offset + limit) < total_count;
 
         Ok(DealSearchResponse {
             deals,
@@ -337,11 +311,11 @@ impl Deal {
         pool: &sqlx::PgPool,
         limit: Option<i32>,
     ) -> Result<Vec<Deal>, sqlx::Error> {
-        let limit = limit.unwrap_or(10);
+        let limit = limit.unwrap_or(10) as i64;
 
         let deals = sqlx::query_as!(
             Deal,
-            "SELECT * FROM deals WHERE is_active = true AND is_verified = true ORDER BY usage_count DESC, success_rate DESC LIMIT $1",
+            "SELECT id, external_id, title, description, original_price, discounted_price, discount_percentage, currency, product_url, image_url, merchant, category, deal_type::TEXT as deal_type, coupon_code, cashback_rate, minimum_order_value, maximum_discount, valid_from, valid_until, is_active, is_verified, verification_date, usage_count, success_rate, tags, created_at, updated_at FROM deals WHERE is_active = true AND is_verified = true ORDER BY usage_count DESC, success_rate DESC LIMIT $1",
             limit
         )
         .fetch_all(pool)

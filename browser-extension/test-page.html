@@ -3,125 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test E-commerce Product Page</title>
+    <title>DealPal Test Checkout</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .product-container { display: flex; gap: 20px; margin: 20px 0; }
-        .product-image { width: 300px; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; }
-        .product-details { flex: 1; }
-        .price { font-size: 24px; font-weight: bold; color: #B12704; }
-        .original-price { text-decoration: line-through; color: #666; margin-left: 10px; }
-        .discount { color: #CC0C39; font-weight: bold; }
-        .offers { background: #fff3cd; padding: 15px; margin: 15px 0; border-radius: 5px; }
-        .coupon { background: #d4edda; padding: 10px; margin: 10px 0; border-radius: 5px; }
-        .add-to-cart { background: #ff9900; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        body { font-family: sans-serif; padding: 2em; }
+        .container { max-width: 600px; margin: auto; }
+        .product { display: flex; justify-content: space-between; margin-bottom: 1em; }
+        .total { font-weight: bold; font-size: 1.2em; }
+        .coupon-form { margin-top: 2em; }
+        .coupon-input { padding: 0.5em; width: 200px; }
+        .apply-btn { padding: 0.5em 1em; }
+        .message { margin-top: 1em; padding: 1em; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
-    <h1 class="product-title" id="product-title">Premium Wireless Bluetooth Headphones</h1>
-    
-    <div class="product-container">
-        <div class="product-image">
-            <img src="https://placehold.co/300x300.png?text=Headphones" alt="Product Image" class="product-image">
+    <div class="container">
+        <h1>Test Checkout Page</h1>
+        <div class="products">
+            <div class="product">
+                <span>Product A</span>
+                <span>$50.00</span>
+            </div>
+            <div class="product">
+                <span>Product B</span>
+                <span>$30.00</span>
+            </div>
         </div>
-        
-        <div class="product-details">
-            <div class="price-section">
-                <span class="price">₹2,499</span>
-                <span class="original-price">₹3,999</span>
-                <span class="discount">38% off</span>
-            </div>
-            
-            <div class="offers">
-                <h3>🎁 Special Offers</h3>
-                <div class="offer">Bank Offer: 10% Instant discount with HDFC Bank</div>
-                <div class="offer">Cashback: Get 5% cashback with Amazon Pay</div>
-                <div class="offer">Exchange: Up to ₹500 off on exchange</div>
-            </div>
-            
-            <div class="coupon">
-                <strong>💰 Coupon Available:</strong> Use code "SAVE20" for extra ₹200 off
-            </div>
-            
-            <div class="coupon">
-                <strong>🚚 Free Shipping:</strong> Free delivery on orders above ₹499
-            </div>
-            
-            <button class="add-to-cart">Add to Cart</button>
+        <hr>
+        <div class="product total">
+            <span>Total</span>
+            <span class="order-total">$80.00</span>
         </div>
-    </div>
-    
-    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
-        <h3>🧪 AI Extension Test Instructions</h3>
-        <ol>
-            <li>Load the DealPal extension in Chrome/Edge (Developer Mode → Load Unpacked)</li>
-            <li>Open this test page</li>
-            <li>Check browser console for "🎯 DealPal" and "🤖 AI" messages</li>
-            <li>Click the DealPal extension icon to see detected data</li>
-            <li>Look for deal notifications in the top-right corner</li>
-        </ol>
-        
-        <p><strong>Expected AI Results:</strong></p>
-        <ul>
-            <li>🤖 AI Detection with confidence score</li>
-            <li>Product name: "Premium Wireless Bluetooth Headphones"</li>
-            <li>Price: "₹2,499"</li>
-            <li>Original price: "₹3,999"</li>
-            <li>Discount: "38% off"</li>
-            <li>Deals found: 2 coupons, 3 offers</li>
-            <li>Structured data extraction from JSON-LD</li>
-        </ul>
 
-        <p><strong>AI Features Being Tested:</strong></p>
-        <ul>
-            <li>🔍 Content classification (product vs non-product)</li>
-            <li>📝 Product information extraction</li>
-            <li>💰 Deal and coupon detection</li>
-            <li>🏷️ Brand and category inference</li>
-            <li>📊 Confidence scoring</li>
-            <li>💾 Intelligent caching</li>
-        </ul>
-    </div>
+        <div class="coupon-form">
+            <input type="text" id="promo-code" class="coupon-input" placeholder="Enter promo code">
+            <button class="apply-btn">Apply</button>
+        </div>
 
-    <!-- JSON-LD structured data for AI testing -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": "Premium Wireless Bluetooth Headphones",
-      "image": "https://placehold.co/300x300.png?text=Headphones",
-      "description": "High-quality wireless Bluetooth headphones with noise cancellation and premium sound quality.",
-      "brand": {
-        "@type": "Brand",
-        "name": "AudioTech"
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "2499",
-        "priceCurrency": "INR",
-        "availability": "https://schema.org/InStock",
-        "url": "https://example.com/headphones"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.5",
-        "reviewCount": "87"
-      }
-    }
-    </script>
+        <div class="message" style="display: none;"></div>
+    </div>
 
     <script>
-        // Simulate an e-commerce site
-        console.log('Test page loaded - this simulates a product page');
-        
-        // Add some dynamic content to test mutation observer
-        setTimeout(() => {
-            const dynamicOffer = document.createElement('div');
-            dynamicOffer.className = 'coupon';
-            dynamicOffer.innerHTML = '<strong>⚡ Flash Sale:</strong> Limited time offer - 15% extra off!';
-            document.querySelector('.product-details').appendChild(dynamicOffer);
-            console.log('Added dynamic offer - extension should detect this');
-        }, 3000);
+        const applyBtn = document.querySelector('.apply-btn');
+        const couponInput = document.querySelector('#promo-code');
+        const totalEl = document.querySelector('.order-total');
+        const messageEl = document.querySelector('.message');
+
+        const coupons = {
+            'SAVE10': 10,
+            'SAVE20': 20
+        };
+
+        applyBtn.addEventListener('click', () => {
+            const code = couponInput.value.toUpperCase();
+            if (coupons[code]) {
+                const discount = coupons[code];
+                const newTotal = 80 - discount;
+                totalEl.textContent = `$${newTotal.toFixed(2)}`;
+                messageEl.textContent = `Successfully applied coupon ${code}!`;
+                messageEl.className = 'message success';
+                messageEl.style.display = 'block';
+            } else {
+                totalEl.textContent = '$80.00';
+                messageEl.textContent = 'Invalid coupon code.';
+                messageEl.className = 'message error';
+                messageEl.style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>

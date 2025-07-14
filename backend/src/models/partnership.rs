@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use sqlx::FromRow;
 use bigdecimal::{BigDecimal, ToPrimitive};
-use time::OffsetDateTime;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Partnership {
@@ -18,15 +17,14 @@ pub struct Partnership {
     pub description: Option<String>,
     pub average_order_value: Option<BigDecimal>,
     pub monthly_orders: Option<String>,
-    pub status: PartnershipStatus,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
-    pub reviewed_at: Option<OffsetDateTime>,
+    pub status: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub reviewed_at: Option<DateTime<Utc>>,
     pub reviewer_notes: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type)]
-#[sqlx(type_name = "partnership_status", rename_all = "lowercase")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum PartnershipStatus {
     Pending,
     UnderReview,
@@ -65,14 +63,14 @@ pub struct PartnershipResponse {
     pub description: Option<String>,
     pub average_order_value: Option<f64>,
     pub monthly_orders: Option<String>,
-    pub status: PartnershipStatus,
+    pub status: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct UpdatePartnershipRequest {
-    pub status: Option<PartnershipStatus>,
+    pub status: Option<String>,
     pub cashback_rate: Option<f64>,
     pub reviewer_notes: Option<String>,
 }
@@ -103,14 +101,8 @@ impl From<Partnership> for PartnershipResponse {
             average_order_value: partnership.average_order_value.and_then(|bd| bd.to_f64()),
             monthly_orders: partnership.monthly_orders,
             status: partnership.status,
-            created_at: DateTime::<Utc>::from_timestamp(
-                partnership.created_at.unix_timestamp(),
-                partnership.created_at.nanosecond()
-            ).unwrap_or_default(),
-            updated_at: DateTime::<Utc>::from_timestamp(
-                partnership.updated_at.unix_timestamp(),
-                partnership.updated_at.nanosecond()
-            ).unwrap_or_default(),
+            created_at: partnership.created_at,
+            updated_at: partnership.updated_at,
         }
     }
 }

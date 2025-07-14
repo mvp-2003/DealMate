@@ -1,7 +1,7 @@
 use bigdecimal::BigDecimal;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use time::OffsetDateTime;
+use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
@@ -9,8 +9,8 @@ pub struct Wallet {
     pub id: Uuid,
     pub user_id: Uuid,
     pub balance: BigDecimal,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Deserialize)]

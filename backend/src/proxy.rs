@@ -35,8 +35,8 @@ pub async fn auth_proxy(
         header::HeaderValue::from_str(&std::env::var("INTER_SERVICE_SECRET").unwrap()).unwrap(),
     );
 
-    let host = state.auth_service_addr.ip().to_string();
-    let port = state.auth_service_addr.port();
+    let _host = state.auth_service_addr.ip().to_string();
+    let _port = state.auth_service_addr.port();
 
     let stream = match TcpStream::connect(state.auth_service_addr).await {
         Ok(stream) => stream,
@@ -91,8 +91,8 @@ pub async fn ai_proxy(
         header::HeaderValue::from_str(&std::env::var("INTER_SERVICE_SECRET").unwrap()).unwrap(),
     );
 
-    let host = state.ai_service_addr.ip().to_string();
-    let port = state.ai_service_addr.port();
+    let _host = state.ai_service_addr.ip().to_string();
+    let _port = state.ai_service_addr.port();
 
     let stream = match TcpStream::connect(state.ai_service_addr).await {
         Ok(stream) => stream,

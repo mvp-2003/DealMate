@@ -179,7 +179,18 @@ class AutoCouponTester {
     };
   }
 
-  async autoTestCoupons(availableCoupons) {
+  getMerchantFromURL() {
+    const hostname = window.location.hostname;
+    // This is a simple implementation. A more robust solution would use a
+    // library or a more comprehensive list of mappings.
+    const parts = hostname.split('.');
+    if (parts.length >= 2) {
+      return parts[parts.length - 2];
+    }
+    return hostname;
+  }
+
+  async autoTestCoupons() {
     if (this.isTestingInProgress) {
       console.log('🎯 DealPal: Coupon testing already in progress');
       return this.testResults;
@@ -195,7 +206,22 @@ class AutoCouponTester {
     this.testResults = [];
     this.originalPrice = this.getCurrentPrice();
 
-    console.log('🎯 DealPal: Starting automatic coupon testing...');
+    const merchant = this.getMerchantFromURL();
+    if (!merchant) {
+        console.warn('🎯 DealPal: Could not determine merchant from URL.');
+        this.isTestingInProgress = false;
+        return [];
+    }
+
+    console.log(`🎯 DealPal: Starting automatic coupon testing for ${merchant}...`);
+
+    const availableCoupons = await this.fetchCouponsForMerchant(merchant);
+
+    if (availableCoupons.length === 0) {
+        console.log('🎯 DealPal: No coupons found for this merchant.');
+        this.isTestingInProgress = false;
+        return [];
+    }
     
     // Show testing notification
     this.showTestingNotification(availableCoupons.length);
@@ -212,11 +238,11 @@ class AutoCouponTester {
     // Test each coupon
     for (let i = 0; i < availableCoupons.length; i++) {
       const coupon = availableCoupons[i];
-      console.log(`🎯 DealPal: Testing coupon ${i + 1}/${availableCoupons.length}: ${coupon.code}`);
+      console.log(`🎯 DealPal: Testing coupon ${i + 1}/${availableCoupons.length}: ${coupon.coupon_code}`);
       
-      this.updateTestingProgress(i + 1, availableCoupons.length, coupon.code);
+      this.updateTestingProgress(i + 1, availableCoupons.length, coupon.coupon_code);
       
-      const result = await this.testCoupon(coupon.code, couponInput, applyButton);
+      const result = await this.testCoupon(coupon.coupon_code, couponInput, applyButton);
       if (result) {
         this.testResults.push({
           ...result,
@@ -361,6 +387,29 @@ class AutoCouponTester {
   delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  async fetchCouponsForMerchant(merchant) {
+    try {
+      const domain = window.location.hostname;
+      const response = await fetch(`http://localhost:8000/api/v1/coupons/search?merchant_domain=${domain}&active_only=true`);
+      if (!response.ok) {
+        console.error('🎯 DealPal: Failed to fetch coupons from backend');
+        return [];
+      }
+      const coupons = await response.json();
+      console.log(`🎯 DealPal: Fetched ${coupons.length} coupons for ${domain}`);
+      return coupons.map(coupon => ({
+        coupon_code: coupon.code,
+        title: coupon.title,
+        description: coupon.description,
+        discount_type: coupon.discount_type,
+        discount_value: coupon.discount_value
+      }));
+    } catch (error) {
+      console.error('🎯 DealPal: Error fetching coupons:', error);
+      return [];
+    }
+  }
 }
 
 // Initialize and export
@@ -369,7 +418,7 @@ const autoCouponTester = new AutoCouponTester();
 // Listen for messages from popup or background
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'startCouponTesting') {
-    autoCouponTester.autoTestCoupons(request.coupons).then(results => {
+    autoCouponTester.autoTestCoupons().then(results => {
       sendResponse({ success: true, results });
     });
     return true; // Indicates async response
