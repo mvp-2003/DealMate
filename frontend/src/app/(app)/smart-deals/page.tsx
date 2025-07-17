@@ -8,6 +8,7 @@ import { Loader2, RefreshCw, Info } from 'lucide-react';
 import { handleGetRankedOffers, handleGetUserPointsState } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { DealLoader } from '@/components/ui/animated-loader';
 
 
 // Mock initial offers
@@ -96,21 +97,24 @@ export default function SmartDealsPage() {
 
         {/* Loading State - Enhanced Mobile */}
         {isLoading && (
-          <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-4 sm:gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="glass-card p-3 xs:p-4 sm:p-6 animate-pulse">
-                <div className="h-20 xs:h-24 sm:h-32 bg-muted/20 rounded-md mb-3 xs:mb-4"></div>
-                <div className="space-y-2 xs:space-y-3">
-                  <div className="h-3 xs:h-4 bg-muted/20 rounded w-3/4"></div>
-                  <div className="h-2 xs:h-3 bg-muted/20 rounded w-1/2"></div>
-                  <div className="h-2 xs:h-3 bg-muted/20 rounded w-1/3"></div>
-                  <div className="flex gap-2 mt-3">
-                    <div className="h-6 xs:h-8 bg-muted/20 rounded flex-1"></div>
-                    <div className="h-6 xs:h-8 bg-muted/20 rounded w-8 xs:w-10"></div>
+          <div className="flex flex-col items-center justify-center py-16 space-y-8">
+            <DealLoader size="lg" />
+            <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-4 sm:gap-6 w-full opacity-30">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="glass-card p-3 xs:p-4 sm:p-6 animate-pulse">
+                  <div className="h-20 xs:h-24 sm:h-32 bg-muted/20 rounded-md mb-3 xs:mb-4"></div>
+                  <div className="space-y-2 xs:space-y-3">
+                    <div className="h-3 xs:h-4 bg-muted/20 rounded w-3/4"></div>
+                    <div className="h-2 xs:h-3 bg-muted/20 rounded w-1/2"></div>
+                    <div className="h-2 xs:h-3 bg-muted/20 rounded w-1/3"></div>
+                    <div className="flex gap-2 mt-3">
+                      <div className="h-6 xs:h-8 bg-muted/20 rounded flex-1"></div>
+                      <div className="h-6 xs:h-8 bg-muted/20 rounded w-8 xs:w-10"></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 

@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import ProductInfoCard from '@/components/dashboard/ProductInfoCard';
 import PriceComparisonTable from '@/components/dashboard/PriceComparisonTable';
 import OffersList from '@/components/dashboard/OffersList';
@@ -5,11 +8,17 @@ import SavingsScore from '@/components/dashboard/SavingsScore';
 import PriceHistoryChart from '@/components/dashboard/PriceHistoryChart';
 import MonthlySavingsChart from '@/components/dashboard/MonthlySavingsChart'; // New Chart
 import { TicketPercent, CreditCard } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function DashboardPage() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
   return (
     <div className="min-h-screen-safe">
-      <div className="space-responsive">
+      <div className={cn("space-responsive", isLoaded ? 'animate-fade-in' : 'opacity-0')}>
         
         {/* Welcome Section - Mobile Optimized */}
         <div className="glass-card p-3 xs:p-4 sm:p-6 mb-4 xs:mb-6">
@@ -23,7 +32,7 @@ export default function DashboardPage() {
         
         {/* Hero Section with Product Cards - Responsive Grid */}
         <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-8 mb-12 xs:mb-16">
-          <div className="relative animate-fade-in">
+          <div className="relative">
             <ProductInfoCard
               title="Cool Gadget Pro X"
               currentPrice="₹999"
@@ -33,7 +42,7 @@ export default function DashboardPage() {
               imageUrl="https://placehold.co/600x400.png"
             />
           </div>
-          <div className="relative animate-fade-in" style={{animationDelay: '0.1s'}}>
+          <div className="relative" style={{animationDelay: '0.1s'}}>
             <ProductInfoCard
               title="Smart Headphones Ultra"
               currentPrice="₹1,499"
@@ -43,7 +52,7 @@ export default function DashboardPage() {
               imageUrl="https://placehold.co/600x400.png"
             />
           </div>
-          <div className="relative sm:col-span-2 lg:col-span-1 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <div className="relative sm:col-span-2 lg:col-span-1" style={{animationDelay: '0.2s'}}>
             <ProductInfoCard
               title="Wireless Speaker Pro"
               currentPrice="₹799"
@@ -79,7 +88,7 @@ export default function DashboardPage() {
 
         {/* Offers Section - Responsive Stack */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 xs:gap-4 sm:gap-6 mb-6 xs:mb-8">
-          <div className="animate-slide-up">
+          <div>
             <OffersList 
               title="Available Coupons" 
               icon={TicketPercent} 
@@ -90,7 +99,7 @@ export default function DashboardPage() {
             />
           </div>
           
-          <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
+          <div style={{animationDelay: '0.1s'}}>
             <OffersList 
               title="Cashback Offers" 
               icon={CreditCard} 

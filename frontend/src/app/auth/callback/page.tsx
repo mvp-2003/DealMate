@@ -2,6 +2,7 @@
 
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { AuthLoader } from '@/components/ui/animated-loader';
 
 function AuthCallback() {
   const router = useRouter();
@@ -34,12 +35,20 @@ function AuthCallback() {
     }
   }, [router, searchParams]);
 
-  return <div>Loading...</div>;
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <AuthLoader size="lg" />
+    </div>
+  );
 }
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <AuthLoader size="lg" />
+      </div>
+    }>
       <AuthCallback />
     </Suspense>
   );

@@ -80,6 +80,7 @@
         "*://*.vijaysales.com/*"
       ],
       "js": [
+        "animated-loader.js",
         "config.js",
         "ai-extractors.js",
         "stacksmart-engine.js",
