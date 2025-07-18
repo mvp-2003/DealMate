@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Heart, BotMessageSquare, Settings, Sparkles, Wallet } from 'lucide-react'; // Added Sparkles and Wallet
+import { LayoutDashboard, Heart, BotMessageSquare, Settings, Sparkles, Wallet, Package2 } from 'lucide-react'; // Added Sparkles, Wallet, and Package2
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const tabs = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Smart Deals', href: '/smart-deals', icon: Sparkles },
+  { name: 'LootPacks', href: '/lootpacks', icon: Package2 },
   { name: 'Wishlist', href: '/wishlist', icon: Heart },
   { name: 'DealBot', href: '/ask-dealbot', icon: BotMessageSquare },
   { name: 'Wallet', href: '/wallet', icon: Wallet },
@@ -48,6 +49,7 @@ export default function NavigationTabs() {
                       {tab.name === 'Smart Deals' ? 'Deals' : 
                        tab.name === 'DealBot' ? 'Bot' : 
                        tab.name === 'Dashboard' ? 'Home' :
+                       tab.name === 'LootPacks' ? 'Loot' :
                        tab.name}
                     </span>
                   </Link>
