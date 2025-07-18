@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PaymentLoader } from '@/components/ui/animated-loader';
 import { 
   Star, 
   Trophy, 
@@ -200,12 +201,15 @@ export default function RewardsDashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-          ))}
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center space-y-8">
+        <PaymentLoader size="lg" />
+        <div className="space-y-6 animate-pulse opacity-30 w-full max-w-7xl px-4">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -414,7 +418,7 @@ export default function RewardsDashboard() {
         </TabsContent>
 
         {/* Available Programs */}
-        <TabsContent value="available" className="space-y-4">
+        <TabsContent value="available">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {availablePrograms.map((program) => {
               const IconComponent = program.icon;

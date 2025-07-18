@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Save } from 'lucide-react';
+import { PaymentLoader } from '@/components/ui/animated-loader';
 
 const cardFormSchema = z.object({
   bank: z.string().min(2, { message: "Bank name must be at least 2 characters." }),

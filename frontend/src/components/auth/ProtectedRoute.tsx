@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { isFeatureEnabled } from '@/lib/feature-toggles-client';
+import { AuthAppLoader } from '@/components/ui/app-loading-screen';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -39,11 +40,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }, [router]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    );
+    return <AuthAppLoader />;
   }
 
   if (!isAuthenticated) {

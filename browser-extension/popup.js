@@ -1,14 +1,41 @@
 // DealPal Popup Script - Enhanced functionality
 console.log('🎯 DealPal Popup: Script loaded');
 
+// Import the animated loader
+// Note: In a real extension, this would be loaded via manifest.json
+if (typeof window.DealPalLoader === 'undefined') {
+  // Fallback loader implementation
+  window.DealPalLoader = {
+    showLoaderInElement: function(elementId, type, size) {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.innerHTML = `<div style="text-align: center; padding: 20px; color: #a855f7;">
+          <div style="display: inline-block; animation: spin 1s linear infinite;">🔄</div>
+          <div style="margin-top: 8px; font-size: 14px;">Loading ${type}...</div>
+        </div>`;
+      }
+    },
+    hideLoader: function(elementId, content) {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.innerHTML = content || '';
+      }
+    }
+  };
+}
+
 let currentProduct = null;
 let detectedDeals = null;
 
-function updateStatus(message, type = 'info') {
+function updateStatus(message, type = 'info', showLoader = false) {
   const statusElement = document.getElementById('detection-status');
   if (statusElement) {
-    statusElement.textContent = message;
-    statusElement.style.color = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#e2e8f0';
+    if (showLoader) {
+      window.DealPalLoader.showLoaderInElement('detection-status', 'deals', 'sm');
+    } else {
+      statusElement.textContent = message;
+      statusElement.style.color = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#e2e8f0';
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bot, AlertTriangle, User } from 'lucide-react';
+import { SearchLoader } from '@/components/ui/animated-loader';
 
 interface DealBotResponseProps {
   userQuery?: string; // Optional: display the user's query
@@ -40,9 +41,8 @@ export default function DealBotResponse({ userQuery, response, error, isLoading 
           </CardHeader>
           <CardContent className="min-h-[120px] text-base">
             {isLoading && (
-                <div className="flex items-center space-x-2 text-muted-foreground animate-pulse">
-                    <Bot className="h-5 w-5 text-primary" />
-                    <span>DealBot is crafting your advice...</span>
+                <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                    <SearchLoader size="md" />
                 </div>
             )}
             {error && !isLoading && (

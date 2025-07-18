@@ -1,11 +1,16 @@
 'use client';
 
 import { useAuth0 } from '@auth0/auth0-react';
+import { AuthLoader } from '@/components/ui/animated-loader';
 
 export default function UserProfile() {
   const { user, logout, isLoading } = useAuth0();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return (
+    <div className="flex items-center justify-center p-4">
+      <AuthLoader size="sm" />
+    </div>
+  );
   if (!user) return null;
 
   const handleLogout = () => {

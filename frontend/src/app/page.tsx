@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { isFeatureEnabled } from '@/lib/feature-toggles-client';
+import { AuthLoader } from '@/components/ui/animated-loader';
 
 export default function HomePage() {
   const router = useRouter();
@@ -36,9 +37,9 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="text-white text-center">
+      <div className="text-white text-center space-y-8">
         <h1 className="text-4xl font-bold mb-4">DealPal</h1>
-        <p className="text-lg">Loading...</p>
+        <AuthLoader size="lg" />
       </div>
     </div>
   );
