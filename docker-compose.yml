@@ -15,8 +15,8 @@ services:
     container_name: dealpal-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-dealpal}
-      POSTGRES_USER: ${POSTGRES_USER:-dealpal}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dealpal}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "${DB_PORT:-5432}:5432"
@@ -24,7 +24,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dealpal} -d ${POSTGRES_DB:-dealpal}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-dealpal}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,7 +47,7 @@ services:
       --appendonly yes
       --maxmemory ${REDIS_MAX_MEMORY:-256mb}
       --maxmemory-policy allkeys-lru
-      --requirepass ${REDIS_PASSWORD:-dealpal}
+      --requirepass ${REDIS_PASSWORD}
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 10s
@@ -74,8 +74,8 @@ services:
       - "${BACKEND_PORT:-8000}:8000"
     environment:
       <<: *common-variables
-      DATABASE_URL: postgresql://${POSTGRES_USER:-dealpal}:${POSTGRES_PASSWORD:-dealpal}@db:5432/${POSTGRES_DB:-dealpal}
-      REDIS_URL: redis://default:${REDIS_PASSWORD:-dealpal}@redis:6379
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-dealpal}
+      REDIS_URL: redis://default:${REDIS_PASSWORD}@redis:6379
       RUST_LOG: ${RUST_LOG:-info,sqlx=warn}
       RUST_BACKTRACE: ${RUST_BACKTRACE:-1}
       AUTH0_DOMAIN: ${AUTH0_DOMAIN}
@@ -114,8 +114,8 @@ services:
     environment:
       <<: *common-variables
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-dealpal}:${POSTGRES_PASSWORD:-dealpal}@db:5432/${POSTGRES_DB:-dealpal}
-      REDIS_URL: redis://default:${REDIS_PASSWORD:-dealpal}@redis:6379
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-dealpal}
+      REDIS_URL: redis://default:${REDIS_PASSWORD}@redis:6379
       RUST_BACKEND_URL: http://backend:8000
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-1.5-flash}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
@@ -200,7 +200,7 @@ services:
     environment:
       <<: *common-variables
       NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-dealpal}:${POSTGRES_PASSWORD:-dealpal}@db:5432/${POSTGRES_DB:-dealpal}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-dealpal}
       AUTH0_DOMAIN: ${AUTH0_DOMAIN}
       AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
       AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
@@ -324,7 +324,7 @@ services:
     ports:
       - "${REDIS_COMMANDER_PORT:-8081}:8081"
     environment:
-      REDIS_HOSTS: local:redis:6379:0:${REDIS_PASSWORD:-dealpal}
+      REDIS_HOSTS: local:redis:6379:0:${REDIS_PASSWORD}
     depends_on:
       - redis
     restart: unless-stopped

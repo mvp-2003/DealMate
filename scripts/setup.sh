@@ -105,7 +105,7 @@ if [ ! -f "../.env" ]; then
 GOOGLE_API_KEY=your_google_api_key_here
 
 # Database Configuration (Optional for local development)
-DATABASE_URL=postgresql://username:password@localhost:5432/dealpal
+DATABASE_URL=postgresql://your_username:your_password@localhost:5432/dealpal
 
 # Gemini Model Configuration (Optional)
 GEMINI_MODEL=gemini-1.5-flash

@@ -6,6 +6,27 @@
 
 set -e
 
+# Check for required commands
+check_required_commands() {
+    local missing_commands=()
+    
+    # Check for make command (required for containerized mode)
+    if ! command -v make &> /dev/null; then
+        missing_commands+=("make")
+    fi
+    
+    # Check for curl (required for health checks)
+    if ! command -v curl &> /dev/null; then
+        missing_commands+=("curl")
+    fi
+    
+    if [ ${#missing_commands[@]} -ne 0 ]; then
+        echo -e "${RED}❌ Missing required commands: ${missing_commands[*]}${NC}"
+        echo -e "${YELLOW}Please install the missing commands before running this script.${NC}"
+        exit 1
+    fi
+}
+
 # Parse command line arguments
 DEPLOYMENT_MODE="auto"
 while [[ $# -gt 0 ]]; do
@@ -51,6 +72,9 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}🚀 DealPal Master Application Runner${NC}"
 echo "====================================="
 
+# Check required commands
+check_required_commands
+
 # Function to detect container runtime
 detect_container_runtime() {
     if command -v docker &> /dev/null && docker info &> /dev/null 2>&1; then
@@ -59,6 +83,19 @@ detect_container_runtime() {
         echo "podman"
     else
         echo "none"
+    fi
+}
+
+# Function to detect compose command
+detect_compose_command() {
+    if command -v docker-compose &> /dev/null; then
+        echo "docker-compose"
+    elif command -v podman-compose &> /dev/null; then
+        echo "podman-compose"
+    elif docker compose version &> /dev/null 2>&1; then
+        echo "docker compose"
+    else
+        echo ""
     fi
 }
 
@@ -111,8 +148,17 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
     echo "5. 📊 Show platform status"
     echo ""
     
+    # Detect compose command
+    COMPOSE_CMD=$(detect_compose_command)
+    if [[ -z "$COMPOSE_CMD" ]]; then
+        echo -e "${RED}❌ Docker Compose is not installed!${NC}"
+        echo -e "${YELLOW}Please install Docker Compose or Podman Compose${NC}"
+        exit 1
+    fi
+    echo -e "${CYAN}Using compose command: ${COMPOSE_CMD}${NC}"
+    
     # Check if Docker setup is needed
-    if [[ ! -f ".env" ]] || ! docker compose config &> /dev/null 2>&1; then
+    if [[ ! -f ".env" ]] || ! ${COMPOSE_CMD} config &> /dev/null 2>&1; then
         echo -e "${YELLOW}⚙️  Running Docker setup...${NC}"
         chmod +x scripts/docker-setup.sh
         ./scripts/docker-setup.sh
@@ -134,7 +180,7 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
     fi
     
     # Check if services are already running
-    if docker compose ps --services --filter "status=running" | grep -q .; then
+    if ${COMPOSE_CMD} ps --services --filter "status=running" | grep -q .; then
         echo -e "${YELLOW}⚠️  Some containers are already running!${NC}"
         echo -e "${YELLOW}Do you want to restart them? (y/N): ${NC}"
         read -r response
@@ -149,7 +195,7 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
             echo -e "${GREEN}🎉 DealPal platform is running!${NC}"
             echo -e "${CYAN}📱 Application URLs:${NC}"
             echo -e "  🌐 Frontend:       ${YELLOW}http://localhost:3000${NC}"
-            echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000${NC}"
+            echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000/api${NC}"
             echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
             echo -e "  🔐 Auth Service:   ${YELLOW}http://localhost:3001${NC}"
             echo ""
@@ -180,7 +226,7 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
     echo ""
     echo -e "${CYAN}📱 Application URLs:${NC}"
     echo -e "  🌐 Frontend:       ${YELLOW}http://localhost:3000${NC}"
-    echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000${NC}"
+    echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000/api${NC}"
     echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
     echo -e "  🔐 Auth Service:   ${YELLOW}http://localhost:3001${NC}"
     echo -e "  📚 API Docs:       ${YELLOW}http://localhost:8001/docs${NC}"
@@ -261,7 +307,7 @@ else
             backend_running=true
         fi
         
-        if curl -s --max-time 2 "http://localhost:9002" > /dev/null 2>&1; then
+        if curl -s --max-time 2 "http://localhost:3000" > /dev/null 2>&1; then
             frontend_running=true
         fi
         
@@ -359,7 +405,7 @@ else
     # Start Backend
     echo -e "${YELLOW}🦀 Starting Backend...${NC}"
     cd backend
-    nohup ./target/release/dealpal-backend > ../backend.log 2>&1 &
+    nohup ./target/release/dealpal-backend > ../logs/backend.log 2>&1 &
     BACKEND_PID=$!
     cd ..
     echo "Backend PID: $BACKEND_PID"
@@ -414,7 +460,7 @@ else
     fi
 
     echo -e "${YELLOW}Testing Frontend...${NC}"
-    if curl -s --max-time 10 "http://localhost:9002" > /dev/null 2>&1; then
+    if curl -s --max-time 10 "http://localhost:3000" > /dev/null 2>&1; then
         echo -e "${GREEN}✅ Frontend is responding${NC}"
     else
         echo -e "${RED}❌ Frontend not responding${NC}"
@@ -436,8 +482,8 @@ else
     echo -e "${CYAN}📱 Application URLs:${NC}"
     echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
     echo -e "  🔐 Auth Service:   ${YELLOW}http://localhost:3001${NC}"
-    echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000${NC}"
-    echo -e "  📦 Frontend App:   ${YELLOW}http://localhost:9002${NC}"
+    echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000/api${NC}"
+    echo -e "  🌐 Frontend App:   ${YELLOW}http://localhost:3000${NC}"
     echo -e "  📚 API Docs:       ${YELLOW}http://localhost:8001/docs${NC}"
     echo ""
     echo -e "${CYAN}📋 Service Information:${NC}"
@@ -464,7 +510,38 @@ else
     cleanup() {
         echo ""
         echo -e "${YELLOW}🛑 Shutting down DealPal platform...${NC}"
-        kill $AI_SERVICE_PID $AUTH_SERVICE_PID $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
+        
+        # Kill processes gracefully
+        if [ ! -z "$AI_SERVICE_PID" ]; then
+            kill -TERM $AI_SERVICE_PID 2>/dev/null || true
+        fi
+        if [ ! -z "$AUTH_SERVICE_PID" ]; then
+            kill -TERM $AUTH_SERVICE_PID 2>/dev/null || true
+        fi
+        if [ ! -z "$BACKEND_PID" ]; then
+            kill -TERM $BACKEND_PID 2>/dev/null || true
+        fi
+        if [ ! -z "$FRONTEND_PID" ]; then
+            kill -TERM $FRONTEND_PID 2>/dev/null || true
+        fi
+        
+        # Wait for processes to terminate
+        sleep 2
+        
+        # Force kill if still running
+        if [ ! -z "$AI_SERVICE_PID" ]; then
+            kill -KILL $AI_SERVICE_PID 2>/dev/null || true
+        fi
+        if [ ! -z "$AUTH_SERVICE_PID" ]; then
+            kill -KILL $AUTH_SERVICE_PID 2>/dev/null || true
+        fi
+        if [ ! -z "$BACKEND_PID" ]; then
+            kill -KILL $BACKEND_PID 2>/dev/null || true
+        fi
+        if [ ! -z "$FRONTEND_PID" ]; then
+            kill -KILL $FRONTEND_PID 2>/dev/null || true
+        fi
+        
         echo -e "${GREEN}✅ All services stopped${NC}"
         echo -e "${BLUE}👋 Thank you for using DealPal!${NC}"
         exit 0
