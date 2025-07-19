@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE coupons SET is_active = false WHERE valid_until < NOW() AND is_active = true",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "823c936ee2bb7067a536f9e3dbf2c3ee6e7584cb483dd885353766b00749ff4d"
+}

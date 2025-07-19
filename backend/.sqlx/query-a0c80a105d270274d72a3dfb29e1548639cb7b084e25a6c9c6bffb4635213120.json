@@ -1,0 +1,148 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT * FROM card_vault\n        WHERE user_id = $1 AND is_active = true\n        ORDER BY is_primary DESC, created_at DESC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "bank_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "card_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "card_network",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "last_four_digits",
+        "type_info": "Bpchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "nickname",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "base_reward_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "reward_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 9,
+        "name": "point_value_inr",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "category_rewards",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 11,
+        "name": "current_points",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "points_expiry_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 13,
+        "name": "milestone_config",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 14,
+        "name": "features",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 15,
+        "name": "annual_fee",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 16,
+        "name": "fee_waiver_criteria",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 17,
+        "name": "bank_offers",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 18,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 19,
+        "name": "is_primary",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 20,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 21,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "a0c80a105d270274d72a3dfb29e1548639cb7b084e25a6c9c6bffb4635213120"
+}

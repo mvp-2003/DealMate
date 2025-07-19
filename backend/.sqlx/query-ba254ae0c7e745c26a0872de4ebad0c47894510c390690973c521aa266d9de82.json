@@ -1,0 +1,129 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO partnerships (\n            business_name, website, contact_email, contact_name, phone,\n            business_type, monthly_revenue, cashback_rate, description,\n            average_order_value, monthly_orders, status, created_at, updated_at\n        )\n        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::text::partnership_status, NOW(), NOW())\n        RETURNING id, business_name, website, contact_email, contact_name, phone, business_type, monthly_revenue, cashback_rate, description, average_order_value, monthly_orders, status::text as \"status!\", created_at, updated_at, reviewed_at, reviewer_notes",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "business_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "website",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "contact_email",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "contact_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "phone",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "business_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "monthly_revenue",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "cashback_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "average_order_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 11,
+        "name": "monthly_orders",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 12,
+        "name": "status!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 14,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 15,
+        "name": "reviewed_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 16,
+        "name": "reviewer_notes",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Numeric",
+        "Text",
+        "Numeric",
+        "Varchar",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      null,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "ba254ae0c7e745c26a0872de4ebad0c47894510c390690973c521aa266d9de82"
+}

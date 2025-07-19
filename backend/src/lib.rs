@@ -92,8 +92,7 @@ pub fn app(pool: PgPool, app_state: AppState) -> Router {
         // .nest("/partnerships", partnerships_routes(pool.clone()))
         .nest("/users", user_routes(pool.clone()))
         .nest("/coupons", coupon_routes(pool.clone()))
-        .merge(card_vault::routes())
-        .with_state(pool.clone())
+        .merge(card_vault::routes(pool.clone()))
         .route_layer(from_fn(auth_middleware));
 
     // Create proxy routes separately with the AppState

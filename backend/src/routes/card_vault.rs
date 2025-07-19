@@ -8,6 +8,7 @@ use axum::{
 use bigdecimal::BigDecimal;
 use chrono::Utc;
 use serde_json::json;
+use std::str::FromStr;
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -21,8 +22,8 @@ use crate::models::card_vault::{
 
 /// Get all cards for the authenticated user
 pub async fn get_user_cards(
-    State(pool): State<PgPool>,
     user: AuthUser,
+    State(pool): State<PgPool>,
 ) -> Result<Json<Vec<CardVault>>, AppError> {
     let rows = sqlx::query!(
         r#"
@@ -65,9 +66,9 @@ pub async fn get_user_cards(
 
 /// Get a specific card by ID
 pub async fn get_card(
-    State(pool): State<PgPool>,
-    user: AuthUser,
     Path(card_id): Path<Uuid>,
+    user: AuthUser,
+    State(pool): State<PgPool>,
 ) -> Result<Json<CardVault>, AppError> {
     let row = sqlx::query!(
         r#"
@@ -114,8 +115,8 @@ pub async fn get_card(
 
 /// Create a new card
 pub async fn create_card(
-    State(pool): State<PgPool>,
     user: AuthUser,
+    State(pool): State<PgPool>,
     Json(req): Json<CreateCardRequest>,
 ) -> Result<impl IntoResponse, AppError> {
     let card_id = Uuid::new_v4();
@@ -127,7 +128,8 @@ pub async fn create_card(
         user.0.id
     )
     .fetch_one(&pool)
-    .await?;
+    .await?
+    .unwrap_or(0);
     
     let is_primary = card_count == 0;
     
@@ -198,9 +200,9 @@ pub async fn create_card(
 
 /// Update a card
 pub async fn update_card(
-    State(pool): State<PgPool>,
-    user: AuthUser,
     Path(card_id): Path<Uuid>,
+    user: AuthUser,
+    State(pool): State<PgPool>,
     Json(req): Json<UpdateCardRequest>,
 ) -> Result<Json<CardVault>, AppError> {
     // First check if the card belongs to the user
@@ -280,9 +282,9 @@ pub async fn update_card(
 
 /// Delete a card (soft delete by setting is_active = false)
 pub async fn delete_card(
-    State(pool): State<PgPool>,
-    user: AuthUser,
     Path(card_id): Path<Uuid>,
+    user: AuthUser,
+    State(pool): State<PgPool>,
 ) -> Result<impl IntoResponse, AppError> {
     let result = sqlx::query!(
         "UPDATE card_vault SET is_active = false WHERE id = $1 AND user_id = $2",
@@ -312,8 +314,8 @@ pub async fn get_card_templates() -> Result<Json<Vec<CardTemplate>>, AppError> {
 
 /// Calculate deal rankings for all user cards
 pub async fn calculate_deal_rankings(
-    State(pool): State<PgPool>,
     user: AuthUser,
+    State(pool): State<PgPool>,
     Json(req): Json<CalculateDealRankingRequest>,
 ) -> Result<Json<DealRankingResponse>, AppError> {
     // Fetch user's active cards
@@ -543,10 +545,11 @@ fn calculate_milestone_progress(card: &CardVault, points_earned: i32) -> Option<
 }
 
 /// Configure card vault routes
-pub fn routes() -> Router {
+pub fn routes(pool: PgPool) -> Router {
     Router::new()
         .route("/api/cards", get(get_user_cards).post(create_card))
         .route("/api/cards/templates", get(get_card_templates))
         .route("/api/cards/rank-deals", post(calculate_deal_rankings))
         .route("/api/cards/:card_id", get(get_card).put(update_card).delete(delete_card))
+        .with_state(pool)
 }

@@ -16,6 +16,9 @@ pub enum AppError {
 
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
+
+    #[error("Not found: {0}")]
+    NotFound(String),
 }
 
 impl IntoResponse for AppError {
@@ -40,6 +43,13 @@ impl IntoResponse for AppError {
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
                     format!("Internal server error: {}", e),
+                )
+            }
+            AppError::NotFound(e) => {
+                eprintln!("Not found error: {:?}", e);
+                (
+                    StatusCode::NOT_FOUND,
+                    format!("Not found: {}", e),
                 )
             }
         };

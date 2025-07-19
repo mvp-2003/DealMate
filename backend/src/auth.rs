@@ -29,14 +29,11 @@ pub struct Claims {
 pub struct AuthUser(pub User);
 
 #[async_trait]
-impl<S> FromRequestParts<S> for AuthUser
-where
-    S: Send + Sync,
-    PgPool: FromRequestParts<S>,
+impl FromRequestParts<PgPool> for AuthUser
 {
     type Rejection = StatusCode;
 
-    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, state: &PgPool) -> Result<Self, Self::Rejection> {
         // Get claims from request extensions (set by auth middleware)
         let claims = parts
             .extensions
@@ -44,10 +41,7 @@ where
             .ok_or(StatusCode::UNAUTHORIZED)?
             .clone();
 
-        // Get database pool
-        let pool = PgPool::from_request_parts(parts, state)
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        let pool = state.clone();
 
         // Look up user by Auth0 ID
         let user = sqlx::query_as!(

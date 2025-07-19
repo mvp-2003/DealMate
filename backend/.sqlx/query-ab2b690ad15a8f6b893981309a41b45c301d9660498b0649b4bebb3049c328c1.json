@@ -1,0 +1,178 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, external_id, title, description, original_price, discounted_price, discount_percentage, currency, product_url, image_url, merchant, category, deal_type::TEXT as deal_type, coupon_code, cashback_rate, minimum_order_value, maximum_discount, valid_from, valid_until, is_active, is_verified, verification_date, usage_count, success_rate, tags, created_at, updated_at FROM deals WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "external_id",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "title",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "original_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "discounted_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "discount_percentage",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "product_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "image_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "merchant",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 11,
+        "name": "category",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 12,
+        "name": "deal_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "coupon_code",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 14,
+        "name": "cashback_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 15,
+        "name": "minimum_order_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 16,
+        "name": "maximum_discount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 17,
+        "name": "valid_from",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 18,
+        "name": "valid_until",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 19,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 20,
+        "name": "is_verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 21,
+        "name": "verification_date",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 22,
+        "name": "usage_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 23,
+        "name": "success_rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 24,
+        "name": "tags",
+        "type_info": "TextArray"
+      },
+      {
+        "ordinal": 25,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 26,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      null,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "ab2b690ad15a8f6b893981309a41b45c301d9660498b0649b4bebb3049c328c1"
+}

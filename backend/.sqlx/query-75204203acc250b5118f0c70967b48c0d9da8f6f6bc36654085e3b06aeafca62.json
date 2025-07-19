@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO smart_deal_rankings (\n                user_id, deal_id, original_price, deal_discount,\n                recommended_card_id, card_benefit, total_savings,\n                effective_price, savings_percentage, points_earned,\n                milestone_progress, ranking_score, created_at, expires_at\n            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), $13)\n            ON CONFLICT (user_id, deal_id) \n            DO UPDATE SET\n                recommended_card_id = EXCLUDED.recommended_card_id,\n                card_benefit = EXCLUDED.card_benefit,\n                total_savings = EXCLUDED.total_savings,\n                effective_price = EXCLUDED.effective_price,\n                savings_percentage = EXCLUDED.savings_percentage,\n                points_earned = EXCLUDED.points_earned,\n                milestone_progress = EXCLUDED.milestone_progress,\n                ranking_score = EXCLUDED.ranking_score,\n                expires_at = EXCLUDED.expires_at\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Numeric",
+        "Numeric",
+        "Uuid",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Int4",
+        "Text",
+        "Numeric",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "75204203acc250b5118f0c70967b48c0d9da8f6f6bc36654085e3b06aeafca62"
+}

@@ -1,0 +1,125 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT c.* FROM coupons c \n               JOIN merchants m ON c.merchant_id = m.id \n               WHERE c.code = $1 AND m.domain = $2 AND c.is_active = true",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "merchant_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "code",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "title",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "discount_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "discount_value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "minimum_order",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "maximum_discount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "valid_from",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 10,
+        "name": "valid_until",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 11,
+        "name": "usage_limit",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "usage_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 14,
+        "name": "source",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 15,
+        "name": "affiliate_network",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 16,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 17,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "6745f425b17bc6d86efdb01c58f8b75e51df5b2fa621e213ecf2a8eaa3c4d645"
+}
