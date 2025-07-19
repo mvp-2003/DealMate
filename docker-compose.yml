@@ -1,18 +1,91 @@
+# Multi-architecture Docker Compose configuration
+# Supports development and production environments
+
+version: '3.9'
+
+x-common-variables: &common-variables
+  TZ: ${TZ:-UTC}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+
 services:
-  backend:
-    build: 
-      context: ./backend
-      cache_from:
-        - backend:latest
-    ports:
-      - "8000:8000"
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    platform: linux/amd64
+    container_name: dealpal-db
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - RUST_LOG=info
-    env_file:
-      - ./.env
+      POSTGRES_DB: ${POSTGRES_DB:-dealpal}
+      POSTGRES_USER: ${POSTGRES_USER:-dealpal}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dealpal}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dealpal} -d ${POSTGRES_DB:-dealpal}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - dealpal-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    platform: linux/amd64
+    container_name: dealpal-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory ${REDIS_MAX_MEMORY:-256mb}
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD:-dealpal}
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - dealpal-network
+
+  # Rust Backend Service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-runtime
+      platforms:
+        - linux/amd64
+        - linux/arm64
+      cache_from:
+        - type=registry,ref=dealpal/backend:latest
+    container_name: dealpal-backend
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      <<: *common-variables
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dealpal}:${POSTGRES_PASSWORD:-dealpal}@db:5432/${POSTGRES_DB:-dealpal}
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-dealpal}@redis:6379
+      RUST_LOG: ${RUST_LOG:-info,sqlx=warn}
+      RUST_BACKTRACE: ${RUST_BACKTRACE:-1}
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -21,24 +94,33 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    networks:
+      - dealpal-network
 
   # Python AI Service
   ai-service:
-    build: 
-      context: ./backend/ai-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ai-runtime
+      platforms:
+        - linux/amd64
+        - linux/arm64
       cache_from:
-        - ai-service:latest
+        - type=registry,ref=dealpal/ai-service:latest
+    container_name: dealpal-ai-service
     ports:
-      - "8001:8001"
+      - "${AI_SERVICE_PORT:-8001}:8001"
     environment:
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=redis://redis:6379
-      - LOG_LEVEL=INFO
-      - GEMINI_MODEL=gemini-1.5-flash
-      - RUST_BACKEND_URL=http://backend:8000
-    env_file:
-      - ./.env
+      <<: *common-variables
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dealpal}:${POSTGRES_PASSWORD:-dealpal}@db:5432/${POSTGRES_DB:-dealpal}
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-dealpal}@redis:6379
+      RUST_BACKEND_URL: http://backend:8000
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-1.5-flash}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+      MAX_WORKERS: ${AI_MAX_WORKERS:-1}
     depends_on:
       redis:
         condition: service_healthy
@@ -51,26 +133,46 @@ services:
       retries: 3
       start_period: 60s
     restart: unless-stopped
+    networks:
+      - dealpal-network
+    volumes:
+      - ai_models_cache:/home/dealpal/.cache
 
+  # Next.js Frontend
   frontend:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: Dockerfile
+      target: frontend-runtime
+      platforms:
+        - linux/amd64
+        - linux/arm64
       cache_from:
-        - frontend:latest
+        - type=registry,ref=dealpal/frontend:latest
       args:
-        - NODE_ENV=production
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        NEXT_PUBLIC_AI_API_URL: ${NEXT_PUBLIC_AI_API_URL:-http://localhost:8001}
+        NEXT_PUBLIC_AUTH0_DOMAIN: ${NEXT_PUBLIC_AUTH0_DOMAIN}
+        NEXT_PUBLIC_AUTH0_CLIENT_ID: ${NEXT_PUBLIC_AUTH0_CLIENT_ID}
+        NEXT_PUBLIC_AUTH0_REDIRECT_URI: ${NEXT_PUBLIC_AUTH0_REDIRECT_URI}
+    container_name: dealpal-frontend
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      <<: *common-variables
+      NODE_ENV: ${NODE_ENV:-production}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      NEXT_PUBLIC_AI_API_URL: ${NEXT_PUBLIC_AI_API_URL:-http://localhost:8001}
+      AUTH0_SECRET: ${AUTH0_SECRET}
+      AUTH0_BASE_URL: ${AUTH0_BASE_URL:-http://localhost:3000}
+      AUTH0_ISSUER_BASE_URL: ${AUTH0_ISSUER_BASE_URL}
+      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
+      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
     depends_on:
       backend:
         condition: service_healthy
       ai-service:
         condition: service_healthy
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-      - NEXT_PUBLIC_AI_API_URL=http://localhost:8001
-      - NODE_ENV=production
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
@@ -78,17 +180,32 @@ services:
       retries: 3
       start_period: 30s
     restart: unless-stopped
+    networks:
+      - dealpal-network
 
+  # Auth Service
   auth-service:
     build:
       context: .
-      dockerfile: backend/auth-service/Dockerfile
+      dockerfile: Dockerfile
+      target: auth-runtime
+      platforms:
+        - linux/amd64
+        - linux/arm64
       cache_from:
-        - auth-service:latest
+        - type=registry,ref=dealpal/auth-service:latest
+    container_name: dealpal-auth-service
     ports:
-      - "3001:3001"
-    env_file:
-      - ./.env
+      - "${AUTH_SERVICE_PORT:-3001}:3001"
+    environment:
+      <<: *common-variables
+      NODE_ENV: ${NODE_ENV:-production}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dealpal}:${POSTGRES_PASSWORD:-dealpal}@db:5432/${POSTGRES_DB:-dealpal}
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
+      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       db:
         condition: service_healthy
@@ -99,46 +216,15 @@ services:
       retries: 3
       start_period: 30s
     restart: unless-stopped
+    networks:
+      - dealpal-network
 
-  # Database
-  db:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_DB=dealpal
-      - POSTGRES_USER=dealpal
-      - POSTGRES_PASSWORD=password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backend/migrations:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dealpal -d dealpal"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    restart: unless-stopped
-
-  # Redis for caching
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 30s
-    restart: unless-stopped
-
-  # Apache Kafka for real-time event streaming
+  # Development-only services
+  # Kafka ecosystem for event streaming
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.4.0
+    image: confluentinc/cp-zookeeper:7.5.0
+    platform: linux/amd64
+    container_name: dealpal-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -151,19 +237,26 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - dealpal-network
+    profiles:
+      - full
+      - kafka
 
   kafka:
-    image: confluentinc/cp-kafka:7.4.0
+    image: confluentinc/cp-kafka:7.5.0
+    platform: linux/amd64
+    container_name: dealpal-kafka
     depends_on:
       zookeeper:
         condition: service_healthy
     ports:
-      - "9092:9092"
-      - "29092:29092"
+      - "${KAFKA_PORT:-9092}:9092"
+      - "${KAFKA_EXTERNAL_PORT:-29092}:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -182,98 +275,84 @@ services:
       retries: 5
       start_period: 60s
     restart: unless-stopped
-
-  # Kafka Schema Registry for Avro schemas
-  schema-registry:
-    image: confluentinc/cp-schema-registry:7.4.0
-    depends_on:
-      kafka:
-        condition: service_healthy
-    ports:
-      - "8081:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:9092
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    restart: unless-stopped
-
-  # Kafka Connect for data integration
-  kafka-connect:
-    image: confluentinc/cp-kafka-connect:7.4.0
-    depends_on:
-      kafka:
-        condition: service_healthy
-      schema-registry:
-        condition: service_healthy
-    ports:
-      - "8083:8083"
-    environment:
-      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
-      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
-      CONNECT_GROUP_ID: dealpal-connect
-      CONNECT_CONFIG_STORAGE_TOPIC: dealpal-connect-configs
-      CONNECT_OFFSET_STORAGE_TOPIC: dealpal-connect-offsets
-      CONNECT_STATUS_STORAGE_TOPIC: dealpal-connect-status
-      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
-      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8083/connectors"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 90s
-    restart: unless-stopped
-
-  # Kafka UI for monitoring
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    depends_on:
-      kafka:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: dealpal-cluster
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: dealpal-connect
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:8083
-    restart: unless-stopped
+    networks:
+      - dealpal-network
+    profiles:
+      - full
+      - kafka
 
   # Nginx reverse proxy for production
   nginx:
     image: nginx:alpine
+    container_name: dealpal-nginx
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
     depends_on:
       - frontend
       - backend
       - auth-service
+      - ai-service
+    restart: unless-stopped
+    networks:
+      - dealpal-network
     profiles:
       - production
+
+  # Development tools
+  adminer:
+    image: adminer:latest
+    container_name: dealpal-adminer
+    ports:
+      - "${ADMINER_PORT:-8082}:8080"
+    depends_on:
+      - db
     restart: unless-stopped
+    networks:
+      - dealpal-network
+    profiles:
+      - dev
+      - tools
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: dealpal-redis-commander
+    ports:
+      - "${REDIS_COMMANDER_PORT:-8081}:8081"
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:${REDIS_PASSWORD:-dealpal}
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - dealpal-network
+    profiles:
+      - dev
+      - tools
 
 volumes:
   postgres_data:
+    driver: local
   redis_data:
-  ai-models-cache:
-  torch-cache:
+    driver: local
+  ai_models_cache:
+    driver: local
   kafka_data:
+    driver: local
   zookeeper_data:
+    driver: local
   zookeeper_logs:
+    driver: local
+  nginx_cache:
+    driver: local
+
+networks:
+  dealpal-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
