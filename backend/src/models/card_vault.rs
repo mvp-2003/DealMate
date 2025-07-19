@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use sqlx::FromRow;
 use uuid::Uuid;
+use std::str::FromStr;
 
 /// RBI-compliant card vault entry (no sensitive data stored)
 #[derive(Debug, FromRow, Serialize, Deserialize, Clone)]
@@ -220,7 +221,7 @@ impl CardTemplate {
             bank_name: "HDFC".to_string(),
             card_type: "Infinia".to_string(),
             card_network: "Visa".to_string(),
-            base_reward_rate: BigDecimal::from(3.3),
+            base_reward_rate: BigDecimal::from_str("3.3").unwrap(),
             reward_type: "points".to_string(),
             point_value_inr: BigDecimal::from(1),
             category_rewards: serde_json::json!({
@@ -244,9 +245,9 @@ impl CardTemplate {
             bank_name: "Axis".to_string(),
             card_type: "Magnus".to_string(),
             card_network: "Mastercard".to_string(),
-            base_reward_rate: BigDecimal::from(4.8),
+            base_reward_rate: BigDecimal::from_str("4.8").unwrap(),
             reward_type: "points".to_string(),
-            point_value_inr: BigDecimal::from(0.2),
+            point_value_inr: BigDecimal::from_str("0.2").unwrap(),
             category_rewards: serde_json::json!({
                 "travel_edge": 5,
                 "grab_deals": 5,

@@ -10,8 +10,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cardsApi } from '@/lib/api/cards';
 import { CardVault, CardTemplate, getCardDisplayName } from '@/types/card-vault';
-import CardVaultForm from './CardVaultForm';
-import CardTemplateSelector from './CardTemplateSelector';
+import CardVaultForm from '@/components/wallet/CardVaultForm';
+import CardTemplateSelector from '@/components/wallet/CardTemplateSelector';
 import { toast } from 'sonner';
 
 export default function CardVaultManager() {

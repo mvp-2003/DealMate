@@ -1,14 +1,18 @@
 use axum::{
-    extract::Query,
-    http::{HeaderMap, StatusCode},
+    extract::{Query, FromRequestParts},
+    http::{HeaderMap, StatusCode, request::Parts},
     response::{IntoResponse, Redirect},
     Json,
+    async_trait,
 };
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use once_cell::sync::Lazy;
+use crate::models::user::User;
+use sqlx::PgPool;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Claims {
@@ -18,6 +22,72 @@ pub struct Claims {
     pub picture: Option<String>,
     pub exp: usize,
     pub iat: usize,
+}
+
+// AuthUser extractor for authenticated routes
+#[derive(Debug, Clone)]
+pub struct AuthUser(pub User);
+
+#[async_trait]
+impl<S> FromRequestParts<S> for AuthUser
+where
+    S: Send + Sync,
+    PgPool: FromRequestParts<S>,
+{
+    type Rejection = StatusCode;
+
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+        // Get claims from request extensions (set by auth middleware)
+        let claims = parts
+            .extensions
+            .get::<Claims>()
+            .ok_or(StatusCode::UNAUTHORIZED)?
+            .clone();
+
+        // Get database pool
+        let pool = PgPool::from_request_parts(parts, state)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        // Look up user by Auth0 ID
+        let user = sqlx::query_as!(
+            User,
+            "SELECT * FROM users WHERE auth0_id = $1",
+            claims.sub
+        )
+        .fetch_optional(&pool)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        match user {
+            Some(user) => Ok(AuthUser(user)),
+            None => {
+                // Create user if not exists
+                let user_id = Uuid::new_v4();
+                let now = chrono::Utc::now().naive_utc();
+                
+                let user = sqlx::query_as!(
+                    User,
+                    r#"
+                    INSERT INTO users (id, auth0_id, username, email, created_at, updated_at)
+                    VALUES ($1, $2, $3, $4, $5, $6)
+                    RETURNING *
+                    "#,
+                    user_id,
+                    claims.sub,
+                    claims.name.clone().unwrap_or_else(|| claims.email.clone().unwrap_or_else(|| "user".to_string())),
+                    claims.email,
+                    now,
+                    now
+                )
+                .fetch_one(&pool)
+                .await
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+                Ok(AuthUser(user))
+            }
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]

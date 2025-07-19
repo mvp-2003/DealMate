@@ -1,10 +1,12 @@
 'use client';
 
-import { CardTemplate } from '@/types/card-vault';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CreditCard, Star, TrendingUp } from 'lucide-react';
+import { CardTemplate } from '@/types/card-vault';
 
 interface CardTemplateSelectorProps {
   templates: CardTemplate[];
@@ -12,149 +14,131 @@ interface CardTemplateSelectorProps {
 }
 
 export default function CardTemplateSelector({ templates, onSelectTemplate }: CardTemplateSelectorProps) {
-  const popularCards = [
-    {
-      bank: 'HDFC',
-      card: 'Infinia',
-      highlights: ['3.3% base rewards', '16.5% on SmartBuy', 'Unlimited lounge access'],
-      recommended: true,
-    },
-    {
-      bank: 'Axis',
-      card: 'Magnus',
-      highlights: ['4.8% base rewards', '25% milestone bonus', 'Golf & concierge'],
-      recommended: true,
-    },
-    {
-      bank: 'SBI',
-      card: 'Cashback',
-      highlights: ['5% online cashback', 'No reward caps', 'Low annual fee'],
-      recommended: false,
-    },
-    {
-      bank: 'ICICI',
-      card: 'Amazon Pay',
-      highlights: ['5% Amazon cashback', '2% on bills', '1% others'],
-      recommended: false,
-    },
-    {
-      bank: 'Amex',
-      card: 'Membership Rewards',
-      highlights: ['Flexible points', 'Transfer partners', 'Premium benefits'],
-      recommended: false,
-    },
-  ];
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredTemplates = templates.filter(
+    (template) =>
+      template.bankName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.cardType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.cardNetwork.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getCategoryRewardsDisplay = (categoryRewards: Record<string, number>) => {
+    const entries = Object.entries(categoryRewards);
+    if (entries.length === 0) return null;
+    
+    const displayEntries = entries.slice(0, 3);
+    const remaining = entries.length - 3;
+    
+    return (
+      <div className="flex flex-wrap gap-1 mt-2">
+        {displayEntries.map(([category, rate]) => (
+          <Badge key={category} variant="secondary" className="text-xs">
+            {category}: {rate}%
+          </Badge>
+        ))}
+        {remaining > 0 && (
+          <Badge variant="secondary" className="text-xs">
+            +{remaining} more
+          </Badge>
+        )}
+      </div>
+    );
+  };
+
+  const getFeaturesList = (features: CardTemplate['features']) => {
+    const activeFeatures = Object.entries(features)
+      .filter(([_, value]) => value === true)
+      .map(([key]) => key);
+
+    const featureLabels: Record<string, string> = {
+      loungeAccess: 'Lounge Access',
+      concierge: 'Concierge',
+      golfAccess: 'Golf Access',
+      insuranceCover: 'Insurance',
+      fuelSurchargeWaiver: 'Fuel Waiver',
+      noForexMarkup: 'No Forex Markup',
+      priorityPass: 'Priority Pass',
+      meetGreet: 'Meet & Greet',
+    };
+
+    return activeFeatures.slice(0, 3).map(feature => (
+      <Badge key={feature} variant="outline" className="text-xs">
+        {featureLabels[feature] || feature}
+      </Badge>
+    ));
+  };
 
   return (
     <div className="space-y-4">
-      <div className="text-center mb-4">
-        <h3 className="text-lg font-semibold mb-2">Popular Credit Cards</h3>
-        <p className="text-sm text-muted-foreground">
-          Select from popular cards to quickly add with pre-configured reward structures
-        </p>
+      <div className="relative">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search by bank, card name, or network..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
-      <div className="grid gap-4">
-        {templates.map((template, idx) => {
-          const info = popularCards.find(
-            p => p.bank === template.bankName && p.card === template.cardType
-          );
-          
-          return (
-            <Card key={idx} className="cursor-pointer hover:border-primary transition-colors">
+      {filteredTemplates.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          No matching cards found
+        </div>
+      ) : (
+        <div className="space-y-3 max-h-[400px] overflow-y-auto">
+          {filteredTemplates.map((template, index) => (
+            <Card
+              key={index}
+              className="cursor-pointer hover:border-primary transition-colors"
+              onClick={() => onSelectTemplate(template)}
+            >
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <CreditCard className="h-5 w-5" />
+                    <CardTitle className="text-lg">
                       {template.bankName} {template.cardType}
                     </CardTitle>
-                    <CardDescription className="mt-1">
-                      {template.cardNetwork} • ₹{template.annualFee} annual fee
+                    <CardDescription>
+                      {template.cardNetwork} • ₹{template.annualFee.toLocaleString()} annual fee
                     </CardDescription>
                   </div>
-                  {info?.recommended && (
-                    <Badge variant="secondary" className="flex items-center gap-1">
-                      <Star className="h-3 w-3" />
-                      Popular
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {/* Reward Structure */}
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Base Reward:</span>
-                  <span className="font-medium">
+                  <Badge variant="default">
                     {template.rewardType === 'cashback' 
-                      ? `${template.baseRewardRate}% cashback`
+                      ? `${template.baseRewardRate}% Cashback`
                       : `${template.baseRewardRate} pts/₹`
                     }
-                  </span>
+                  </Badge>
                 </div>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {/* Fee Waiver */}
+                {template.feeWaiverCriteria && (
+                  <p className="text-sm text-muted-foreground">
+                    Fee waiver: {template.feeWaiverCriteria}
+                  </p>
+                )}
 
                 {/* Category Rewards */}
-                {Object.keys(template.categoryRewards).length > 0 && (
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-2">Category Bonuses:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {Object.entries(template.categoryRewards).map(([cat, rate]) => (
-                        <Badge key={cat} variant="outline" className="text-xs">
-                          {cat}: {rate}%
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Highlights */}
-                {info?.highlights && (
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-2">Key Benefits:</p>
-                    <ul className="text-sm space-y-1">
-                      {info.highlights.map((highlight, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <TrendingUp className="h-3 w-3 mt-0.5 text-green-600" />
-                          <span>{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {getCategoryRewardsDisplay(template.categoryRewards)}
 
                 {/* Features */}
                 <div className="flex flex-wrap gap-1">
-                  {Object.entries(template.features)
-                    .filter(([_, enabled]) => enabled)
-                    .slice(0, 3)
-                    .map(([feature]) => (
-                      <Badge key={feature} variant="secondary" className="text-xs">
-                        {feature.replace(/([A-Z])/g, ' $1').trim()}
-                      </Badge>
-                    ))}
-                  {Object.keys(template.features).filter(k => template.features[k]).length > 3 && (
-                    <Badge variant="secondary" className="text-xs">
-                      +{Object.keys(template.features).filter(k => template.features[k]).length - 3} more
-                    </Badge>
-                  )}
+                  {getFeaturesList(template.features)}
                 </div>
 
-                <Button 
-                  className="w-full" 
-                  onClick={() => onSelectTemplate(template)}
+                <Button
+                  className="w-full mt-3"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectTemplate(template);
+                  }}
                 >
-                  Add This Card
+                  Use This Template
                 </Button>
               </CardContent>
             </Card>
-          );
-        })}
-      </div>
-
-      {templates.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          <CreditCard className="h-12 w-12 mx-auto mb-3 opacity-30" />
-          <p>No card templates available</p>
+          ))}
         </div>
       )}
     </div>

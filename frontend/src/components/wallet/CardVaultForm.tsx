@@ -1,385 +1,303 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreateCardRequest } from '@/types/card-vault';
-import { Save, Plus, Trash2 } from 'lucide-react';
-
-const cardFormSchema = z.object({
-  bankName: z.string().min(2, { message: "Bank name is required" }),
-  cardType: z.string().min(2, { message: "Card type is required" }),
-  cardNetwork: z.string().optional(),
-  lastFourDigits: z.string().length(4).optional().or(z.literal('')),
-  nickname: z.string().optional(),
-  
-  baseRewardRate: z.number().min(0).optional(),
-  rewardType: z.enum(['points', 'cashback', 'miles']).optional(),
-  pointValueInr: z.number().min(0).optional(),
-  
-  annualFee: z.number().min(0).optional(),
-  feeWaiverCriteria: z.string().optional(),
-  currentPoints: z.number().int().min(0).optional(),
-});
+import { Info } from 'lucide-react';
 
 interface CardVaultFormProps {
-  onSubmit: (data: CreateCardRequest) => Promise<void>;
+  onSubmit: (data: CreateCardRequest) => void;
   initialData?: Partial<CreateCardRequest>;
-  isLoading?: boolean;
 }
 
-export default function CardVaultForm({ onSubmit, initialData, isLoading }: CardVaultFormProps) {
-  const [categoryRewards, setCategoryRewards] = useState<Record<string, number>>(
-    initialData?.categoryRewards || {}
-  );
-  const [milestones, setMilestones] = useState(initialData?.milestoneConfig || []);
-  const [features, setFeatures] = useState(initialData?.features || {});
-  
-  const form = useForm<z.infer<typeof cardFormSchema>>({
-    resolver: zodResolver(cardFormSchema),
-    defaultValues: {
-      bankName: initialData?.bankName || "",
-      cardType: initialData?.cardType || "",
-      cardNetwork: initialData?.cardNetwork || "",
-      lastFourDigits: initialData?.lastFourDigits || "",
-      nickname: initialData?.nickname || "",
-      baseRewardRate: initialData?.baseRewardRate || 0,
-      rewardType: initialData?.rewardType || 'points',
-      pointValueInr: initialData?.pointValueInr || 0,
-      annualFee: initialData?.annualFee || 0,
-      feeWaiverCriteria: initialData?.feeWaiverCriteria || "",
-      currentPoints: initialData?.currentPoints || 0,
-    },
+export default function CardVaultForm({ onSubmit, initialData }: CardVaultFormProps) {
+  const [formData, setFormData] = useState<CreateCardRequest>({
+    bankName: initialData?.bankName || '',
+    cardType: initialData?.cardType || '',
+    cardNetwork: initialData?.cardNetwork || 'Visa',
+    lastFourDigits: initialData?.lastFourDigits || '',
+    nickname: initialData?.nickname || '',
+    baseRewardRate: initialData?.baseRewardRate || 0,
+    rewardType: initialData?.rewardType || 'points',
+    pointValueInr: initialData?.pointValueInr || 0,
+    categoryRewards: initialData?.categoryRewards || {},
+    currentPoints: initialData?.currentPoints || 0,
+    milestoneConfig: initialData?.milestoneConfig || [],
+    features: initialData?.features || {},
+    annualFee: initialData?.annualFee || 0,
+    feeWaiverCriteria: initialData?.feeWaiverCriteria,
   });
 
-  const processSubmit = async (values: z.infer<typeof cardFormSchema>) => {
-    const submitData: CreateCardRequest = {
-      ...values,
-      categoryRewards: Object.keys(categoryRewards).length > 0 ? categoryRewards : undefined,
-      milestoneConfig: milestones.length > 0 ? milestones : undefined,
-      features: Object.keys(features).length > 0 ? features : undefined,
-    };
-    await onSubmit(submitData);
-  };
+  const [categoryName, setCategoryName] = useState('');
+  const [categoryRate, setCategoryRate] = useState('');
 
-  const addCategoryReward = () => {
-    const category = prompt('Enter category name (e.g., dining, travel, fuel):');
-    if (category) {
-      const rate = prompt('Enter reward rate (e.g., 5 for 5%):');
-      if (rate) {
-        setCategoryRewards({ ...categoryRewards, [category]: parseFloat(rate) });
-      }
+  const handleAddCategory = () => {
+    if (categoryName && categoryRate) {
+      setFormData({
+        ...formData,
+        categoryRewards: {
+          ...formData.categoryRewards,
+          [categoryName.toLowerCase()]: parseFloat(categoryRate),
+        },
+      });
+      setCategoryName('');
+      setCategoryRate('');
     }
   };
 
-  const removeCategoryReward = (category: string) => {
-    const updated = { ...categoryRewards };
-    delete updated[category];
-    setCategoryRewards(updated);
+  const handleRemoveCategory = (category: string) => {
+    const { [category]: _, ...rest } = formData.categoryRewards || {};
+    setFormData({ ...formData, categoryRewards: rest });
   };
 
-  const addMilestone = () => {
-    const threshold = prompt('Enter points threshold:');
-    if (threshold) {
-      const value = prompt('Enter reward value in ₹:');
-      if (value) {
-        setMilestones([...milestones, {
-          threshold: parseInt(threshold),
-          rewardValue: parseFloat(value),
-        }]);
-      }
-    }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(processSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="bankName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bank Name*</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., HDFC, ICICI" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="cardType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Card Type*</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., Infinia, Millennia" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Tabs defaultValue="basic" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="basic">Basic Info</TabsTrigger>
+          <TabsTrigger value="rewards">Rewards</TabsTrigger>
+          <TabsTrigger value="features">Features</TabsTrigger>
+        </TabsList>
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="cardNetwork"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Card Network</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select network" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="visa">Visa</SelectItem>
-                    <SelectItem value="mastercard">Mastercard</SelectItem>
-                    <SelectItem value="rupay">RuPay</SelectItem>
-                    <SelectItem value="amex">American Express</SelectItem>
-                    <SelectItem value="diners">Diners Club</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="lastFourDigits"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last 4 Digits</FormLabel>
-                <FormControl>
-                  <Input type="text" maxLength={4} placeholder="1234" {...field} />
-                </FormControl>
-                <FormDescription>Optional, for identification</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <TabsContent value="basic" className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="bankName">Bank Name</Label>
+              <Input
+                id="bankName"
+                value={formData.bankName}
+                onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                placeholder="e.g., HDFC"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="cardType">Card Type</Label>
+              <Input
+                id="cardType"
+                value={formData.cardType}
+                onChange={(e) => setFormData({ ...formData, cardType: e.target.value })}
+                placeholder="e.g., Infinia"
+                required
+              />
+            </div>
+          </div>
 
-        <FormField
-          control={form.control}
-          name="nickname"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Card Nickname</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., My Travel Card" {...field} />
-              </FormControl>
-              <FormDescription>Optional friendly name</FormDescription>
-              <FormMessage />
-            </FormItem>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="cardNetwork">Card Network</Label>
+              <Select
+                value={formData.cardNetwork}
+                onValueChange={(value) => setFormData({ ...formData, cardNetwork: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Visa">Visa</SelectItem>
+                  <SelectItem value="Mastercard">Mastercard</SelectItem>
+                  <SelectItem value="Rupay">Rupay</SelectItem>
+                  <SelectItem value="American Express">American Express</SelectItem>
+                  <SelectItem value="Diners Club">Diners Club</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="lastFourDigits">Last 4 Digits (Optional)</Label>
+              <Input
+                id="lastFourDigits"
+                value={formData.lastFourDigits || ''}
+                onChange={(e) => setFormData({ ...formData, lastFourDigits: e.target.value })}
+                placeholder="1234"
+                maxLength={4}
+                pattern="[0-9]{4}"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="nickname">Card Nickname (Optional)</Label>
+            <Input
+              id="nickname"
+              value={formData.nickname || ''}
+              onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
+              placeholder="e.g., My Travel Card"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="annualFee">Annual Fee (₹)</Label>
+            <Input
+              id="annualFee"
+              type="number"
+              value={formData.annualFee || 0}
+              onChange={(e) => setFormData({ ...formData, annualFee: parseFloat(e.target.value) || 0 })}
+              placeholder="0"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="feeWaiverCriteria">Fee Waiver Criteria (Optional)</Label>
+            <Input
+              id="feeWaiverCriteria"
+              value={formData.feeWaiverCriteria || ''}
+              onChange={(e) => setFormData({ ...formData, feeWaiverCriteria: e.target.value })}
+              placeholder="e.g., Spend 2L in a year"
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="rewards" className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="rewardType">Reward Type</Label>
+              <Select
+                value={formData.rewardType}
+                onValueChange={(value) => setFormData({ ...formData, rewardType: value as 'points' | 'cashback' | 'miles' })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="points">Points</SelectItem>
+                  <SelectItem value="cashback">Cashback</SelectItem>
+                  <SelectItem value="miles">Miles</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="baseRewardRate">
+                Base Reward Rate (%)
+                <span className="text-xs text-muted-foreground ml-1">
+                  {formData.rewardType === 'cashback' ? 'Cashback %' : 'Points per ₹100'}
+                </span>
+              </Label>
+              <Input
+                id="baseRewardRate"
+                type="number"
+                step="0.1"
+                value={formData.baseRewardRate || 0}
+                onChange={(e) => setFormData({ ...formData, baseRewardRate: parseFloat(e.target.value) || 0 })}
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+          {formData.rewardType === 'points' && (
+            <div>
+              <Label htmlFor="pointValueInr">Point Value (₹)</Label>
+              <Input
+                id="pointValueInr"
+                type="number"
+                step="0.01"
+                value={formData.pointValueInr || 0}
+                onChange={(e) => setFormData({ ...formData, pointValueInr: parseFloat(e.target.value) || 0 })}
+                placeholder="0"
+              />
+            </div>
           )}
-        />
 
-        <div className="border-t pt-4">
-          <h3 className="font-medium mb-3">Reward Structure</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="rewardType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Reward Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="points">Points</SelectItem>
-                      <SelectItem value="cashback">Cashback</SelectItem>
-                      <SelectItem value="miles">Miles</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="baseRewardRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Base Rate</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      step="0.1" 
-                      placeholder="e.g., 1.5" 
-                      {...field} 
-                      onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
-                    />
-                  </FormControl>
-                  <FormDescription>Per ₹ spent</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="pointValueInr"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Point Value (₹)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      step="0.01" 
-                      placeholder="e.g., 0.25" 
-                      {...field}
-                      onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
-                    />
-                  </FormControl>
-                  <FormDescription>1 point = ?₹</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+          <div>
+            <Label htmlFor="currentPoints">Current Points Balance</Label>
+            <Input
+              id="currentPoints"
+              type="number"
+              value={formData.currentPoints || 0}
+              onChange={(e) => setFormData({ ...formData, currentPoints: parseInt(e.target.value) || 0 })}
+              placeholder="0"
             />
           </div>
-        </div>
 
-        {/* Category Rewards */}
-        <div className="border-t pt-4">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="font-medium">Category Bonuses</h3>
-            <Button type="button" variant="outline" size="sm" onClick={addCategoryReward}>
-              <Plus className="mr-1 h-3 w-3" />
-              Add Category
-            </Button>
-          </div>
-          {Object.keys(categoryRewards).length > 0 && (
-            <div className="space-y-2">
-              {Object.entries(categoryRewards).map(([category, rate]) => (
-                <div key={category} className="flex justify-between items-center p-2 border rounded">
+          <div>
+            <Label>Category-specific Rewards</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                placeholder="Category (e.g., dining)"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+              />
+              <Input
+                placeholder="Rate %"
+                type="number"
+                step="0.1"
+                value={categoryRate}
+                onChange={(e) => setCategoryRate(e.target.value)}
+              />
+              <Button type="button" onClick={handleAddCategory}>
+                Add
+              </Button>
+            </div>
+            <div className="mt-2 space-y-1">
+              {Object.entries(formData.categoryRewards || {}).map(([category, rate]) => (
+                <div key={category} className="flex justify-between items-center p-2 bg-secondary rounded">
                   <span className="capitalize">{category}: {rate}%</span>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => removeCategoryReward(category)}
+                    onClick={() => handleRemoveCategory(category)}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    Remove
                   </Button>
                 </div>
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Milestones */}
-        <div className="border-t pt-4">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="font-medium">Milestone Rewards</h3>
-            <Button type="button" variant="outline" size="sm" onClick={addMilestone}>
-              <Plus className="mr-1 h-3 w-3" />
-              Add Milestone
-            </Button>
           </div>
-          {milestones.length > 0 && (
-            <div className="space-y-2">
-              {milestones.map((milestone, idx) => (
-                <div key={idx} className="flex justify-between items-center p-2 border rounded">
-                  <span>{milestone.threshold.toLocaleString()} pts → ₹{milestone.rewardValue}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setMilestones(milestones.filter((_, i) => i !== idx))}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        </TabsContent>
 
-        {/* Card Features */}
-        <div className="border-t pt-4">
-          <h3 className="font-medium mb-3">Card Features</h3>
-          <div className="grid grid-cols-2 gap-3">
+        <TabsContent value="features" className="space-y-4">
+          <div className="text-sm text-muted-foreground mb-4">
+            <Info className="inline h-4 w-4 mr-1" />
+            Select the features available with your card
+          </div>
+          
+          <div className="space-y-3">
             {[
-              { key: 'loungeAccess', label: 'Lounge Access' },
-              { key: 'fuelSurchargeWaiver', label: 'Fuel Surcharge Waiver' },
-              { key: 'golfAccess', label: 'Golf Access' },
+              { key: 'loungeAccess', label: 'Airport Lounge Access' },
               { key: 'concierge', label: 'Concierge Service' },
-              { key: 'insuranceCover', label: 'Insurance Cover' },
+              { key: 'golfAccess', label: 'Golf Course Access' },
+              { key: 'insuranceCover', label: 'Insurance Coverage' },
+              { key: 'fuelSurchargeWaiver', label: 'Fuel Surcharge Waiver' },
               { key: 'noForexMarkup', label: 'No Forex Markup' },
-            ].map(feature => (
-              <div key={feature.key} className="flex items-center space-x-2">
+              { key: 'priorityPass', label: 'Priority Pass' },
+              { key: 'meetGreet', label: 'Meet & Greet Service' },
+            ].map((feature) => (
+              <div key={feature.key} className="flex items-center justify-between">
+                <Label htmlFor={feature.key} className="cursor-pointer">
+                  {feature.label}
+                </Label>
                 <Switch
-                  checked={features[feature.key] || false}
-                  onCheckedChange={(checked) => 
-                    setFeatures({ ...features, [feature.key]: checked })
+                  id={feature.key}
+                  checked={formData.features?.[feature.key] || false}
+                  onCheckedChange={(checked) =>
+                    setFormData({
+                      ...formData,
+                      features: {
+                        ...formData.features,
+                        [feature.key]: checked,
+                      },
+                    })
                   }
                 />
-                <Label>{feature.label}</Label>
               </div>
             ))}
           </div>
-        </div>
+        </TabsContent>
+      </Tabs>
 
-        {/* Additional Details */}
-        <div className="grid grid-cols-2 gap-4 border-t pt-4">
-          <FormField
-            control={form.control}
-            name="annualFee"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Annual Fee (₹)</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="e.g., 5000" 
-                    {...field}
-                    onChange={e => field.onChange(parseInt(e.target.value) || 0)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="currentPoints"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Current Points</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="e.g., 10000" 
-                    {...field}
-                    onChange={e => field.onChange(parseInt(e.target.value) || 0)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <Button type="submit" disabled={isLoading} className="w-full">
-          <Save className="mr-2 h-4 w-4" />
-          {isLoading ? "Saving..." : "Save Card"}
-        </Button>
-      </form>
-    </Form>
+      <div className="flex justify-end gap-2 pt-4">
+        <Button type="submit">Add Card</Button>
+      </div>
+    </form>
   );
 }

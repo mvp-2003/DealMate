@@ -1,4 +1,10 @@
-use actix_web::{web, HttpResponse};
+use axum::{
+    extract::{Path, State, Json},
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, post},
+    Router,
+};
 use bigdecimal::BigDecimal;
 use chrono::Utc;
 use serde_json::json;
@@ -6,7 +12,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::auth::AuthUser;
-use crate::error::ApiError;
+use crate::error::AppError;
 use crate::models::card_vault::{
     CardVault, CreateCardRequest, UpdateCardRequest, 
     CalculateDealRankingRequest, DealRankingResponse,
@@ -15,85 +21,117 @@ use crate::models::card_vault::{
 
 /// Get all cards for the authenticated user
 pub async fn get_user_cards(
-    pool: web::Data<PgPool>,
+    State(pool): State<PgPool>,
     user: AuthUser,
-) -> Result<HttpResponse, ApiError> {
-    let cards = sqlx::query_as!(
-        CardVault,
+) -> Result<Json<Vec<CardVault>>, AppError> {
+    let rows = sqlx::query!(
         r#"
-        SELECT 
-            id, user_id, bank_name, card_type, card_network, 
-            last_four_digits, nickname,
-            base_reward_rate, reward_type, point_value_inr,
-            category_rewards, current_points, points_expiry_date,
-            milestone_config, features, annual_fee, fee_waiver_criteria,
-            bank_offers, is_active, is_primary,
-            created_at, updated_at
-        FROM card_vault
+        SELECT * FROM card_vault
         WHERE user_id = $1 AND is_active = true
         ORDER BY is_primary DESC, created_at DESC
         "#,
-        user.id
+        user.0.id
     )
-    .fetch_all(pool.get_ref())
+    .fetch_all(&pool)
     .await?;
 
-    Ok(HttpResponse::Ok().json(cards))
+    let cards: Vec<CardVault> = rows.into_iter().map(|row| CardVault {
+        id: row.id,
+        user_id: row.user_id,
+        bank_name: row.bank_name,
+        card_type: row.card_type,
+        card_network: row.card_network,
+        last_four_digits: row.last_four_digits,
+        nickname: row.nickname,
+        base_reward_rate: row.base_reward_rate.unwrap_or(BigDecimal::from(0)),
+        reward_type: row.reward_type.unwrap_or("points".to_string()),
+        point_value_inr: row.point_value_inr.unwrap_or(BigDecimal::from(0)),
+        category_rewards: row.category_rewards.unwrap_or(json!({})),
+        current_points: row.current_points.unwrap_or(0),
+        points_expiry_date: row.points_expiry_date,
+        milestone_config: row.milestone_config.unwrap_or(json!([])),
+        features: row.features.unwrap_or(json!({})),
+        annual_fee: row.annual_fee.unwrap_or(BigDecimal::from(0)),
+        fee_waiver_criteria: row.fee_waiver_criteria,
+        bank_offers: row.bank_offers.unwrap_or(json!([])),
+        is_active: row.is_active.unwrap_or(true),
+        is_primary: row.is_primary.unwrap_or(false),
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+    }).collect();
+
+    Ok(Json(cards))
 }
 
 /// Get a specific card by ID
 pub async fn get_card(
-    pool: web::Data<PgPool>,
+    State(pool): State<PgPool>,
     user: AuthUser,
-    card_id: web::Path<Uuid>,
-) -> Result<HttpResponse, ApiError> {
-    let card = sqlx::query_as!(
-        CardVault,
+    Path(card_id): Path<Uuid>,
+) -> Result<Json<CardVault>, AppError> {
+    let row = sqlx::query!(
         r#"
-        SELECT 
-            id, user_id, bank_name, card_type, card_network, 
-            last_four_digits, nickname,
-            base_reward_rate, reward_type, point_value_inr,
-            category_rewards, current_points, points_expiry_date,
-            milestone_config, features, annual_fee, fee_waiver_criteria,
-            bank_offers, is_active, is_primary,
-            created_at, updated_at
-        FROM card_vault
+        SELECT * FROM card_vault
         WHERE id = $1 AND user_id = $2
         "#,
-        card_id.into_inner(),
-        user.id
+        card_id,
+        user.0.id
     )
-    .fetch_optional(pool.get_ref())
+    .fetch_optional(&pool)
     .await?;
 
-    match card {
-        Some(card) => Ok(HttpResponse::Ok().json(card)),
-        None => Err(ApiError::NotFound("Card not found".to_string())),
+    match row {
+        Some(row) => {
+            let card = CardVault {
+                id: row.id,
+                user_id: row.user_id,
+                bank_name: row.bank_name,
+                card_type: row.card_type,
+                card_network: row.card_network,
+                last_four_digits: row.last_four_digits,
+                nickname: row.nickname,
+                base_reward_rate: row.base_reward_rate.unwrap_or(BigDecimal::from(0)),
+                reward_type: row.reward_type.unwrap_or("points".to_string()),
+                point_value_inr: row.point_value_inr.unwrap_or(BigDecimal::from(0)),
+                category_rewards: row.category_rewards.unwrap_or(json!({})),
+                current_points: row.current_points.unwrap_or(0),
+                points_expiry_date: row.points_expiry_date,
+                milestone_config: row.milestone_config.unwrap_or(json!([])),
+                features: row.features.unwrap_or(json!({})),
+                annual_fee: row.annual_fee.unwrap_or(BigDecimal::from(0)),
+                fee_waiver_criteria: row.fee_waiver_criteria,
+                bank_offers: row.bank_offers.unwrap_or(json!([])),
+                is_active: row.is_active.unwrap_or(true),
+                is_primary: row.is_primary.unwrap_or(false),
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+            };
+            Ok(Json(card))
+        },
+        None => Err(AppError::NotFound("Card not found".to_string())),
     }
 }
 
 /// Create a new card
 pub async fn create_card(
-    pool: web::Data<PgPool>,
+    State(pool): State<PgPool>,
     user: AuthUser,
-    req: web::Json<CreateCardRequest>,
-) -> Result<HttpResponse, ApiError> {
+    Json(req): Json<CreateCardRequest>,
+) -> Result<impl IntoResponse, AppError> {
     let card_id = Uuid::new_v4();
     let now = Utc::now();
     
     // Check if this is the user's first card
     let card_count: i64 = sqlx::query_scalar!(
         "SELECT COUNT(*) FROM card_vault WHERE user_id = $1",
-        user.id
+        user.0.id
     )
-    .fetch_one(pool.get_ref())
+    .fetch_one(&pool)
     .await?;
     
     let is_primary = card_count == 0;
     
-    let card = sqlx::query_as!(
-        CardVault,
+    let row = sqlx::query!(
         r#"
         INSERT INTO card_vault (
             id, user_id, bank_name, card_type, card_network,
@@ -108,7 +146,7 @@ pub async fn create_card(
         RETURNING *
         "#,
         card_id,
-        user.id,
+        user.0.id,
         req.bank_name,
         req.card_type,
         req.card_network,
@@ -127,134 +165,192 @@ pub async fn create_card(
         now,
         now
     )
-    .fetch_one(pool.get_ref())
+    .fetch_one(&pool)
     .await?;
 
-    Ok(HttpResponse::Created().json(card))
+    let card = CardVault {
+        id: row.id,
+        user_id: row.user_id,
+        bank_name: row.bank_name,
+        card_type: row.card_type,
+        card_network: row.card_network,
+        last_four_digits: row.last_four_digits,
+        nickname: row.nickname,
+        base_reward_rate: row.base_reward_rate.unwrap_or(BigDecimal::from(0)),
+        reward_type: row.reward_type.unwrap_or("points".to_string()),
+        point_value_inr: row.point_value_inr.unwrap_or(BigDecimal::from(0)),
+        category_rewards: row.category_rewards.unwrap_or(json!({})),
+        current_points: row.current_points.unwrap_or(0),
+        points_expiry_date: row.points_expiry_date,
+        milestone_config: row.milestone_config.unwrap_or(json!([])),
+        features: row.features.unwrap_or(json!({})),
+        annual_fee: row.annual_fee.unwrap_or(BigDecimal::from(0)),
+        fee_waiver_criteria: row.fee_waiver_criteria,
+        bank_offers: row.bank_offers.unwrap_or(json!([])),
+        is_active: row.is_active.unwrap_or(true),
+        is_primary: row.is_primary.unwrap_or(false),
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+    };
+
+    Ok((StatusCode::CREATED, Json(card)))
 }
 
 /// Update a card
 pub async fn update_card(
-    pool: web::Data<PgPool>,
+    State(pool): State<PgPool>,
     user: AuthUser,
-    card_id: web::Path<Uuid>,
-    req: web::Json<UpdateCardRequest>,
-) -> Result<HttpResponse, ApiError> {
+    Path(card_id): Path<Uuid>,
+    Json(req): Json<UpdateCardRequest>,
+) -> Result<Json<CardVault>, AppError> {
     // First check if the card belongs to the user
     let exists = sqlx::query_scalar!(
         "SELECT EXISTS(SELECT 1 FROM card_vault WHERE id = $1 AND user_id = $2)",
-        card_id.into_inner(),
-        user.id
+        card_id,
+        user.0.id
     )
-    .fetch_one(pool.get_ref())
+    .fetch_one(&pool)
     .await?
     .unwrap_or(false);
 
     if !exists {
-        return Err(ApiError::NotFound("Card not found".to_string()));
+        return Err(AppError::NotFound("Card not found".to_string()));
     }
 
     // If setting as primary, unset other primary cards
     if req.is_primary == Some(true) {
         sqlx::query!(
             "UPDATE card_vault SET is_primary = false WHERE user_id = $1",
-            user.id
+            user.0.id
         )
-        .execute(pool.get_ref())
+        .execute(&pool)
         .await?;
     }
 
-    // Build dynamic update query
-    let mut query = String::from("UPDATE card_vault SET updated_at = NOW()");
-    let mut params = vec![];
-    let mut param_count = 1;
+    // For now, let's do a simple update
+    let row = sqlx::query!(
+        r#"
+        UPDATE card_vault 
+        SET 
+            nickname = COALESCE($3, nickname),
+            current_points = COALESCE($4, current_points),
+            is_primary = COALESCE($5, is_primary),
+            is_active = COALESCE($6, is_active),
+            updated_at = NOW()
+        WHERE id = $1 AND user_id = $2
+        RETURNING *
+        "#,
+        card_id,
+        user.0.id,
+        req.nickname,
+        req.current_points,
+        req.is_primary,
+        req.is_active
+    )
+    .fetch_one(&pool)
+    .await?;
 
-    if let Some(nickname) = &req.nickname {
-        query.push_str(&format!(", nickname = ${}", param_count));
-        params.push(nickname);
-        param_count += 1;
-    }
+    let card = CardVault {
+        id: row.id,
+        user_id: row.user_id,
+        bank_name: row.bank_name,
+        card_type: row.card_type,
+        card_network: row.card_network,
+        last_four_digits: row.last_four_digits,
+        nickname: row.nickname,
+        base_reward_rate: row.base_reward_rate.unwrap_or(BigDecimal::from(0)),
+        reward_type: row.reward_type.unwrap_or("points".to_string()),
+        point_value_inr: row.point_value_inr.unwrap_or(BigDecimal::from(0)),
+        category_rewards: row.category_rewards.unwrap_or(json!({})),
+        current_points: row.current_points.unwrap_or(0),
+        points_expiry_date: row.points_expiry_date,
+        milestone_config: row.milestone_config.unwrap_or(json!([])),
+        features: row.features.unwrap_or(json!({})),
+        annual_fee: row.annual_fee.unwrap_or(BigDecimal::from(0)),
+        fee_waiver_criteria: row.fee_waiver_criteria,
+        bank_offers: row.bank_offers.unwrap_or(json!([])),
+        is_active: row.is_active.unwrap_or(true),
+        is_primary: row.is_primary.unwrap_or(false),
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+    };
 
-    if let Some(current_points) = &req.current_points {
-        query.push_str(&format!(", current_points = ${}", param_count));
-        params.push(&current_points.to_string());
-        param_count += 1;
-    }
-
-    if let Some(is_primary) = &req.is_primary {
-        query.push_str(&format!(", is_primary = ${}", param_count));
-        params.push(&is_primary.to_string());
-        param_count += 1;
-    }
-
-    if let Some(is_active) = &req.is_active {
-        query.push_str(&format!(", is_active = ${}", param_count));
-        params.push(&is_active.to_string());
-        param_count += 1;
-    }
-
-    query.push_str(&format!(" WHERE id = ${} AND user_id = ${} RETURNING *", 
-        param_count, param_count + 1));
-
-    // Execute update and fetch updated card
-    let updated_card = sqlx::query_as::<_, CardVault>(&query)
-        .bind(*card_id)
-        .bind(user.id)
-        .fetch_one(pool.get_ref())
-        .await?;
-
-    Ok(HttpResponse::Ok().json(updated_card))
+    Ok(Json(card))
 }
 
 /// Delete a card (soft delete by setting is_active = false)
 pub async fn delete_card(
-    pool: web::Data<PgPool>,
+    State(pool): State<PgPool>,
     user: AuthUser,
-    card_id: web::Path<Uuid>,
-) -> Result<HttpResponse, ApiError> {
+    Path(card_id): Path<Uuid>,
+) -> Result<impl IntoResponse, AppError> {
     let result = sqlx::query!(
         "UPDATE card_vault SET is_active = false WHERE id = $1 AND user_id = $2",
-        card_id.into_inner(),
-        user.id
+        card_id,
+        user.0.id
     )
-    .execute(pool.get_ref())
+    .execute(&pool)
     .await?;
 
     if result.rows_affected() == 0 {
-        return Err(ApiError::NotFound("Card not found".to_string()));
+        return Err(AppError::NotFound("Card not found".to_string()));
     }
 
-    Ok(HttpResponse::NoContent().finish())
+    Ok(StatusCode::NO_CONTENT)
 }
 
 /// Get available card templates
-pub async fn get_card_templates() -> Result<HttpResponse, ApiError> {
+pub async fn get_card_templates() -> Result<Json<Vec<CardTemplate>>, AppError> {
     let templates = vec![
         CardTemplate::hdfc_infinia(),
         CardTemplate::axis_magnus(),
         CardTemplate::sbi_cashback(),
     ];
 
-    Ok(HttpResponse::Ok().json(templates))
+    Ok(Json(templates))
 }
 
 /// Calculate deal rankings for all user cards
 pub async fn calculate_deal_rankings(
-    pool: web::Data<PgPool>,
+    State(pool): State<PgPool>,
     user: AuthUser,
-    req: web::Json<CalculateDealRankingRequest>,
-) -> Result<HttpResponse, ApiError> {
+    Json(req): Json<CalculateDealRankingRequest>,
+) -> Result<Json<DealRankingResponse>, AppError> {
     // Fetch user's active cards
-    let cards = sqlx::query_as!(
-        CardVault,
+    let rows = sqlx::query!(
         r#"
         SELECT * FROM card_vault
         WHERE user_id = $1 AND is_active = true
         "#,
-        user.id
+        user.0.id
     )
-    .fetch_all(pool.get_ref())
+    .fetch_all(&pool)
     .await?;
+
+    let cards: Vec<CardVault> = rows.into_iter().map(|row| CardVault {
+        id: row.id,
+        user_id: row.user_id,
+        bank_name: row.bank_name,
+        card_type: row.card_type,
+        card_network: row.card_network,
+        last_four_digits: row.last_four_digits,
+        nickname: row.nickname,
+        base_reward_rate: row.base_reward_rate.unwrap_or(BigDecimal::from(0)),
+        reward_type: row.reward_type.unwrap_or("points".to_string()),
+        point_value_inr: row.point_value_inr.unwrap_or(BigDecimal::from(0)),
+        category_rewards: row.category_rewards.unwrap_or(json!({})),
+        current_points: row.current_points.unwrap_or(0),
+        points_expiry_date: row.points_expiry_date,
+        milestone_config: row.milestone_config.unwrap_or(json!([])),
+        features: row.features.unwrap_or(json!({})),
+        annual_fee: row.annual_fee.unwrap_or(BigDecimal::from(0)),
+        fee_waiver_criteria: row.fee_waiver_criteria,
+        bank_offers: row.bank_offers.unwrap_or(json!([])),
+        is_active: row.is_active.unwrap_or(true),
+        is_primary: row.is_primary.unwrap_or(false),
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+    }).collect();
 
     let mut rankings = Vec::new();
 
@@ -296,7 +392,7 @@ pub async fn calculate_deal_rankings(
                 ranking_score = EXCLUDED.ranking_score,
                 expires_at = EXCLUDED.expires_at
             "#,
-            user.id,
+            user.0.id,
             req.deal_id,
             req.original_price,
             req.deal_discount,
@@ -310,7 +406,7 @@ pub async fn calculate_deal_rankings(
             best_card.score,
             expires_at
         )
-        .execute(pool.get_ref())
+        .execute(&pool)
         .await?;
     }
 
@@ -319,7 +415,7 @@ pub async fn calculate_deal_rankings(
         rankings,
     };
 
-    Ok(HttpResponse::Ok().json(response))
+    Ok(Json(response))
 }
 
 /// Helper function to calculate card benefits for a deal
@@ -330,7 +426,6 @@ fn calculate_card_benefit(
     original_price: &BigDecimal,
     deal_discount: &BigDecimal,
 ) -> CardDealAnalysis {
-    use std::str::FromStr;
     
     // Calculate base reward
     let base_reward = &card.base_reward_rate * original_price / BigDecimal::from(100);
@@ -375,7 +470,13 @@ fn calculate_card_benefit(
     } else {
         &BigDecimal::from(0)
     };
-    let points_earned = (points_rate * original_price).to_u64_digits().0[0] as i32;
+    
+    // Safe conversion to i32 for points
+    let points_earned = points_rate.clone() * original_price.clone();
+    let points_earned = points_earned.to_string()
+        .parse::<f64>()
+        .unwrap_or(0.0) as i32;
+    
     let points_value_inr = &card.point_value_inr * BigDecimal::from(points_earned);
     
     // Check milestone progress
@@ -442,15 +543,10 @@ fn calculate_milestone_progress(card: &CardVault, points_earned: i32) -> Option<
 }
 
 /// Configure card vault routes
-pub fn configure(cfg: &mut web::ServiceConfig) {
-    cfg.service(
-        web::scope("/api/cards")
-            .route("", web::get().to(get_user_cards))
-            .route("", web::post().to(create_card))
-            .route("/templates", web::get().to(get_card_templates))
-            .route("/rank-deals", web::post().to(calculate_deal_rankings))
-            .route("/{card_id}", web::get().to(get_card))
-            .route("/{card_id}", web::put().to(update_card))
-            .route("/{card_id}", web::delete().to(delete_card))
-    );
+pub fn routes() -> Router {
+    Router::new()
+        .route("/api/cards", get(get_user_cards).post(create_card))
+        .route("/api/cards/templates", get(get_card_templates))
+        .route("/api/cards/rank-deals", post(calculate_deal_rankings))
+        .route("/api/cards/:card_id", get(get_card).put(update_card).delete(delete_card))
 }

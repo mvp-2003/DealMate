@@ -85,18 +85,16 @@ pub fn app(pool: PgPool, app_state: AppState) -> Router {
         .allow_methods(Any)
         .allow_headers(Any);
 
-    let mut protected_routes = Router::new()
+    let protected_routes = Router::new()
         .nest("/deals", deals::deals_routes(pool.clone()))
         .nest("/wallet", wallet_routes(pool.clone()))
         .nest("/settings", settings_routes(pool.clone()))
         // .nest("/partnerships", partnerships_routes(pool.clone()))
         .nest("/users", user_routes(pool.clone()))
-        .nest("/coupons", coupon_routes(pool.clone()));
-    
-    // Configure card vault routes
-    card_vault::configure(&mut protected_routes);
-    
-    let protected_routes = protected_routes.route_layer(from_fn(auth_middleware));
+        .nest("/coupons", coupon_routes(pool.clone()))
+        .merge(card_vault::routes())
+        .with_state(pool.clone())
+        .route_layer(from_fn(auth_middleware));
 
     // Create proxy routes separately with the AppState
     let proxy_routes = Router::new()
