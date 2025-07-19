@@ -79,6 +79,7 @@ typings/
 # Browser extension environment
 browser-extension/.env
 browser-extension/.env.local
+browser-extension/config.built.js
 
 # parcel-bundler cache files
 .cache

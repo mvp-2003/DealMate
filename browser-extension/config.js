@@ -1,13 +1,15 @@
 /**
  * DealPal Browser Extension Configuration
- * Loads environment variables from the master .env file
+ * IMPORTANT: API keys and secrets must be configured through the build process
+ * DO NOT hardcode any secrets in this file!
  */
 
-// Environment variables loaded from master .env file
+// Configuration loaded from build process or extension settings
 const CONFIG = {
     // AI Service Configuration
-    GEMINI_API_KEY: 'AIzaSyA0gf53rhugs-zCHLxii14II2AX-FTqeAM',
-    GEMINI_MODEL: 'gemini-1.5-flash',
+    // This should be injected during build or loaded from extension storage
+    GEMINI_API_KEY: process.env.BROWSER_EXTENSION_GOOGLE_API_KEY || '',
+    GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
     
     // Service URLs
     RUST_BACKEND_URL: 'http://localhost:8000',

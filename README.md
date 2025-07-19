@@ -17,36 +17,139 @@ Our platform is optimized for excellent user experience with:
 
 ## 🚀 Quick Start
 
+DealPal uses Docker/Podman for containerization, ensuring consistent development environments across different operating systems and architectures.
+
+### Supported Platforms
+
+Our containers support the following platforms:
+- **Operating Systems**: Linux, macOS, Windows (via Docker Desktop)
+- **Architectures**: amd64 (x86_64), arm64 (Apple Silicon, ARM servers)
+
+### Prerequisites
+
+#### System Requirements
+- **RAM**: Minimum 4GB, recommended 8GB+
+- **Disk Space**: Minimum 10GB free space
+- **CPU**: 2+ cores recommended
+
+#### Software Requirements
+
+Choose one of the following container runtimes:
+
+**Option 1: Docker**
+- **Linux**: [Install Docker Engine](https://docs.docker.com/engine/install/)
+- **macOS**: [Install Docker Desktop](https://docs.docker.com/desktop/install/mac-install/)
+- **Windows**: [Install Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
+
+**Option 2: Podman (Linux/macOS)**
+- **Linux**: [Install Podman](https://podman.io/getting-started/installation#linux-distributions)
+- **macOS**: [Install Podman Desktop](https://podman-desktop.io/docs/installation/macos-install)
+
+### Getting Started
+
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/mvp-2003/DealPal.git
+cd DealPal
+```
+
+#### 2. One-Command Setup and Run
+```bash
+# Automatic deployment (defaults to native)
+./run_app.sh
+
+# Force containerized deployment
+./run_app.sh --docker
+./run_app.sh --containerized
+./run_app.sh -c
+
+# Force native deployment (default behavior)
+./run_app.sh --native
+./run_app.sh -n
+```
+
+**The `run_app.sh` script automatically:**
+- Defaults to native deployment for faster development
+- Can be forced to containerized mode with `-c` flag
+- Runs `docker-setup.sh` if containerized mode is requested
+- Prompts for API key configuration
+- Starts all services
+- Provides health checks
+- Shows access URLs and management commands
+
+#### 3. Access the Application
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **AI Service**: http://localhost:8001
+- **Auth Service**: http://localhost:3001
+
+Development tools (when using `make up-dev`):
+- **Adminer (DB GUI)**: http://localhost:8082
+- **Redis Commander**: http://localhost:8081
+
 ### For New Developers
 
-Welcome to DealPal! This guide will help you get started quickly.
+Welcome to DealPal! For a complete development setup:
 
-1. **Clone and Install**
-   ```bash
-   git clone <repository-url>
-   cd DealPal
-   ```
-
-2. **Environment Setup**
+1. **Environment Setup**
    - Copy `.env.example` to `.env`
    - Fill in required API keys (Google API key for AI service)
 
-3. **Start Development**
+2. **Development Scripts**
    ```bash
    cd scripts
-   ./dev.sh
-   ```
-   
-   Or with Docker:
-   ```bash
-   docker-compose up --build
+   ./dev.sh            # Development mode
+   ./setup.sh          # Initial project setup (native only)
+   ./start.sh          # Start all services  
+   ./stop.sh           # Stop all services
+   ./build.sh          # Build all components
+   ./status.sh         # Check service status
    ```
 
-   Or with Podman:
-   ```bash
-   cd scripts
-   ./podman-up.sh
-   ```
+### Deployment Modes Comparison
+
+| Feature | Native Development (Default) | Containerized (Docker) |
+|---------|------------------------------|----------------------|
+| **Setup Time** | Faster setup | Slower initial setup |
+| **Consistency** | ⚠️ Varies by system | ✅ Identical across all systems |
+| **Isolation** | ❌ Uses system dependencies | ✅ Fully isolated environment |
+| **Resource Usage** | Lower (direct execution) | Higher (containers overhead) |
+| **Development Speed** | Faster (direct access) | Moderate (container overhead) |
+| **Team Collaboration** | ⚠️ "Works on my machine" issues | ✅ Same environment for everyone |
+| **Cleanup** | Manual dependency removal | ✅ Easy (`make clean`) |
+| **Production Parity** | ⚠️ Different from production | ✅ Same as production |
+
+### Script Comparison
+
+#### `run_app.sh` (Unified Application Launcher)
+- **Purpose**: Single entry point to run DealPal in any environment
+- **Deployment modes**: Defaults to native development for speed
+- **Usage Examples:**
+  ```bash
+  ./run_app.sh                    # Native development (default)
+  ./run_app.sh --docker          # Force containerized
+  ./run_app.sh -c                # Force containerized (short)
+  ./run_app.sh --native          # Force native (explicit)
+  ./run_app.sh -n                # Force native (short)
+  ./run_app.sh --help            # Show help
+  ```
+
+#### `scripts/docker-setup.sh` (Containerized Environment Setup)
+- **Purpose**: One-time setup for Docker/Podman environment
+- **What it does**:
+  - Validates system requirements and container runtime
+  - Creates `.env` file with secure passwords
+  - Builds/pulls Docker images
+  - Initializes containerized database
+
+*Note: This script is automatically called by `run_app.sh` when needed.*
+
+#### `scripts/setup.sh` (Native Environment Setup)
+- **Purpose**: One-time setup for native development environment
+- **What it does**:
+  - Installs language runtimes (Rust, Node.js, Python)
+  - Installs system dependencies and package managers
+  - Sets up local database (PostgreSQL)
 
 ### Architecture Overview
 
@@ -69,6 +172,202 @@ DealPal/
 ├── browser-extension/       # Chrome/Firefox extension
 ├── scripts/                 # Shell scripts for development
 └── docs/                   # Documentation
+```
+
+## 🐳 Containerized Architecture
+
+DealPal uses a single master Dockerfile with multi-stage builds for all services, simplifying maintenance and ensuring consistency across environments.
+
+### Container Services
+
+1. **Frontend** (`frontend`)
+   - Next.js application
+   - Port: 3000
+   - Built with Node.js 20
+   - Target: `frontend-runtime`
+
+2. **Backend** (`backend`)
+   - Rust (Axum) API server
+   - Port: 8000
+   - Built with Rust 1.79
+   - Target: `backend-runtime`
+
+3. **AI Service** (`ai-service`)
+   - Python FastAPI service
+   - Port: 8001
+   - Built with Python 3.12
+   - Target: `ai-runtime`
+
+4. **Auth Service** (`auth-service`)
+   - Node.js authentication service
+   - Port: 3001
+   - Integrates with Auth0
+   - Target: `auth-runtime`
+
+5. **Database** (`db`)
+   - PostgreSQL 16
+   - Port: 5432
+   - Persistent volume for data
+
+6. **Cache** (`redis`)
+   - Redis 7
+   - Port: 6379
+   - Used for caching and sessions
+
+### Common Container Commands
+
+#### Using Make (Recommended)
+
+```bash
+# Show all available commands
+make help
+
+# Build services
+make build              # Build all services
+make build-nocache     # Build without cache
+
+# Start/Stop services
+make up                # Start core services
+make up-dev           # Start with dev tools
+make up-full          # Start with Kafka
+make down             # Stop services
+make restart          # Restart services
+
+# Logs and debugging
+make logs             # View all logs
+make logs-backend     # View backend logs
+make logs-frontend    # View frontend logs
+make logs-ai         # View AI service logs
+
+# Access containers
+make exec-backend    # Backend shell
+make exec-frontend   # Frontend shell
+make exec-ai        # AI service shell
+make exec-db        # Database shell
+
+# Testing and maintenance
+make test           # Run all tests
+make health         # Check service health
+make backup-db      # Backup database
+make clean          # Clean everything
+```
+
+#### Using Docker Compose Directly
+
+```bash
+# Start services
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop services
+docker compose down
+
+# Rebuild a specific service
+docker compose build backend
+
+# Run commands in containers
+docker compose exec backend cargo test
+docker compose exec frontend npm run lint
+```
+
+### Development Workflow
+
+#### Making Code Changes
+The containers mount your local code directories, so changes are reflected immediately:
+- **Frontend**: Hot reload enabled
+- **Backend**: Rebuild required (`make restart`)
+- **AI Service**: Auto-reload enabled
+
+#### Database Migrations
+```bash
+# Create a new migration
+docker compose exec backend sqlx migrate add migration_name
+
+# Run migrations
+make migrate
+
+# Revert last migration
+docker compose exec backend sqlx migrate revert
+```
+
+#### Running Tests
+```bash
+# Run all tests
+make test
+
+# Run specific service tests
+make test-backend
+make test-frontend
+make test-ai
+
+# Run tests with coverage
+docker compose exec backend cargo tarpaulin
+docker compose exec frontend npm run test:coverage
+```
+
+### Troubleshooting
+
+#### Port Conflicts
+If you get port already in use errors:
+```bash
+# Check what's using the port
+lsof -i :3000  # macOS/Linux
+netstat -ano | findstr :3000  # Windows
+
+# Change ports in .env file
+FRONTEND_PORT=3001
+BACKEND_PORT=8001
+```
+
+#### Permission Issues (Linux)
+If you encounter permission issues:
+```bash
+# Add your user to docker group
+sudo usermod -aG docker $USER
+
+# Logout and login again, or:
+newgrp docker
+```
+
+#### Build Failures
+```bash
+# Clean and rebuild
+make clean
+make build-nocache
+
+# Check Docker daemon
+docker info
+
+# Increase Docker resources (Docker Desktop)
+# Preferences > Resources > Increase CPU/Memory
+```
+
+#### Database Connection Issues
+```bash
+# Check if database is running
+docker compose ps db
+
+# Check database logs
+docker compose logs db
+
+# Restart database
+docker compose restart db
+
+# Reset database (WARNING: destroys data)
+make down-volumes
+make up
+make migrate
+```
+
+#### Out of Disk Space
+```bash
+# Clean up Docker resources
+docker system prune -a --volumes
+
+# Check disk usage
+docker system df
 ```
 
 ## 📱 Platform Components
@@ -269,26 +568,59 @@ Comprehensive price analysis across retailers:
 
 ## 🚀 Deployment
 
-### Docker Deployment
+### Containerized Deployment (Recommended)
 
+#### Development
 ```bash
-docker-compose up --build
+# Quick start (auto-detects environment)
+./run_app.sh
+
+# Force containerized deployment
+./run_app.sh -c
 ```
 
-### Individual Services
+#### Production
+```bash
+# Build multi-architecture images
+make build-multiarch
 
-**Frontend:**
+# Use production profile
+make deploy-prod
+
+# Or with docker-compose
+docker compose --profile production up -d
+```
+
+#### Environment Configuration
+Create a production `.env` file with:
+- Strong passwords (use password generators)
+- Production API endpoints
+- SSL certificates paths
+- Production database credentials
+
+### Native Deployment
+
+#### Frontend
 ```bash
 cd frontend
 npm run build
 npm start
 ```
 
-**AI Service:**
+#### AI Service
 ```bash
 cd backend/ai-service
 uvicorn main:app --host 0.0.0.0 --port 8001
 ```
+
+### Best Practices
+
+1. **Always use .env files** - Never hardcode credentials
+2. **Regular backups** - Use `make backup-db` regularly
+3. **Monitor resources** - Check `docker stats` for resource usage
+4. **Update base images** - Run `make update-images` periodically
+5. **Use health checks** - Run `make health` to verify services
+6. **Clean up regularly** - Use `docker system prune` to free space
 
 ## 📊 Performance Metrics
 
