@@ -26,10 +26,11 @@ echo -e "${BLUE}🚀 DealPal Master Application Runner${NC}"
 echo "====================================="
 echo -e "${CYAN}This script will:${NC}"
 echo "1. 🔧 Build all components"
-echo "2. 🚀 Start all services"
-echo "3. 🧪 Run health checks"
-echo "4. 📊 Show platform status"
-echo "5. 🎯 Keep services running"
+echo "2. �️  Run database migrations"
+echo "3. �🚀 Start all services"
+echo "4. 🧪 Run health checks"
+echo "5. 📊 Show platform status"
+echo "6. 🎯 Keep services running"
 echo ""
 
 # Function to show spinner while waiting
@@ -110,8 +111,20 @@ else
 fi
 echo ""
 
-# Step 2: Start all services
-echo -e "${BLUE}🚀 Step 2: Starting All Services${NC}"
+# Step 2: Run Database Migrations
+echo -e "${BLUE}🗄️  Step 2: Database Migrations${NC}"
+echo "=================================="
+./scripts/migrate.sh
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ Database migrations completed successfully${NC}"
+else
+    echo -e "${RED}❌ Database migration failed! Exiting...${NC}"
+    exit 1
+fi
+echo ""
+
+# Step 3: Start all services
+echo -e "${BLUE}🚀 Step 3: Starting All Services${NC}"
 echo "================================="
 
 # Start AI Service
@@ -176,8 +189,8 @@ sleep 8
 echo -e "${GREEN}✅ All services started${NC}"
 echo ""
 
-# Step 3: Health checks
-echo -e "${BLUE}🧪 Step 3: Running Health Checks${NC}"
+# Step 4: Health checks
+echo -e "${BLUE}🧪 Step 4: Running Health Checks${NC}"
 echo "================================="
 
 # Wait a bit more for services to fully start
@@ -215,14 +228,14 @@ fi
 
 echo ""
 
-# Step 4: Platform status
-echo -e "${BLUE}📊 Step 4: Platform Status${NC}"
+# Step 5: Platform status
+echo -e "${BLUE}📊 Step 5: Platform Status${NC}"
 echo "=========================="
 ./scripts/status.sh
 echo ""
 
-# Step 5: Keep running and show info
-echo -e "${BLUE}🎯 Step 5: DealPal Platform Running${NC}"
+# Step 6: Keep running and show info
+echo -e "${BLUE}🎯 Step 6: DealPal Platform Running${NC}"
 echo "==================================="
 echo -e "${GREEN}🎉 DealPal platform is now fully operational!${NC}"
 echo ""

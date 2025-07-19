@@ -419,6 +419,48 @@ def optimize_deal_stack(base_price, available_offers):
 - **Reward Tracking**: Points and cashback monitoring
 - **Spending Analytics**: Purchase pattern analysis
 
+### 4.5.1 RBI-Compliant Card Vault
+**Purpose**: Secure storage of card metadata for intelligent deal ranking without storing sensitive information
+
+#### Compliance Features:
+- **RBI Guidelines Adherence**: No storage of full card numbers, CVV, or expiry dates
+- **Metadata Only Storage**: Bank name, card type, last 4 digits only
+- **Secure Vault Architecture**: Encrypted storage with access controls
+- **Audit Trail**: Complete logging of all card vault operations
+
+#### Card Management Features:
+- **Manual Card Entry**: Add cards with reward structure details
+- **Popular Card Templates**: Pre-configured templates for popular cards (HDFC Infinia, Axis Magnus, SBI Cashback)
+- **Reward Tracking**: Monitor current points balance and milestone progress
+- **Category-Specific Rewards**: Track bonus rewards for dining, travel, fuel, etc.
+- **Bank Offer Integration**: Time-sensitive bank-specific merchant offers
+
+#### Smart Deal Ranking Algorithm:
+```python
+# Intelligent deal ranking considering card benefits
+Total_Benefit = Deal_Discount + Card_Rewards + Bank_Offers + Milestone_Value
+Effective_Price = Original_Price - Total_Benefit
+Ranking_Score = Total_Savings + (Points_Value * 0.5) + (Milestone_Bonus * 2)
+```
+
+#### Database Schema:
+- **card_vault**: Stores card metadata and reward structures
+- **card_transactions**: Tracks rewards earned per transaction
+- **card_offers**: Time-sensitive bank-specific offers
+- **smart_deal_rankings**: Cached deal rankings with card recommendations
+
+#### User Benefits:
+- **Personalized Deal Rankings**: Deals sorted by total savings including card benefits
+- **Best Card Recommendations**: Suggests optimal card for each purchase
+- **Milestone Tracking**: Progress towards valuable reward milestones
+- **Comprehensive Savings**: Combines deal discounts with card rewards
+
+#### Technical Implementation:
+- **Frontend**: React components with TypeScript for type safety
+- **Backend**: Rust API with PostgreSQL for secure data storage
+- **API Endpoints**: RESTful APIs for card CRUD operations
+- **Real-time Calculations**: Dynamic benefit calculations for each deal
+
 ### 4.6 Reward Intelligence Engine
 **Purpose**: Intelligent calculation of reward point values and optimization recommendations
 
@@ -487,6 +529,64 @@ def calculate_reward_value(user_points, reward_tiers, spending_pattern):
 - **Personalized Timing**: Optimal alert timing based on user behavior
 - **Multi-Channel Notifications**: Email, push, SMS, and in-app alerts
 - **Smart Bundling**: Related product deal recommendations
+
+### 4.10 LootPacks - Gamified Rewards System
+**Purpose**: Enhance user engagement through gamification and surprise rewards
+
+#### Pack Types:
+- **Daily Free Pack**: Available once every 24 hours at no cost
+- **Bronze Pack**: Entry-level premium pack (99 DealCoins)
+- **Silver Pack**: Mid-tier pack with rare rewards (299 DealCoins)
+- **Gold Pack**: Premium pack with exclusive rewards (599 DealCoins)
+
+#### Reward Categories:
+- **Coupons**: Store-specific discount codes (10-30% off)
+- **Cashback Offers**: Bank and wallet cashback deals
+- **DealCoins**: In-app currency for premium features
+- **Vouchers**: Gift cards and store credits
+- **Exclusive Deals**: Members-only offers
+- **Jackpot Rewards**: High-value surprise rewards
+
+#### Gamification Elements:
+- **Daily Streak System**: Consecutive day bonuses
+  - 3 days: Bronze Pack reward
+  - 7 days: Silver Pack reward
+  - 14 days: Gold Pack reward
+  - 30 days: Legendary Pack reward
+- **User Levels**: Experience-based progression system
+- **Member Status Tiers**: Bronze, Silver, Gold, Elite
+- **Achievement System**: Unlock rewards through milestones
+
+#### Technical Implementation:
+- **Frontend Components**:
+  - LootPackCard: Interactive pack selection UI
+  - PackOpeningModal: Animated reveal experience with confetti
+  - DailyStreakTracker: Visual streak progress
+  - RewardsInventory: Comprehensive reward management
+- **Backend Architecture**:
+  - pack_types: Configurable pack definitions
+  - reward_templates: Dynamic reward pool
+  - user_lootpack_stats: User progression tracking
+  - lootpack_events: Special event system
+- **Animation Libraries**:
+  - framer-motion: Smooth UI animations
+  - canvas-confetti: Celebration effects
+
+#### User Experience Flow:
+1. User visits LootPacks section from main navigation
+2. Views available packs with clear pricing/cooldown info
+3. Selects pack to open (free or premium)
+4. Experiences suspenseful opening animation
+5. Discovers rewards with rarity indicators
+6. Manages rewards in personal inventory
+7. Tracks progress through streak system
+
+#### Business Value:
+- **Increased Engagement**: Daily return incentive
+- **Monetization**: DealCoins economy for premium packs
+- **User Retention**: Streak system encourages consistency
+- **Partnership Opportunities**: Branded packs and exclusive rewards
+- **Data Collection**: User preference insights through pack choices
 
 ---
 

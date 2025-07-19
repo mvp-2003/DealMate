@@ -1,0 +1,26 @@
+DROP INDEX IF EXISTS idx_smart_deal_rankings_ranking_score;
+DROP INDEX IF EXISTS idx_smart_deal_rankings_user_id;
+DROP INDEX IF EXISTS idx_card_vault_is_active;
+DROP INDEX IF EXISTS idx_card_vault_user_id;
+DROP INDEX IF EXISTS idx_transactions_partnership_id;
+DROP INDEX IF EXISTS idx_transactions_user_id;
+DROP INDEX IF EXISTS idx_partnerships_created_at;
+DROP INDEX IF EXISTS idx_partnerships_status;
+DROP INDEX IF EXISTS idx_coupon_tests_coupon_id;
+DROP INDEX IF EXISTS idx_coupons_is_active;
+DROP INDEX IF EXISTS idx_coupons_valid_dates;
+DROP INDEX IF EXISTS idx_coupons_merchant_id;
+DROP INDEX IF EXISTS idx_merchants_domain;
+DROP INDEX IF EXISTS idx_settings_user_id;
+DROP INDEX IF EXISTS idx_wallets_user_id;
+
+DROP TABLE IF EXISTS smart_deal_rankings;
+DROP TABLE IF EXISTS card_vault;
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS partnerships;
+DROP TABLE IF EXISTS coupon_tests;
+DROP TABLE IF EXISTS coupons;
+DROP TABLE IF EXISTS merchants;
+DROP TABLE IF EXISTS settings;
+DROP TABLE IF EXISTS wallets;
+DROP TABLE IF EXISTS users;

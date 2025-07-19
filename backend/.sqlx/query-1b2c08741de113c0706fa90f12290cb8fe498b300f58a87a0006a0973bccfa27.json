@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT COALESCE(SUM(cashback_amount), 0) as total_cashback_paid,\n         COUNT(*) as monthly_transactions\n         FROM transactions \n         WHERE created_at >= NOW() - INTERVAL '30 days'\n         AND transaction_type = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "total_cashback_paid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 1,
+        "name": "monthly_transactions",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "1b2c08741de113c0706fa90f12290cb8fe498b300f58a87a0006a0973bccfa27"
+}

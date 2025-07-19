@@ -3,16 +3,15 @@
 
 import { useState, useEffect } from 'react';
 import type { UserCard, UserRewardGoal, LoyaltyProgram, UserPointsState } from '@/lib/types';
-import CreditCardForm from '@/components/wallet/CreditCardForm';
-import CreditCardList from '@/components/wallet/CreditCardList';
-import RewardGoalsList from '@/components/wallet/RewardGoalsList'; // New component
-import RewardGoalForm from '@/components/wallet/RewardGoalForm'; // New component
-import LoyaltyProgramList from '@/components/wallet/LoyaltyProgramList'; // New component
-import RewardProgressChart from '@/components/wallet/RewardProgressChart'; // New component
+import CardVaultManager from '@/components/wallet/CardVaultManager';
+import RewardGoalsList from '@/components/wallet/RewardGoalsList';
+import RewardGoalForm from '@/components/wallet/RewardGoalForm';
+import LoyaltyProgramList from '@/components/wallet/LoyaltyProgramList';
+import RewardProgressChart from '@/components/wallet/RewardProgressChart';
 
 import { Button } from '@/components/ui/button';
-import { Loader2, PlusCircle, Target, Award as LoyaltyIcon } from 'lucide-react';
-import { handleAddUserCard, handleGetUserCards, handleRemoveUserCard, handleAddUserRewardGoal, handleGetUserPointsState, handleUpdateUserRewardGoalActivity, handleRemoveUserRewardGoal } from '@/app/actions';
+import { Loader2, Target, Award as LoyaltyIcon } from 'lucide-react';
+import { handleAddUserRewardGoal, handleGetUserPointsState, handleUpdateUserRewardGoalActivity, handleRemoveUserRewardGoal } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -23,7 +22,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 
@@ -52,41 +50,6 @@ export default function WalletPage() {
     fetchData();
   }, []);
 
-  const handleAddCard = async (cardData: Omit<UserCard, 'id' | 'userId'>) => {
-    const formData = new FormData();
-    Object.entries(cardData).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-             formData.append(key, String(value));
-        }
-    });
-    
-    const result = await handleAddUserCard(formData);
-    if (result.error) {
-      toast({ title: "Error adding card", description: result.error, variant: "destructive" });
-    } else if (result.data) {
-      toast({ title: "Card Added", description: `${result.data.bank} ${result.data.cardType} added successfully.` });
-      setUserPointsState(prev => ({
-        ...prev!,
-        cards: [...(prev?.cards || []), result.data!],
-      }));
-      setIsCardFormOpen(false);
-    }
-  };
-
-  const handleRemoveCard = async (cardId: string) => {
-    const formData = new FormData();
-    formData.append('cardId', cardId);
-    const result = await handleRemoveUserCard(formData);
-    if (result.error || !result.success) {
-      toast({ title: "Error removing card", description: result.error || "Failed to remove card.", variant: "destructive" });
-    } else {
-      toast({ title: "Card Removed", description: "Card removed successfully." });
-      setUserPointsState(prev => ({
-        ...prev!,
-        cards: (prev?.cards || []).filter(card => card.id !== cardId),
-      }));
-    }
-  };
 
   const handleAddGoal = async (goalData: Omit<UserRewardGoal, 'id' | 'userId'>) => {
     const formData = new FormData();
@@ -180,32 +143,7 @@ export default function WalletPage() {
         </TabsList>
         
         <TabsContent value="cards" className="mt-4">
-          <Card className="shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-xl">Your Credit Cards</CardTitle>
-               <Dialog open={isCardFormOpen} onOpenChange={setIsCardFormOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px">
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add Card
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[520px] bg-card border-border shadow-2xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl">Add New Credit Card</DialogTitle>
-                    <DialogDescription>
-                      Enter your card details for personalized ranking. We only store metadata.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <ScrollArea className="max-h-[70vh] pr-3">
-                    <CreditCardForm onSubmit={handleAddCard} onCancel={() => setIsCardFormOpen(false)} />
-                  </ScrollArea>
-                </DialogContent>
-              </Dialog>
-            </CardHeader>
-            <CardContent>
-              <CreditCardList cards={userPointsState.cards} onRemoveCard={handleRemoveCard} />
-            </CardContent>
-          </Card>
+          <CardVaultManager />
         </TabsContent>
 
         <TabsContent value="goals" className="mt-4">

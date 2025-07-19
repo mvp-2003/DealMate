@@ -19,7 +19,7 @@ pub mod pricer;
 pub mod stacksmart;
 pub mod analyzer;
 
-use crate::routes::{coupons, deals, health_check, settings, user, wallet};
+use crate::routes::{card_vault, coupons, deals, health_check, settings, user, wallet};
 use crate::auth::{login_handler, signup_handler, callback_handler, logout_handler, protected_handler};
 use crate::middleware::auth_middleware;
 use crate::proxy::{auth_proxy, ai_proxy, AppState};
@@ -92,6 +92,7 @@ pub fn app(pool: PgPool, app_state: AppState) -> Router {
         // .nest("/partnerships", partnerships_routes(pool.clone()))
         .nest("/users", user_routes(pool.clone()))
         .nest("/coupons", coupon_routes(pool.clone()))
+        .merge(card_vault::routes(pool.clone()))
         .route_layer(from_fn(auth_middleware));
 
     // Create proxy routes separately with the AppState

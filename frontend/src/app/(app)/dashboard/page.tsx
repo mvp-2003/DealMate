@@ -6,7 +6,7 @@ import PriceComparisonTable from '@/components/dashboard/PriceComparisonTable';
 import OffersList from '@/components/dashboard/OffersList';
 import SavingsScore from '@/components/dashboard/SavingsScore';
 import PriceHistoryChart from '@/components/dashboard/PriceHistoryChart';
-import MonthlySavingsChart from '@/components/dashboard/MonthlySavingsChart'; // New Chart
+import MonthlySavingsChart from '@/components/dashboard/MonthlySavingsChart';
 import { TicketPercent, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
