@@ -76,7 +76,8 @@ RUN npm ci --prefer-offline --no-audit --legacy-peer-deps
 # Copy frontend source
 COPY frontend ./frontend
 COPY shared ./shared
-COPY .eslintrc.json tsconfig.json ./
+COPY .eslintrc.json ./
+COPY frontend/tsconfig.json ./
 
 # Build frontend
 ARG NEXT_PUBLIC_API_URL
@@ -164,7 +165,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    PORT=3000 \
+    PORT=9002 \
     HOSTNAME="0.0.0.0"
 
 COPY --from=frontend-builder /app/public ./public
@@ -173,10 +174,10 @@ COPY --from=frontend-builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=frontend-builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
-EXPOSE 3000
+EXPOSE 9002
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:3000/api/health || exit 1
+    CMD curl -f http://localhost:9002/api/health || exit 1
 
 CMD ["node", "server.js"]
 

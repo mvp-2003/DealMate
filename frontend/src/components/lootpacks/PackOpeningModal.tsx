@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -111,7 +111,10 @@ const PackOpeningModal: FC<PackOpeningModalProps> = ({
         setRevealedCount(prev => {
           if (prev >= generatedRewards.length - 1) {
             clearInterval(revealInterval);
-            onRewardsRevealed(generatedRewards);
+            // Defer the callback to avoid state update during render
+            setTimeout(() => {
+              onRewardsRevealed(generatedRewards);
+            }, 0);
             return generatedRewards.length;
           }
           return prev + 1;
@@ -144,6 +147,7 @@ const PackOpeningModal: FC<PackOpeningModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
+        <DialogTitle className="sr-only">Opening Pack Rewards</DialogTitle>
         <div className="text-center py-8">
           {isOpening ? (
             <div className="space-y-6">

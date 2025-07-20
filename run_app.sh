@@ -194,7 +194,7 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
             echo ""
             echo -e "${GREEN}🎉 DealPal platform is running!${NC}"
             echo -e "${CYAN}📱 Application URLs:${NC}"
-            echo -e "  🌐 Frontend:       ${YELLOW}http://localhost:3000${NC}"
+            echo -e "  🌐 Frontend:       ${YELLOW}http://localhost:9002${NC}"
             echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000/api${NC}"
             echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
             echo -e "  🔐 Auth Service:   ${YELLOW}http://localhost:3001${NC}"
@@ -225,7 +225,7 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
     echo -e "${GREEN}🎉 DealPal platform is now fully operational!${NC}"
     echo ""
     echo -e "${CYAN}📱 Application URLs:${NC}"
-    echo -e "  🌐 Frontend:       ${YELLOW}http://localhost:3000${NC}"
+    echo -e "  🌐 Frontend:       ${YELLOW}http://localhost:9002${NC}"
     echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000/api${NC}"
     echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
     echo -e "  🔐 Auth Service:   ${YELLOW}http://localhost:3001${NC}"
@@ -307,7 +307,7 @@ else
             backend_running=true
         fi
         
-        if curl -s --max-time 2 "http://localhost:3000" > /dev/null 2>&1; then
+        if curl -s --max-time 2 "http://localhost:9002" > /dev/null 2>&1; then
             frontend_running=true
         fi
         
@@ -460,7 +460,7 @@ else
     fi
 
     echo -e "${YELLOW}Testing Frontend...${NC}"
-    if curl -s --max-time 10 "http://localhost:3000" > /dev/null 2>&1; then
+    if curl -s --max-time 10 "http://localhost:9002" > /dev/null 2>&1; then
         echo -e "${GREEN}✅ Frontend is responding${NC}"
     else
         echo -e "${RED}❌ Frontend not responding${NC}"
@@ -483,7 +483,7 @@ else
     echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
     echo -e "  🔐 Auth Service:   ${YELLOW}http://localhost:3001${NC}"
     echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000/api${NC}"
-    echo -e "  🌐 Frontend App:   ${YELLOW}http://localhost:3000${NC}"
+    echo -e "  🌐 Frontend App:   ${YELLOW}http://localhost:9002${NC}"
     echo -e "  📚 API Docs:       ${YELLOW}http://localhost:8001/docs${NC}"
     echo ""
     echo -e "${CYAN}📋 Service Information:${NC}"
