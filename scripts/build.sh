@@ -27,7 +27,7 @@ if [ "$BUILD_DEV" = "True" ]; then
 else
     echo "--- Running Production Frontend Build ---"
     npm install --legacy-peer-deps
-    npm run build
+    NODE_ENV=production npm run build
     echo "✅ Frontend production build complete."
 fi
 cd ..

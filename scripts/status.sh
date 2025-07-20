@@ -77,9 +77,9 @@ check_build_status() {
     echo -e "${CYAN}Build Artifacts${NC}"
     
     # Frontend build
-    if [ -d "../.next" ]; then
+    if [ -d "../frontend/.next" ]; then
         echo -e "  Frontend Build: ${GREEN}✅ EXISTS${NC}"
-        local build_size=$(du -sh ../.next 2>/dev/null | cut -f1)
+        local build_size=$(du -sh ../frontend/.next 2>/dev/null | cut -f1)
         echo "  Size: $build_size"
     else
         echo -e "  Frontend Build: ${RED}❌ MISSING${NC}"
@@ -103,8 +103,8 @@ check_build_status() {
         echo -e "  AI Service Env: ${RED}❌ MISSING${NC}"
     fi
     
-    # Auth Service dependencies
-    if [ -d "../backend/auth-service/node_modules" ]; then
+    # Auth Service dependencies (using root node_modules in monorepo)
+    if [ -d "../node_modules" ]; then
         echo -e "  Auth Service Deps: ${GREEN}✅ EXISTS${NC}"
     else
         echo -e "  Auth Service Deps: ${RED}❌ MISSING${NC}"

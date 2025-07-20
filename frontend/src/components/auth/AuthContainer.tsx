@@ -7,7 +7,7 @@ import './auth-styles.css';
 
 export default function AuthContainer() {
   const searchParams = useSearchParams();
-  const isLogin = searchParams.get('form') !== 'signup';
+  const isLogin = searchParams?.get('form') !== 'signup';
 
   return (
     <div className="auth-container">
