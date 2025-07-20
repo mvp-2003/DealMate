@@ -4,6 +4,17 @@ const nextConfig = {
   // serverComponentsExternalPackages has moved to serverExternalPackages
   serverExternalPackages: ['@google/generative-ai', '@genkit-ai/ai', '@genkit-ai/firebase', '@genkit-ai/google'],
   
+  // Skip static generation for error pages during build
+  experimental: {
+    workerThreads: false,
+    cpus: 1,
+  },
+  
+  // Disable static optimization for error pages
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
+  },
+  
   // Performance optimizations
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -94,7 +105,7 @@ const nextConfig = {
     ];
   },
   
-  // Enable static optimization
+  // Use server-side rendering for all pages
   output: 'standalone',
   
   // Environment variables

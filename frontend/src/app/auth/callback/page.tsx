@@ -9,8 +9,8 @@ function AuthCallback() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const code = searchParams.get('code');
-    const state = searchParams.get('state');
+    const code = searchParams?.get('code');
+    const state = searchParams?.get('state');
 
     if (code) {
       // Exchange the authorization code for a token

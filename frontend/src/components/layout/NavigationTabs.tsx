@@ -24,7 +24,7 @@ export default function NavigationTabs() {
       <TooltipProvider delayDuration={300}>
         <div className="flex justify-around overflow-x-auto scrollbar-hide px-1 xs:px-2">
           {tabs.map((tab) => {
-            const isActive = pathname === tab.href || (pathname.startsWith(tab.href) && tab.href !== '/' && tab.href.length > 1 && pathname.includes(tab.href));
+            const isActive = pathname === tab.href || (pathname && pathname.startsWith(tab.href) && tab.href !== '/' && tab.href.length > 1 && pathname.includes(tab.href));
             return (
               <Tooltip key={tab.name}>
                 <TooltipTrigger asChild>
