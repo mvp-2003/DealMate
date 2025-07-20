@@ -1,18 +1,15 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import type { UserCard, UserRewardGoal, LoyaltyProgram, UserPointsState } from '@/lib/types';
-import CardVaultManager from '@/components/wallet/CardVaultManager';
-import RewardGoalsList from '@/components/wallet/RewardGoalsList';
-import RewardGoalForm from '@/components/wallet/RewardGoalForm';
-import LoyaltyProgramList from '@/components/wallet/LoyaltyProgramList';
-import RewardProgressChart from '@/components/wallet/RewardProgressChart';
-
 import { Button } from '@/components/ui/button';
 import { Loader2, Target, Award as LoyaltyIcon } from 'lucide-react';
 import { handleAddUserRewardGoal, handleGetUserPointsState, handleUpdateUserRewardGoalActivity, handleRemoveUserRewardGoal } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import { AuthLoader } from '@/components/ui/animated-loader';
+import { useLazyLoading } from '@/hooks/useLazyLoading';
 import {
   Dialog,
   DialogContent,
@@ -24,13 +21,44 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
+// Lazy load heavy components
+const CardVaultManager = dynamic(() => import('@/components/wallet/CardVaultManager'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
+
+const RewardGoalsList = dynamic(() => import('@/components/wallet/RewardGoalsList'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
+
+const RewardGoalForm = dynamic(() => import('@/components/wallet/RewardGoalForm'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
+
+const LoyaltyProgramList = dynamic(() => import('@/components/wallet/LoyaltyProgramList'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
+
+const RewardProgressChart = dynamic(() => import('@/components/wallet/RewardProgressChart'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
 
 export default function WalletPage() {
   const [userPointsState, setUserPointsState] = useState<UserPointsState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCardFormOpen, setIsCardFormOpen] = useState(false);
   const [isGoalFormOpen, setIsGoalFormOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('cards');
   const { toast } = useToast();
+  
+  // Use lazy loading hooks for progressive loading
+  const { isVisible: shouldLoadCharts } = useLazyLoading(0.1, '100px');
+  const { isVisible: shouldLoadGoals } = useLazyLoading(0.1, '150px');
+  const { isVisible: shouldLoadLoyalty } = useLazyLoading(0.1, '200px');
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -126,7 +154,7 @@ export default function WalletPage() {
             </p>
           </div>
 
-      <Tabs defaultValue="cards" className="w-full">
+      <Tabs defaultValue="cards" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3 h-auto">
           <TabsTrigger value="cards" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px data-[state=active]:shadow-md data-[state=active]:shadow-primary/30 text-xs sm:text-sm px-2 py-2">
             <span className="hidden sm:inline">My Cards</span>
@@ -143,66 +171,78 @@ export default function WalletPage() {
         </TabsList>
         
         <TabsContent value="cards" className="mt-4">
-          <CardVaultManager />
+          <Suspense fallback={<AuthLoader size="md" />}>
+            <CardVaultManager />
+          </Suspense>
         </TabsContent>
 
         <TabsContent value="goals" className="mt-4">
-          <Card className="shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-xl">Your Reward Goals</CardTitle>
-              <Dialog open={isGoalFormOpen} onOpenChange={setIsGoalFormOpen}>
-                  <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px">
-                      <Target className="mr-2 h-4 w-4" /> Add Goal
-                  </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[480px] bg-card border-border shadow-2xl">
-                  <DialogHeader>
-                      <DialogTitle>Set a New Reward Goal</DialogTitle>
-                      <DialogDescription>Define what you're aiming for with your rewards.</DialogDescription>
-                  </DialogHeader>
-                   <RewardGoalForm 
-                        onSubmit={handleAddGoal} 
-                        cards={userPointsState.cards} 
-                        loyaltyPrograms={userPointsState.loyaltyPrograms}
-                        onCancel={() => setIsGoalFormOpen(false)}
+          {(activeTab === 'goals' || shouldLoadGoals) && (
+            <Suspense fallback={<AuthLoader size="md" />}>
+              <>
+                <Card className="shadow-lg">
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle className="text-xl">Your Reward Goals</CardTitle>
+                    <Dialog open={isGoalFormOpen} onOpenChange={setIsGoalFormOpen}>
+                      <DialogTrigger asChild>
+                        <Button size="sm" variant="outline" className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px">
+                          <Target className="mr-2 h-4 w-4" /> Add Goal
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[480px] bg-card border-border shadow-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Set a New Reward Goal</DialogTitle>
+                          <DialogDescription>Define what you're aiming for with your rewards.</DialogDescription>
+                        </DialogHeader>
+                        <RewardGoalForm 
+                          onSubmit={handleAddGoal} 
+                          cards={userPointsState.cards} 
+                          loyaltyPrograms={userPointsState.loyaltyPrograms}
+                          onCancel={() => setIsGoalFormOpen(false)}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </CardHeader>
+                  <CardContent>
+                    <RewardGoalsList 
+                      goals={userPointsState.rewardGoals || []} 
+                      onToggleActivity={handleToggleGoalActivity}
+                      onRemoveGoal={handleRemoveGoal}
                     />
-                  </DialogContent>
-              </Dialog>
-            </CardHeader>
-            <CardContent>
-              <RewardGoalsList 
-                goals={userPointsState.rewardGoals || []} 
-                onToggleActivity={handleToggleGoalActivity}
-                onRemoveGoal={handleRemoveGoal}
-              />
-            </CardContent>
-          </Card>
-           {userPointsState.rewardGoals && userPointsState.rewardGoals.length > 0 && userPointsState.cards.length > 0 && (
-            <Card className="mt-4 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl">Goal Progress Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[200px]">
-                 <RewardProgressChart goals={userPointsState.rewardGoals} cards={userPointsState.cards} loyaltyPrograms={userPointsState.loyaltyPrograms} />
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+                {userPointsState.rewardGoals && userPointsState.rewardGoals.length > 0 && userPointsState.cards.length > 0 && (
+                  <Card className="mt-4 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="text-xl">Goal Progress Overview</CardTitle>
+                    </CardHeader>
+                    <CardContent className="h-[200px]">
+                      <RewardProgressChart goals={userPointsState.rewardGoals} cards={userPointsState.cards} loyaltyPrograms={userPointsState.loyaltyPrograms} />
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            </Suspense>
           )}
         </TabsContent>
 
         <TabsContent value="loyalty" className="mt-4">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-xl">Connected Loyalty Programs</CardTitle>
-              {/* Placeholder for Add Loyalty Program button - complex due to potential OAuth/CSV */}
-               <Button size="sm" variant="outline" disabled className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px">
+          {(activeTab === 'loyalty' || shouldLoadLoyalty) && (
+            <Suspense fallback={<AuthLoader size="md" />}>
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl">Connected Loyalty Programs</CardTitle>
+                  {/* Placeholder for Add Loyalty Program button - complex due to potential OAuth/CSV */}
+                  <Button size="sm" variant="outline" disabled className="transform transition-transform duration-150 ease-in-out hover:scale-105 active:translate-y-px">
                     <LoyaltyIcon className="mr-2 h-4 w-4" /> Add Program (Soon)
-               </Button>
-            </CardHeader>
-            <CardContent>
-              <LoyaltyProgramList programs={userPointsState.loyaltyPrograms} />
-            </CardContent>
-          </Card>
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <LoyaltyProgramList programs={userPointsState.loyaltyPrograms} />
+                </CardContent>
+              </Card>
+            </Suspense>
+          )}
         </TabsContent>
       </Tabs>
       

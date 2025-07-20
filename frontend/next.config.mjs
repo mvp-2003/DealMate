@@ -4,8 +4,20 @@ const nextConfig = {
   // serverComponentsExternalPackages has moved to serverExternalPackages
   serverExternalPackages: ['@google/generative-ai', '@genkit-ai/ai', '@genkit-ai/firebase', '@genkit-ai/google'],
   
-  // Skip static generation for error pages during build
+  // Performance optimizations
   experimental: {
+    // Enable modern bundling features
+    turbo: {},
+    // Optimize server components
+    serverComponentsExternalPackages: ['@google/generative-ai'],
+    // Enable partial prerendering for better performance
+    // ppr: 'incremental', // Disabled - requires canary version
+    // Optimize CSS loading
+    optimizeCss: true,
+    // Enable SWC minification
+    swcMinify: true,
+    // Reduce bundle size
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     workerThreads: false,
     cpus: 1,
   },
@@ -54,13 +66,40 @@ const nextConfig = {
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Production optimizations
     if (!dev && !isServer) {
-      config.optimization.splitChunks.chunks = 'all';
-      config.optimization.splitChunks.cacheGroups = {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
+      // Advanced code splitting
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            enforce: true,
+          },
+          ui: {
+            test: /[\\/]src[\\/]components[\\/]ui[\\/]/,
+            name: 'ui-components',
+            chunks: 'all',
+            priority: 10,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 5,
+          },
         },
+      };
+      
+      // Enable tree shaking
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
+      
+      // Minimize bundle size
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'react': 'react/index.js',
+        'react-dom': 'react-dom/index.js',
       };
     }
     

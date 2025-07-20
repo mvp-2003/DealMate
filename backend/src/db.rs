@@ -1,5 +1,6 @@
-use sqlx::{Connection, PgConnection, PgPool};
+use sqlx::{Connection, PgConnection, PgPool, postgres::PgPoolOptions};
 use std::env;
+use std::time::Duration;
 use tracing::info;
 use url::Url;
 
@@ -30,8 +31,36 @@ pub async fn create_pool() -> Result<PgPool, sqlx::Error> {
         info!("Database already exists");
     }
 
-    // Connect to the target database to create the pool.
-    let pool = PgPool::connect(&db_url).await?;
+    // Create optimized connection pool with performance settings
+    let pool = PgPoolOptions::new()
+        .max_connections(20) // Increased for better concurrency
+        .min_connections(5)  // Maintain minimum connections
+        .acquire_timeout(Duration::from_secs(8))
+        .idle_timeout(Duration::from_secs(600)) // 10 minutes
+        .max_lifetime(Duration::from_secs(1800)) // 30 minutes
+        .test_before_acquire(true) // Validate connections
+        .after_connect(|conn, _meta| {
+            Box::pin(async move {
+                // Optimize connection settings for performance
+                sqlx::query("SET statement_timeout = '60s'")
+                    .execute(&mut *conn)
+                    .await?;
+                sqlx::query("SET lock_timeout = '30s'")
+                    .execute(&mut *conn)
+                    .await?;
+                sqlx::query("SET idle_in_transaction_session_timeout = '60s'")
+                    .execute(&mut *conn)
+                    .await?;
+                // Enable query plan caching
+                sqlx::query("SET plan_cache_mode = 'auto'")
+                    .execute(&mut *conn)
+                    .await?;
+                Ok(())
+            })
+        })
+        .connect(&db_url)
+        .await?;
+    
     Ok(pool)
 }
 

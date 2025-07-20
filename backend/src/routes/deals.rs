@@ -6,18 +6,33 @@ use axum::{
     Router,
 };
 use sqlx::PgPool;
+use serde::Deserialize;
+use std::sync::Arc;
 use shared::models::deal::{
     CreateDealRequest, Deal, DealSearchRequest, DealSearchResponse,
 };
 use crate::kafka::{KafkaProducer, DealEvent, DealEventType};
+use crate::lazy_db::LazyDbService;
+
+#[derive(Deserialize)]
+pub struct DealsQuery {
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
+    pub search: Option<String>,
+    pub category: Option<String>,
+    pub merchant: Option<String>,
+}
 
 pub fn deals_routes(pool: PgPool) -> Router {
+    let lazy_db = Arc::new(LazyDbService::new(pool.clone()));
+    
     Router::new()
-        .route("/", post(create_deal).get(search_deals))
-        .route("/:id", get(get_deal))
+        .route("/", post(create_deal).get(search_deals_lazy))
+        .route("/:id", get(get_deal_lazy))
         .route("/merchant/:merchant", get(get_coupons_by_merchant))
         .route("/submit", post(submit_coupon))
         .layer(Extension(pool))
+        .layer(Extension(lazy_db))
 }
 
 async fn create_deal(
@@ -126,6 +141,32 @@ async fn submit_coupon(
             
             Ok(Json(deal))
         },
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+// Lazy loading implementations
+async fn search_deals_lazy(
+    Extension(lazy_db): Extension<Arc<LazyDbService>>,
+    Query(params): Query<DealsQuery>,
+) -> Result<Json<Vec<serde_json::Value>>, StatusCode> {
+    let limit = params.limit.unwrap_or(20).min(100); // Limit max results
+    let offset = params.offset.unwrap_or(0);
+    let search_filter = params.search.as_deref();
+    
+    match lazy_db.get_deals_lazy(limit, offset, search_filter).await {
+        Ok(deals) => Ok(Json(deals)),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+async fn get_deal_lazy(
+    Extension(lazy_db): Extension<Arc<LazyDbService>>,
+    Path(id): Path<String>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    match lazy_db.get_user_lazy(&id).await {
+        Ok(Some(deal)) => Ok(Json(deal)),
+        Ok(None) => Err(StatusCode::NOT_FOUND),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }

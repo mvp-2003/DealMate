@@ -140,3 +140,20 @@ The implementation includes:
 4. **Visual Feedback**: Animations enhance perceived value of rewards
 
 This LootPacks implementation successfully adds a gamified layer to DealPal, creating additional user engagement opportunities while maintaining the core value proposition of finding and maximizing deals. The system is designed to be extensible, allowing for future enhancements and seasonal events.
+
+## Card Templates Endpoint Fix (2025-01-21)
+
+### Issue
+- Frontend was getting 'Failed to fetch card templates' error
+- The /api/cards/templates endpoint was under protected routes requiring authentication
+- But the endpoint itself doesn't need authentication (no AuthUser parameter)
+
+### Solution
+1. Created separate public_routes() function in card_vault.rs for non-authenticated endpoints
+2. Moved /api/cards/templates to public routes
+3. Added card_vault::public_routes() to the main app router without auth middleware
+
+### Result
+- Card templates endpoint now accessible at GET /api/cards/templates without authentication
+- Returns 3 predefined templates: HDFC Infinia, Axis Magnus, SBI Cashback
+

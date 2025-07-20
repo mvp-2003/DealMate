@@ -548,8 +548,13 @@ fn calculate_milestone_progress(card: &CardVault, points_earned: i32) -> Option<
 pub fn routes(pool: PgPool) -> Router {
     Router::new()
         .route("/api/cards", get(get_user_cards).post(create_card))
-        .route("/api/cards/templates", get(get_card_templates))
         .route("/api/cards/rank-deals", post(calculate_deal_rankings))
         .route("/api/cards/:card_id", get(get_card).put(update_card).delete(delete_card))
         .with_state(pool)
+}
+
+/// Configure public card vault routes (no auth required)
+pub fn public_routes() -> Router {
+    Router::new()
+        .route("/api/cards/templates", get(get_card_templates))
 }

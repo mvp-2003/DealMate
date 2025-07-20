@@ -1,15 +1,35 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { Package2, Sparkles, Gift, Clock, Zap, Crown, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import LootPackCard from '@/components/lootpacks/LootPackCard';
-import PackOpeningModal from '@/components/lootpacks/PackOpeningModal';
-import RewardsInventory from '@/components/lootpacks/RewardsInventory';
-import DailyStreakTracker from '@/components/lootpacks/DailyStreakTracker';
+import { AuthLoader } from '@/components/ui/animated-loader';
+import { useLazyLoading, useProgressiveLoading } from '@/hooks/useLazyLoading';
 import { cn } from '@/lib/utils';
+
+// Lazy load heavy components
+const LootPackCard = dynamic(() => import('@/components/lootpacks/LootPackCard'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
+
+const PackOpeningModal = dynamic(() => import('@/components/lootpacks/PackOpeningModal'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
+
+const RewardsInventory = dynamic(() => import('@/components/lootpacks/RewardsInventory'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
+
+const DailyStreakTracker = dynamic(() => import('@/components/lootpacks/DailyStreakTracker'), {
+  loading: () => <AuthLoader size="sm" />,
+  ssr: false
+});
 
 // Mock data for available packs
 const availablePacks = [
@@ -89,6 +109,18 @@ export default function LootPacksPage() {
   const [userStats, setUserStats] = useState(mockUserData);
   const [lastFreePackTime, setLastFreePackTime] = useState<number | null>(null);
   const [timeUntilFree, setTimeUntilFree] = useState<string>('');
+  
+  // Progressive loading states
+  const [visibleSections, setVisibleSections] = useState({
+    hero: true,
+    packs: false,
+    inventory: false,
+    streak: false
+  });
+
+  // Use progressive loading hook
+  const shouldLoadHeavyComponents = useProgressiveLoading(500);
+  const { isVisible: inventoryVisible } = useLazyLoading();
 
   useEffect(() => {
     setIsLoaded(true);
@@ -97,6 +129,17 @@ export default function LootPacksPage() {
     if (savedTime) {
       setLastFreePackTime(parseInt(savedTime));
     }
+    
+    // Progressive section loading
+    const timer1 = setTimeout(() => setVisibleSections(prev => ({ ...prev, packs: true })), 200);
+    const timer2 = setTimeout(() => setVisibleSections(prev => ({ ...prev, streak: true })), 400);
+    const timer3 = setTimeout(() => setVisibleSections(prev => ({ ...prev, inventory: true })), 600);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   }, []);
 
   useEffect(() => {
@@ -191,7 +234,11 @@ export default function LootPacksPage() {
         </div>
 
         {/* Daily Streak Tracker */}
-        <DailyStreakTracker streak={userStats.dailyStreak} />
+        {visibleSections.streak && (
+          <Suspense fallback={<AuthLoader size="sm" />}>
+            <DailyStreakTracker streak={userStats.dailyStreak} />
+          </Suspense>
+        )}
 
         {/* Special Events Banner */}
         <div className="glass-card p-4 mb-6 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/20">
@@ -205,21 +252,24 @@ export default function LootPacksPage() {
         </div>
 
         {/* Available Packs Grid */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Available Packs</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {availablePacks.map((pack, index) => (
-              <LootPackCard
-                key={pack.id}
-                pack={pack}
-                onSelect={handlePackSelect}
-                disabled={pack.type === 'free' && !canOpenFreePack}
-                cooldownText={pack.type === 'free' && !canOpenFreePack ? timeUntilFree : undefined}
-                animationDelay={index * 0.1}
-              />
-            ))}
+        {visibleSections.packs && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Available Packs</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {availablePacks.map((pack, index) => (
+                <Suspense key={pack.id} fallback={<AuthLoader size="sm" />}>
+                  <LootPackCard
+                    pack={pack}
+                    onSelect={handlePackSelect}
+                    disabled={pack.type === 'free' && !canOpenFreePack}
+                    cooldownText={pack.type === 'free' && !canOpenFreePack ? timeUntilFree : undefined}
+                    animationDelay={index * 0.1}
+                  />
+                </Suspense>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -246,19 +296,25 @@ export default function LootPacksPage() {
         </div>
 
         {/* Rewards Inventory */}
-        <RewardsInventory />
+        {visibleSections.inventory && shouldLoadHeavyComponents && (
+          <Suspense fallback={<AuthLoader size="md" />}>
+            <RewardsInventory />
+          </Suspense>
+        )}
 
         {/* Pack Opening Modal */}
         {isOpeningPack && selectedPack && (
-          <PackOpeningModal
-            pack={selectedPack}
-            isOpen={isOpeningPack}
-            onClose={() => {
-              setIsOpeningPack(false);
-              setSelectedPack(null);
-            }}
-            onRewardsRevealed={handlePackOpened}
-          />
+          <Suspense fallback={<AuthLoader size="lg" />}>
+            <PackOpeningModal
+              pack={selectedPack}
+              isOpen={isOpeningPack}
+              onClose={() => {
+                setIsOpeningPack(false);
+                setSelectedPack(null);
+              }}
+              onRewardsRevealed={handlePackOpened}
+            />
+          </Suspense>
         )}
       </div>
     </div>

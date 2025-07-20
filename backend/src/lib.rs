@@ -1,16 +1,19 @@
 use axum::{
     routing::{get, post},
     Router,
+    Extension,
 };
 use sqlx::PgPool;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
+use std::sync::Arc;
 
 pub mod auth;
 pub mod coupon_aggregator;
 pub mod db;
 pub mod error;
 pub mod kafka;  // Add Kafka producer module
+pub mod lazy_db; // Add lazy loading database module
 pub mod middleware;
 pub mod models;
 pub mod routes;
@@ -18,11 +21,14 @@ pub mod proxy;
 pub mod pricer;
 pub mod stacksmart;
 pub mod analyzer;
+pub mod performance; // Add performance module
 
 use crate::routes::{card_vault, coupons, deals, health_check, settings, user, wallet};
 use crate::auth::{login_handler, signup_handler, callback_handler, logout_handler, protected_handler};
 use crate::middleware::auth_middleware;
 use crate::proxy::{auth_proxy, ai_proxy, AppState};
+use crate::performance::{performance_middleware, create_compression_layer, create_performance_headers_layer};
+use crate::lazy_db::{LazyDbService, start_cache_cleanup_task};
 use axum::middleware::from_fn;
 
 // Create a new function for wallet routes to improve modularity
@@ -79,6 +85,15 @@ fn auth_routes() -> Router {
 }
 
 pub fn app(pool: PgPool, app_state: AppState) -> Router {
+    // Create lazy database service for performance optimization
+    let lazy_db_service = Arc::new(LazyDbService::new(pool.clone()));
+    
+    // Start background cache cleanup task
+    let cleanup_service = lazy_db_service.clone();
+    tokio::spawn(async move {
+        start_cache_cleanup_task(cleanup_service).await;
+    });
+
     // Add comments to clarify middleware setup
     let cors = CorsLayer::new()
         .allow_origin(Any) // Allow all origins for now; consider restricting in production
@@ -93,6 +108,7 @@ pub fn app(pool: PgPool, app_state: AppState) -> Router {
         .nest("/users", user_routes(pool.clone()))
         .nest("/coupons", coupon_routes(pool.clone()))
         .merge(card_vault::routes(pool.clone()))
+        .layer(Extension(lazy_db_service)) // Add lazy DB service
         .route_layer(from_fn(auth_middleware));
 
     // Create proxy routes separately with the AppState
@@ -105,7 +121,16 @@ pub fn app(pool: PgPool, app_state: AppState) -> Router {
         .route("/", get(|| async { "Hello, World!" }))
         .route("/health_check", get(health_check::health_check))
         .nest("/api/v1", protected_routes)
+        .merge(card_vault::public_routes()) // Add public card routes (no auth required)
         .merge(proxy_routes)
+        // Add performance middleware
+        .layer(from_fn(performance_middleware))
+        // Add compression for response optimization
+        .layer(create_compression_layer())
+        // Add performance headers
+        .layer(create_performance_headers_layer())
+        // Add request tracing
         .layer(TraceLayer::new_for_http())
+        // Add CORS
         .layer(cors)
 }
