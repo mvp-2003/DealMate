@@ -122,7 +122,7 @@ pub async fn login_handler(Query(params): Query<AuthQuery>) -> impl IntoResponse
     let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
     let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
     let audience = std::env::var("AUTH0_AUDIENCE").expect("AUTH0_AUDIENCE must be set");
-    let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string()) + "/auth/callback";
+    let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:9002".to_string()) + "/auth/callback";
     
     let mut auth_url = format!(
         "https://{}/authorize?response_type=code&client_id={}&redirect_uri={}&scope=openid profile email&audience={}",
@@ -141,7 +141,7 @@ pub async fn signup_handler(Query(params): Query<AuthQuery>) -> impl IntoRespons
     let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
     let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
     let audience = std::env::var("AUTH0_AUDIENCE").expect("AUTH0_AUDIENCE must be set");
-    let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string()) + "/auth/callback";
+    let redirect_uri = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:9002".to_string()) + "/auth/callback";
     
     let mut auth_url = format!(
         "https://{}/authorize?response_type=code&client_id={}&redirect_uri={}&scope=openid profile email&audience={}&screen_hint=signup",
@@ -164,8 +164,8 @@ pub async fn callback_handler(Query(params): Query<AuthQuery>) -> impl IntoRespo
 
     match exchange_code_for_token(&code).await {
         Ok(token_response) => {
-            let frontend_url = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string());
-            let redirect_url = format!("{}/auth?token={}", frontend_url, token_response.access_token);
+            let frontend_url = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:9002".to_string());
+            let redirect_url = format!("{}/auth/callback?token={}", frontend_url, token_response.access_token);
             Redirect::temporary(&redirect_url).into_response()
         }
         Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, "Token exchange failed").into_response(),
@@ -175,7 +175,7 @@ pub async fn callback_handler(Query(params): Query<AuthQuery>) -> impl IntoRespo
 pub async fn logout_handler() -> impl IntoResponse {
     let auth0_domain = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
     let client_id = std::env::var("AUTH0_CLIENT_ID").expect("AUTH0_CLIENT_ID must be set");
-    let frontend_url = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:3000".to_string());
+    let frontend_url = std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:9002".to_string());
     
     let logout_url = format!(
         "https://{}/v2/logout?client_id={}&returnTo={}",

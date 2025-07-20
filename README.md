@@ -1,10 +1,10 @@
-# DealPal - AI-Powered Smart Shopping Assistant
+# DealMate - AI-Powered Smart Shopping Assistant
 
 [![Lighthouse Performance](https://img.shields.io/badge/Lighthouse-Performance-brightgreen)](https://web.dev/lighthouse/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-blue)](https://web.dev/progressive-web-apps/)
 [![Accessibility](https://img.shields.io/badge/Accessibility-WCAG%202.1-green)](https://www.w3.org/WAI/WCAG21/quickref/)
 
-DealPal is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension.
+DealMate is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension.
 
 ## 📊 Performance & Quality
 
@@ -17,7 +17,7 @@ Our platform is optimized for excellent user experience with:
 
 ## 🚀 Quick Start
 
-DealPal uses Docker/Podman for containerization, ensuring consistent development environments across different operating systems and architectures.
+DealMate uses Docker/Podman for containerization, ensuring consistent development environments across different operating systems and architectures.
 
 ### Supported Platforms
 
@@ -49,8 +49,8 @@ Choose one of the following container runtimes:
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/mvp-2003/DealPal.git
-cd DealPal
+git clone https://github.com/mvp-2003/DealMate.git
+cd DealMate
 ```
 
 #### 2. One-Command Setup and Run
@@ -89,7 +89,7 @@ Development tools (when using `make up-dev`):
 
 ### For New Developers
 
-Welcome to DealPal! For a complete development setup:
+Welcome to DealMate! For a complete development setup:
 
 1. **Environment Setup**
    - Copy `.env.example` to `.env`
@@ -693,4 +693,4 @@ lighthouse http://localhost:3000 --only-categories=performance,accessibility,bes
 
 ---
 
-DealPal combines cutting-edge AI technology with practical user value to revolutionize how consumers discover and maximize savings opportunities across all shopping platforms.
+DealMate combines cutting-edge AI technology with practical user value to revolutionize how consumers discover and maximize savings opportunities across all shopping platforms.
