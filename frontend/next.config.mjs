@@ -1,13 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  experimental: {
-    // Recommended for modern Next.js projects
-    appDir: true,
-    // Enable edge runtime for better performance
-    serverComponentsExternalPackages: ['@google/generative-ai'],
-  },
+  // serverComponentsExternalPackages has moved to serverExternalPackages
+  serverExternalPackages: ['@google/generative-ai', '@genkit-ai/ai', '@genkit-ai/firebase', '@genkit-ai/google'],
   
   // Performance optimizations
   images: {
@@ -42,25 +37,7 @@ const nextConfig = {
   // Enable compression
   compress: true,
   
-  // PWA configuration
-  pwa: {
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-    runtimeCaching: [
-      {
-        urlPattern: /^https:\/\/api\.dealpal\.com\/.*/i,
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'api-cache',
-          expiration: {
-            maxEntries: 32,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
-        },
-      },
-    ],
-  },
+  // PWA configuration removed - should be handled by next-pwa plugin if needed
   
   // Bundle analyzer for optimization
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {

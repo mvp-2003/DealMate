@@ -5,7 +5,7 @@
 # ====================
 # Base images
 # ====================
-FROM --platform=$BUILDPLATFORM rust:1.79-slim as rust-base
+FROM --platform=$BUILDPLATFORM rust:1.82-slim as rust-base
 FROM --platform=$BUILDPLATFORM python:3.12-slim as python-base
 FROM --platform=$BUILDPLATFORM node:20-alpine as node-base
 
@@ -26,6 +26,10 @@ WORKDIR /app
 
 # Copy backend source
 COPY backend/Cargo.toml backend/Cargo.lock ./
+
+# Copy shared crate to the expected relative location
+COPY shared ../shared
+
 RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release && rm -rf src target/release/dealpal-backend*
 
