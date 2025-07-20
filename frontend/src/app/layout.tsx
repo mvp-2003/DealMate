@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'DealPal',
+  title: 'DealMate',
   description: 'Your smart shopping assistant for Indian e-commerce.',
   icons: {
     icon: '/Logo.ico',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'DealPal',
+    title: 'DealMate',
   },
   formatDetection: {
     telephone: false,

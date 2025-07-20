@@ -23,10 +23,11 @@ export default function Auth0ProviderWithHistory({ children }: { children: React
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri: typeof window !== 'undefined' ? window.location.origin : '',
+        redirect_uri: typeof window !== 'undefined' ? window.location.origin + '/auth/callback' : '',
         audience: audience,
       }}
       onRedirectCallback={onRedirectCallback}
+      skipRedirectCallback={true}
     >
       {children}
     </Auth0Provider>
