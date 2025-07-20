@@ -7,7 +7,7 @@ import {
   DealRankingResponse 
 } from '@/types/card-vault';
 
-const API_BASE = '/api/v1/cards';
+const API_BASE = '/api/cards';
 
 export const cardsApi = {
   // Get all user cards

@@ -43,7 +43,8 @@ export default function CardVaultManager() {
       const data = await cardsApi.getCardTemplates();
       setTemplates(data);
     } catch (error) {
-      console.error('Failed to load templates');
+      console.error('Failed to load templates', error);
+      toast.error('Failed to load card templates');
     }
   };
 
