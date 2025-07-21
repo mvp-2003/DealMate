@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# DealPal Development Environment Setup Script
-# Sets up everything needed for new developers
+# DealPal Development Environment Setup Script - Unix/Linux/macOS
+# This script wraps the universal Python setup script
 
 set -e
 
@@ -17,174 +17,48 @@ echo -e "${BLUE}🚀 DealPal Development Environment Setup${NC}"
 echo "=============================================="
 echo ""
 
-# Function to check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 
-# Function to install if missing
-check_and_install() {
-    local tool=$1
-    local install_command=$2
+# Change to project root
+cd "$PROJECT_ROOT"
+
+# Check if Python 3 is installed
+if ! command -v python3 >/dev/null 2>&1; then
+    echo -e "${RED}❌ ERROR: Python 3 is not installed${NC}"
+    echo "Please install Python 3.8+ using your package manager:"
+    echo ""
     
-    if command_exists "$tool"; then
-        echo -e "${GREEN}✅ $tool is already installed${NC}"
-    else
-        echo -e "${YELLOW}📦 Installing $tool...${NC}"
-        eval "$install_command"
-        if command_exists "$tool"; then
-            echo -e "${GREEN}✅ $tool installed successfully${NC}"
+    # Detect OS and provide installation instructions
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if command -v apt-get >/dev/null 2>&1; then
+            echo "  sudo apt-get update && sudo apt-get install python3 python3-pip"
+        elif command -v yum >/dev/null 2>&1; then
+            echo "  sudo yum install python3 python3-pip"
+        elif command -v pacman >/dev/null 2>&1; then
+            echo "  sudo pacman -S python python-pip"
         else
-            echo -e "${RED}❌ Failed to install $tool${NC}"
-            exit 1
+            echo "  Please use your distribution's package manager to install Python 3"
         fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "  Download from https://python.org/ or use Homebrew:"
+        echo "  brew install python@3"
+    else
+        echo "  Please install Python 3.8+ from https://python.org/"
     fi
-}
-
-# Check system
-echo -e "${BLUE}🔍 Checking System Requirements${NC}"
-
-# Check Node.js
-check_and_install "node" "curl -fsSL https://nodejs.org/dist/v20.10.0/node-v20.10.0-darwin-x64.tar.gz | tar -xz --strip-components=1 -C /usr/local"
-
-# Check Rust
-if ! command_exists "cargo"; then
-    echo -e "${YELLOW}📦 Installing Rust...${NC}"
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    source ~/.cargo/env
-    echo -e "${GREEN}✅ Rust installed successfully${NC}"
-else
-    echo -e "${GREEN}✅ Rust is already installed${NC}"
-fi
-
-# Check Python
-check_and_install "python3" "echo 'Python3 should be installed via official installer or brew install python'"
-
-# Install project dependencies
-echo -e "\n${BLUE}📦 Installing Project Dependencies${NC}"
-
-# Frontend dependencies
-echo -e "${YELLOW}Installing Frontend dependencies...${NC}"
-cd ../frontend
-npm install
-cd ../scripts
-echo -e "${GREEN}✅ Frontend dependencies installed${NC}"
-
-# Backend dependencies (Rust dependencies are handled by Cargo)
-echo -e "${YELLOW}Checking Backend dependencies...${NC}"
-cd ../backend
-cargo check
-cd ../scripts
-echo -e "${GREEN}✅ Backend dependencies verified${NC}"
-
-# AI Service dependencies
-echo -e "${YELLOW}Setting up AI Service environment...${NC}"
-cd ../backend/ai-service
-if [ ! -d ".venv" ]; then
-    echo "Creating new virtual environment..."
-    python3 -m venv .venv
-else
-    echo "Using existing virtual environment..."
-fi
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-cd ../../scripts
-echo -e "${GREEN}✅ AI Service environment set up${NC}"
-
-# Environment setup
-echo -e "\n${BLUE}🔧 Environment Configuration${NC}"
-
-if [ ! -f "../.env" ]; then
-    echo -e "${YELLOW}Creating .env file template...${NC}"
-    cat > ../.env << EOF
-# DealPal Environment Configuration
-# Copy this to .env and fill in your values
-
-# Gemini AI API Key (Required)
-GOOGLE_API_KEY=your_google_api_key_here
-
-# Database Configuration (Optional for local development)
-DATABASE_URL=postgresql://your_username:your_password@localhost:5432/dealpal
-
-# Gemini Model Configuration (Optional)
-GEMINI_MODEL=gemini-1.5-flash
-
-# Redis Configuration (Optional)
-REDIS_URL=redis://localhost:6379
-
-# Development Settings
-NODE_ENV=development
-RUST_LOG=debug
-EOF
-    echo -e "${GREEN}✅ .env template created${NC}"
-    echo -e "${YELLOW}⚠️  Please edit .env file with your actual API keys${NC}"
-else
-    echo -e "${GREEN}✅ .env file already exists${NC}"
-fi
-
-# Environment file setup
-echo -e "\n${BLUE}🔌 Environment Configuration${NC}"
-
-if [ ! -f "../.env" ]; then
-    echo -e "${YELLOW}Master .env file not found. This should contain all environment variables.${NC}"
-    echo -e "${YELLOW}Please create .env file with all necessary configuration.${NC}"
-else
-    echo -e "${GREEN}✅ Master .env file exists${NC}"
-    echo -e "${GREEN}All services will use the master .env file for configuration${NC}"
-fi
-
-# VSCode setup
-if command_exists "code"; then
-    echo -e "\n${BLUE}🎯 VSCode Configuration${NC}"
     
-    # Create VSCode settings
-    mkdir -p ../.vscode
-    
-    cat > ../.vscode/settings.json << EOF
-{
-    "rust-analyzer.cargo.buildScripts.enable": true,
-    "python.defaultInterpreterPath": "./backend/ai-service/.venv/bin/python",
-    "typescript.preferences.importModuleSpecifier": "relative",
-    "editor.formatOnSave": true,
-    "files.exclude": {
-        "**/target": true,
-        "**/.next": true,
-        "**/node_modules": true,
-        "**/__pycache__": true
-    }
-}
-EOF
-
-    cat > ../.vscode/extensions.json << EOF
-{
-    "recommendations": [
-        "rust-lang.rust-analyzer",
-        "ms-python.python",
-        "bradlc.vscode-tailwindcss",
-        "esbenp.prettier-vscode",
-        "ms-vscode.vscode-typescript-next"
-    ]
-}
-EOF
-
-    echo -e "${GREEN}✅ VSCode configuration created${NC}"
+    exit 1
 fi
 
-# Build everything
-echo -e "\n${BLUE}🔨 Initial Build${NC}"
-./build.sh
+# Run the universal setup script
+echo -e "${YELLOW}Running universal setup script...${NC}"
+python3 "$SCRIPT_DIR/setup_universal.py" "$@"
 
-# Final validation
-echo -e "\n${BLUE}✅ Setup Validation${NC}"
-./status.sh
-
-echo -e "\n${GREEN}🎉 Development Environment Setup Complete!${NC}"
-echo ""
-echo -e "${BLUE}Next Steps:${NC}"
-echo "1. Edit .env file with your API keys"
-echo "2. Run './dev.sh' to start development servers"
-echo "3. Run './test_all.sh' to verify everything works"
-echo "4. Check './status.sh' anytime for platform status"
-echo ""
-echo -e "${PURPLE}Happy coding! 🚀${NC}"
+# Check if the setup was successful
+if [ $? -eq 0 ]; then
+    echo -e "\n${GREEN}✅ Setup completed successfully!${NC}"
+else
+    echo -e "\n${RED}❌ Setup failed. Please check the error messages above.${NC}"
+    exit 1
+fi
