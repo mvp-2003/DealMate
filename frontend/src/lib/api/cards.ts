@@ -7,7 +7,7 @@ import {
   DealRankingResponse 
 } from '@/types/card-vault';
 
-const API_BASE = '/api/cards';
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/cards`;
 
 export const cardsApi = {
   // Get all user cards
