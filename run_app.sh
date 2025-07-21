@@ -75,6 +75,85 @@ echo "====================================="
 # Check required commands
 check_required_commands
 
+# Function to check and create database if needed
+check_and_create_database() {
+    echo -e "${CYAN}🔍 Checking database status...${NC}"
+    
+    # Load environment variables to get DATABASE_URL
+    if [ -f ".env" ]; then
+        set -a
+        source .env
+        set +a
+    else
+        echo -e "${RED}❌ .env file not found! Please create it with DATABASE_URL${NC}"
+        exit 1
+    fi
+    
+    # Extract database components from DATABASE_URL
+    # Format: postgresql://username@host:port/database_name
+    if [[ -z "$DATABASE_URL" ]]; then
+        echo -e "${RED}❌ DATABASE_URL not found in .env file${NC}"
+        exit 1
+    fi
+    
+    # Parse DATABASE_URL to extract components
+    DB_USER=$(echo "$DATABASE_URL" | sed -n 's/.*:\/\/\([^@]*\)@.*/\1/p')
+    DB_HOST=$(echo "$DATABASE_URL" | sed -n 's/.*@\([^:]*\):.*/\1/p')
+    DB_PORT=$(echo "$DATABASE_URL" | sed -n 's/.*:\([0-9]*\)\/.*/\1/p')
+    DB_NAME=$(echo "$DATABASE_URL" | sed -n 's/.*\/\([^?]*\).*/\1/p')
+    
+    echo -e "${CYAN}Database config: ${DB_USER}@${DB_HOST}:${DB_PORT}/${DB_NAME}${NC}"
+    
+    # Check if PostgreSQL is running
+    if ! pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" &>/dev/null; then
+        echo -e "${RED}❌ PostgreSQL is not running or not accessible${NC}"
+        echo -e "${YELLOW}Please start PostgreSQL first:${NC}"
+        echo -e "  brew services start postgresql@16"
+        echo -e "  # or #"
+        echo -e "  sudo systemctl start postgresql"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}✅ PostgreSQL is running${NC}"
+    
+    # Check if database exists
+    DB_EXISTS=$(PGPASSWORD="" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" 2>/dev/null || echo "")
+    
+    if [[ "$DB_EXISTS" == "1" ]]; then
+        echo -e "${GREEN}✅ Database '$DB_NAME' already exists${NC}"
+        
+        # Check if database has tables
+        TABLE_COUNT=$(PGPASSWORD="" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'" 2>/dev/null || echo "0")
+        
+        if [[ "$TABLE_COUNT" -gt 0 ]]; then
+            echo -e "${GREEN}✅ Database has $TABLE_COUNT tables${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Database exists but has no tables - migrations will set it up${NC}"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  Database '$DB_NAME' does not exist${NC}"
+        echo -e "${BLUE}🔧 Creating database '$DB_NAME'...${NC}"
+        
+        # Create the database
+        if PGPASSWORD="" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -c "CREATE DATABASE $DB_NAME;" 2>/dev/null; then
+            echo -e "${GREEN}✅ Database '$DB_NAME' created successfully${NC}"
+            
+            # Set proper ownership if different user
+            if [[ "$DB_USER" != "postgres" ]]; then
+                PGPASSWORD="" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -c "ALTER DATABASE $DB_NAME OWNER TO \"$DB_USER\";" 2>/dev/null || true
+            fi
+        else
+            echo -e "${RED}❌ Failed to create database '$DB_NAME'${NC}"
+            echo -e "${YELLOW}You may need to create it manually:${NC}"
+            echo -e "  psql -U $DB_USER -d postgres -c \"CREATE DATABASE $DB_NAME;\""
+            exit 1
+        fi
+    fi
+    
+    echo -e "${GREEN}✅ Database setup verified${NC}"
+    echo ""
+}
+
 # Function to detect container runtime
 detect_container_runtime() {
     if command -v docker &> /dev/null && docker info &> /dev/null 2>&1; then
@@ -142,10 +221,11 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
     echo "================================="
     echo -e "${CYAN}This will:${NC}"
     echo "1. 🔧 Setup Docker environment"
-    echo "2. 🗄️  Run database migrations"
-    echo "3. 🚀 Start all containerized services"
-    echo "4. 🧪 Run health checks"
-    echo "5. 📊 Show platform status"
+    echo "2. 🗄️  Check/create database"
+    echo "3. 🗄️  Run database migrations"
+    echo "4. 🚀 Start all containerized services"
+    echo "5. 🧪 Run health checks"
+    echo "6. 📊 Show platform status"
     echo ""
     
     # Detect compose command
@@ -164,6 +244,9 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
         ./scripts/docker-setup.sh
         echo ""
     fi
+    
+    # Check and create database if needed
+    check_and_create_database
     
     # Check API keys
     if ! check_api_keys; then
@@ -259,11 +342,12 @@ else
     echo "=========================="
     echo -e "${CYAN}This will:${NC}"
     echo "1. 🔧 Build all components"
-    echo "2. 🗄️  Run database migrations"
-    echo "3. 🚀 Start all services"
-    echo "4. 🧪 Run health checks"
-    echo "5. 📊 Show platform status"
-    echo "6. 🎯 Keep services running"
+    echo "2. 🗄️  Check/create database"
+    echo "3. 🗄️  Run database migrations"
+    echo "4. 🚀 Start all services"
+    echo "5. 🧪 Run health checks"
+    echo "6. 📊 Show platform status"
+    echo "7. 🎯 Keep services running"
     echo ""
     
     # Load environment variables
@@ -350,6 +434,9 @@ else
         exit 1
     fi
     echo ""
+
+    # Step 1.5: Check and create database if needed
+    check_and_create_database
 
     # Step 2: Run Database Migrations
     echo -e "${BLUE}🗄️  Step 2: Database Migrations${NC}"
