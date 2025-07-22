@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const tabs = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Home', href: '/home', icon: LayoutDashboard },
   { name: 'Smart Deals', href: '/smart-deals', icon: Sparkles },
   { name: 'LootPacks', href: '/lootpacks', icon: Package2 },
   { name: 'Wishlist', href: '/wishlist', icon: Heart },
@@ -48,7 +48,6 @@ export default function NavigationTabs() {
                     <span className="text-xs whitespace-nowrap sm:hidden font-medium">
                       {tab.name === 'Smart Deals' ? 'Deals' : 
                        tab.name === 'DealBot' ? 'Bot' : 
-                       tab.name === 'Dashboard' ? 'Home' :
                        tab.name === 'LootPacks' ? 'Loot' :
                        tab.name}
                     </span>

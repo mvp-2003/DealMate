@@ -23,7 +23,7 @@ function AuthCallback() {
         })
         .then((data) => {
           localStorage.setItem('auth_token', data.access_token);
-          router.push('/dashboard');
+          router.push('/home');
         })
         .catch((error) => {
           console.error('Authentication error:', error);
