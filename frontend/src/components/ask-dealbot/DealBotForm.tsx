@@ -32,8 +32,11 @@ export default function DealBotForm({ onSubmitQuery, isLoading }: DealBotFormPro
 
   return (
     <div className="glass-card p-3 xs:p-4 sm:p-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmitQuery)} className="space-y-3 xs:space-y-4 sm:space-y-6">
+          <Form {...form}>
+        <form onSubmit={form.handleSubmit(async (data) => {
+          await onSubmitQuery(data);
+          form.reset(); // Clear the form after submission
+        })} className="space-y-3 xs:space-y-4 sm:space-y-6">
           <FormField
             control={form.control}
             name="query"
