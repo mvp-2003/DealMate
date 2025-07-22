@@ -40,6 +40,7 @@ export default function DashboardPage() {
       clearTimeout(timer4);
     };
   }, []);
+
   return (
     <div className="min-h-screen-safe">
       <div className={cn("space-responsive", isLoaded ? 'animate-fade-in' : 'opacity-0')}>

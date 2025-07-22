@@ -1,7 +1,7 @@
 'use client';
 
 import { lazy, Suspense } from 'react';
-import { AuthLoader } from '@/components/ui/animated-loader';
+import { ComponentLoader, CardSkeleton } from '@/components/ui/component-loader';
 
 // Lazy load home components
 export const LazyProductInfoCard = lazy(() => 
@@ -74,7 +74,7 @@ export const LazyRankedOfferCard = lazy(() =>
 // Component wrapper with suspense
 export function WithSuspense({ 
   children, 
-  fallback = <AuthLoader size="sm" />,
+  fallback = null,
   className = ""
 }: {
   children: React.ReactNode;
@@ -82,7 +82,7 @@ export function WithSuspense({
   className?: string;
 }) {
   return (
-    <Suspense fallback={<div className={className}>{fallback}</div>}>
+    <Suspense fallback={fallback ? <div className={className}>{fallback}</div> : null}>
       {children}
     </Suspense>
   );
