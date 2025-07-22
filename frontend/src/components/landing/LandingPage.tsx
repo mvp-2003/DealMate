@@ -56,7 +56,7 @@ export default function LandingPage() {
             <h1 className="text-2xl font-bold text-white">DealMate</h1>
           </div>
           <Button 
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/auth')}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             Get Started
@@ -77,7 +77,7 @@ export default function LandingPage() {
         <div className="flex gap-4 justify-center">
           <Button 
             size="lg"
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/auth')}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             Start Saving Now
@@ -192,7 +192,7 @@ export default function LandingPage() {
           </p>
           <Button 
             size="lg"
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/auth')}
             className="bg-white text-purple-600 hover:bg-gray-100"
           >
             Get Started Free

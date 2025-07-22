@@ -40,20 +40,25 @@ export function AnimatedLoader({
         sizeClasses[size]
       )}>
         <span>{loadingText}</span>
-        <div className="overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background z-10" />
-          {words.map((word, index) => (
-            <span
-              key={index}
-              className="block h-full pl-1 sm:pl-2 text-primary font-semibold animate-word-spin"
-              style={{
-                animationDelay: `${index * 0.8}s`,
-                animationDuration: `${words.length * 0.8}s`
-              }}
-            >
-              {word}
-            </span>
-          ))}
+        <div className={cn("overflow-hidden relative", sizeClasses[size])}>
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background z-10 pointer-events-none" />
+          <div className="relative">
+            {words.map((word, index) => (
+              <span
+                key={index}
+                className={cn(
+                  "block pl-1 sm:pl-2 text-primary font-semibold animate-word-spin",
+                  sizeClasses[size]
+                )}
+                style={{
+                  animationDelay: `${index * 0.8}s`,
+                  animationDuration: `${words.length * 0.8}s`
+                }}
+              >
+                {word}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </div>

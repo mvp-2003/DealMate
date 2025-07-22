@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bot, AlertTriangle, User } from 'lucide-react';
-import { SearchLoader } from '@/components/ui/animated-loader';
+import { DotsLoader } from '@/components/ui/dots-loader';
 
 interface DealBotResponseProps {
   userQuery?: string; // Optional: display the user's query
@@ -42,7 +42,7 @@ export default function DealBotResponse({ userQuery, response, error, isLoading 
           <CardContent className="min-h-[120px] text-base">
             {isLoading && (
                 <div className="flex flex-col items-center justify-center py-8 space-y-4">
-                    <SearchLoader size="md" />
+                    <DotsLoader />
                 </div>
             )}
             {error && !isLoading && (
@@ -63,4 +63,3 @@ export default function DealBotResponse({ userQuery, response, error, isLoading 
     </div>
   );
 }
-

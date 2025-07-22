@@ -1,31 +1,31 @@
 'use client';
 
 import { lazy, Suspense } from 'react';
-import { AuthLoader } from '@/components/ui/animated-loader';
+import { ComponentLoader, CardSkeleton } from '@/components/ui/component-loader';
 
-// Lazy load dashboard components
+// Lazy load home components
 export const LazyProductInfoCard = lazy(() => 
-  import('@/components/dashboard/ProductInfoCard').then(module => ({ default: module.default }))
+  import('@/components/home/ProductInfoCard').then(module => ({ default: module.default }))
 );
 
 export const LazyPriceComparisonTable = lazy(() => 
-  import('@/components/dashboard/PriceComparisonTable').then(module => ({ default: module.default }))
+  import('@/components/home/PriceComparisonTable').then(module => ({ default: module.default }))
 );
 
 export const LazyOffersList = lazy(() => 
-  import('@/components/dashboard/OffersList').then(module => ({ default: module.default }))
+  import('@/components/home/OffersList').then(module => ({ default: module.default }))
 );
 
 export const LazySavingsScore = lazy(() => 
-  import('@/components/dashboard/SavingsScore').then(module => ({ default: module.default }))
+  import('@/components/home/SavingsScore').then(module => ({ default: module.default }))
 );
 
 export const LazyPriceHistoryChart = lazy(() => 
-  import('@/components/dashboard/PriceHistoryChart').then(module => ({ default: module.default }))
+  import('@/components/home/PriceHistoryChart').then(module => ({ default: module.default }))
 );
 
 export const LazyMonthlySavingsChart = lazy(() => 
-  import('@/components/dashboard/MonthlySavingsChart').then(module => ({ default: module.default }))
+  import('@/components/home/MonthlySavingsChart').then(module => ({ default: module.default }))
 );
 
 // Lazy load wallet components
@@ -74,7 +74,7 @@ export const LazyRankedOfferCard = lazy(() =>
 // Component wrapper with suspense
 export function WithSuspense({ 
   children, 
-  fallback = <AuthLoader size="sm" />,
+  fallback = null,
   className = ""
 }: {
   children: React.ReactNode;
@@ -82,7 +82,7 @@ export function WithSuspense({
   className?: string;
 }) {
   return (
-    <Suspense fallback={<div className={className}>{fallback}</div>}>
+    <Suspense fallback={fallback ? <div className={className}>{fallback}</div> : null}>
       {children}
     </Suspense>
   );

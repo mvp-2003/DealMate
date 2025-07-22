@@ -18,13 +18,13 @@ export default function CardTemplateSelector({ templates, onSelectTemplate }: Ca
 
   const filteredTemplates = templates.filter(
     (template) =>
-      template.bankName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.cardType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.cardNetwork.toLowerCase().includes(searchTerm.toLowerCase())
+      template.bankName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.cardType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.cardNetwork?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getCategoryRewardsDisplay = (categoryRewards: Record<string, number>) => {
-    const entries = Object.entries(categoryRewards);
+    const entries = Object.entries(categoryRewards || {});
     if (entries.length === 0) return null;
     
     const displayEntries = entries.slice(0, 3);
@@ -47,7 +47,7 @@ export default function CardTemplateSelector({ templates, onSelectTemplate }: Ca
   };
 
   const getFeaturesList = (features: CardTemplate['features']) => {
-    const activeFeatures = Object.entries(features)
+    const activeFeatures = Object.entries(features || {})
       .filter(([_, value]) => value === true)
       .map(([key]) => key);
 
@@ -97,18 +97,20 @@ export default function CardTemplateSelector({ templates, onSelectTemplate }: Ca
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-lg">
-                      {template.bankName} {template.cardType}
+                      {template.bankName || 'Unknown Bank'} {template.cardType || 'Card'}
                     </CardTitle>
                     <CardDescription>
-                      {template.cardNetwork} • ₹{template.annualFee.toLocaleString()} annual fee
+                      {template.cardNetwork || 'Unknown Network'} • ₹{(template.annualFee || 0).toLocaleString()} annual fee
                     </CardDescription>
                   </div>
-                  <Badge variant="default">
-                    {template.rewardType === 'cashback' 
-                      ? `${template.baseRewardRate}% Cashback`
-                      : `${template.baseRewardRate} pts/₹`
-                    }
-                  </Badge>
+                  {template.rewardType && template.baseRewardRate !== undefined && (
+                    <Badge variant="default">
+                      {template.rewardType === 'cashback' 
+                        ? `${template.baseRewardRate}% Cashback`
+                        : `${template.baseRewardRate} pts/₹`
+                      }
+                    </Badge>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
