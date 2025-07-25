@@ -1,7 +1,7 @@
 // DealMate Animated Loading Utilities for Browser Extension
 // This file provides animated loading components that can be used throughout the extension
 
-class DealPalLoader {
+class DealMateLoader {
   constructor() {
     this.defaultWords = ['deals', 'offers', 'coupons', 'savings', 'deals'];
     this.loadingTexts = {
@@ -27,11 +27,11 @@ class DealPalLoader {
         100% { transform: translateY(-400%); }
       }
 
-      .dealpal-animate-word-spin {
+      .dealmate-animate-word-spin {
         animation: word-spin 4s infinite;
       }
 
-      .dealpal-loader-container {
+      .dealmate-loader-container {
         display: inline-block;
         background: rgba(0, 0, 0, 0.9);
         backdrop-filter: blur(8px);
@@ -41,7 +41,7 @@ class DealPalLoader {
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
 
-      .dealpal-loader-content {
+      .dealmate-loader-content {
         color: #9ca3af;
         font-weight: 500;
         display: flex;
@@ -51,13 +51,13 @@ class DealPalLoader {
         line-height: 24px;
       }
 
-      .dealpal-loader-words {
+      .dealmate-loader-words {
         overflow: hidden;
         position: relative;
         min-width: 80px;
       }
 
-      .dealpal-loader-words::after {
+      .dealmate-loader-words::after {
         content: "";
         position: absolute;
         inset: 0;
@@ -71,7 +71,7 @@ class DealPalLoader {
         pointer-events: none;
       }
 
-      .dealpal-loader-word {
+      .dealmate-loader-word {
         display: block;
         height: 100%;
         padding-left: 6px;
@@ -79,13 +79,13 @@ class DealPalLoader {
         font-weight: 600;
       }
 
-      .dealpal-loader-dots {
+      .dealmate-loader-dots {
         display: flex;
         gap: 4px;
         margin-left: 8px;
       }
 
-      .dealpal-loader-dot {
+      .dealmate-loader-dot {
         width: 4px;
         height: 4px;
         background-color: #a855f7;
@@ -93,9 +93,9 @@ class DealPalLoader {
         animation: pulse 1.5s ease-in-out infinite;
       }
 
-      .dealpal-loader-dot:nth-child(1) { animation-delay: 0ms; }
-      .dealpal-loader-dot:nth-child(2) { animation-delay: 200ms; }
-      .dealpal-loader-dot:nth-child(3) { animation-delay: 400ms; }
+      .dealmate-loader-dot:nth-child(1) { animation-delay: 0ms; }
+      .dealmate-loader-dot:nth-child(2) { animation-delay: 200ms; }
+      .dealmate-loader-dot:nth-child(3) { animation-delay: 400ms; }
 
       @keyframes pulse {
         0%, 100% { opacity: 0.3; }
@@ -103,22 +103,22 @@ class DealPalLoader {
       }
 
       /* Size variants */
-      .dealpal-loader-sm .dealpal-loader-content {
+      .dealmate-loader-sm .dealmate-loader-content {
         font-size: 14px;
         line-height: 20px;
       }
 
-      .dealpal-loader-sm {
+      .dealmate-loader-sm {
         padding: 8px 12px;
         border-radius: 8px;
       }
 
-      .dealpal-loader-lg .dealpal-loader-content {
+      .dealmate-loader-lg .dealmate-loader-content {
         font-size: 20px;
         line-height: 28px;
       }
 
-      .dealpal-loader-lg {
+      .dealmate-loader-lg {
         padding: 16px 24px;
         border-radius: 16px;
       }
@@ -127,9 +127,9 @@ class DealPalLoader {
 
   // Inject CSS into the page
   injectCSS() {
-    if (!document.getElementById('dealpal-loader-styles')) {
+    if (!document.getElementById('dealmate-loader-styles')) {
       const style = document.createElement('style');
-      style.id = 'dealpal-loader-styles';
+      style.id = 'dealmate-loader-styles';
       style.textContent = this.createLoaderCSS();
       document.head.appendChild(style);
     }
@@ -148,20 +148,20 @@ class DealPalLoader {
     this.injectCSS();
 
     const container = document.createElement('div');
-    container.className = `dealpal-loader-container dealpal-loader-${size} ${className}`;
+    container.className = `dealmate-loader-container dealmate-loader-${size} ${className}`;
 
     const content = document.createElement('div');
-    content.className = 'dealpal-loader-content';
+    content.className = 'dealmate-loader-content';
 
     const textSpan = document.createElement('span');
     textSpan.textContent = loadingText;
 
     const wordsContainer = document.createElement('div');
-    wordsContainer.className = 'dealpal-loader-words';
+    wordsContainer.className = 'dealmate-loader-words';
 
     words.forEach((word, index) => {
       const wordSpan = document.createElement('span');
-      wordSpan.className = 'dealpal-loader-word dealpal-animate-word-spin';
+      wordSpan.className = 'dealmate-loader-word dealmate-animate-word-spin';
       wordSpan.textContent = word;
       wordSpan.style.animationDelay = `${index * 0.8}s`;
       wordSpan.style.animationDuration = `${words.length * 0.8}s`;
@@ -173,10 +173,10 @@ class DealPalLoader {
 
     if (showDots) {
       const dotsContainer = document.createElement('div');
-      dotsContainer.className = 'dealpal-loader-dots';
+      dotsContainer.className = 'dealmate-loader-dots';
       for (let i = 0; i < 3; i++) {
         const dot = document.createElement('div');
-        dot.className = 'dealpal-loader-dot';
+        dot.className = 'dealmate-loader-dot';
         dotsContainer.appendChild(dot);
       }
       content.appendChild(dotsContainer);
@@ -254,9 +254,9 @@ class DealPalLoader {
 }
 
 // Create global instance
-window.DealPalLoader = new DealPalLoader();
+window.DealMateLoader = new DealMateLoader();
 
 // For Node.js environments or modules
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = DealPalLoader;
+  module.exports = DealMateLoader;
 }

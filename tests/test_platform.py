@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-class DealPalTester:
+class DealMateTester:
     """Comprehensive testing suite for DealMate platform"""
     
     def __init__(self, base_url: str = "http://localhost:8000", ai_url: str = "http://localhost:8001"):
@@ -458,7 +458,7 @@ async def main():
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
     
-    async with DealPalTester(args.backend_url, args.ai_url) as tester:
+    async with DealMateTester(args.backend_url, args.ai_url) as tester:
         if args.component:
             # Test specific component
             component_tests = {

@@ -28,5 +28,5 @@ const CONFIG = {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = CONFIG;
 } else if (typeof window !== 'undefined') {
-    window.DEALPAL_CONFIG = CONFIG;
+    window.DEALMATE_CONFIG = CONFIG;
 }

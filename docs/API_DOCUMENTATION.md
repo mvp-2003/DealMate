@@ -471,9 +471,9 @@ X-RateLimit-Reset: 1627834800
 ### JavaScript/TypeScript Example
 
 ```typescript
-import { DealPalAPI } from '@dealpal/sdk';
+import { DealMateAPI } from '@dealmate/sdk';
 
-const api = new DealPalAPI({
+const api = new DealMateAPI({
   baseUrl: 'http://localhost:3000',
   apiKey: 'your-api-key'
 });

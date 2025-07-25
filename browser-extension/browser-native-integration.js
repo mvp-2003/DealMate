@@ -89,7 +89,7 @@ class BrowserNativeIntegration {
       // Ctrl+Shift+D (or Cmd+Shift+D on Mac) to open DealMate
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'D') {
         event.preventDefault();
-        this.openDealPalPopup();
+        this.openDealMatePopup();
       }
       
       // Ctrl+Shift+C (or Cmd+Shift+C on Mac) to test coupons
@@ -150,7 +150,7 @@ class BrowserNativeIntegration {
     }
   }
 
-  openDealPalPopup() {
+  openDealMatePopup() {
     // Send message to background to open popup
     chrome.runtime.sendMessage({
       action: 'openPopup'
@@ -247,7 +247,7 @@ class BrowserNativeIntegration {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `dealpal-report-${Date.now()}.json`;
+      a.download = `dealmate-report-${Date.now()}.json`;
       a.click();
       
       URL.revokeObjectURL(url);
@@ -276,7 +276,7 @@ class BrowserNativeIntegration {
       // Add to browser history with special state
       if (window.history && window.history.pushState) {
         const state = {
-          dealpal: true,
+          dealmate: true,
           deal: dealData,
           timestamp: Date.now()
         };
@@ -299,13 +299,13 @@ class BrowserNativeIntegration {
   // Method to handle context menu clicks (called from background script)
   handleContextMenuClick(info, tab) {
     switch (info.menuItemId) {
-      case 'dealpal-check-deals':
+      case 'dealmate-check-deals':
         this.checkDealsOnSelection(info.selectionText);
         break;
-      case 'dealpal-add-to-watchlist':
+      case 'dealmate-add-to-watchlist':
         this.addToWatchlistFromContext(info);
         break;
-      case 'dealpal-compare-prices':
+      case 'dealmate-compare-prices':
         this.comparePricesFromContext(info);
         break;
     }

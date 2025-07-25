@@ -402,7 +402,7 @@ class StackSmartEngine {
 
   loadUserPreferences() {
     try {
-      return JSON.parse(localStorage.getItem('dealpal_user_preferences') || '{}');
+      return JSON.parse(localStorage.getItem('dealmate_user_preferences') || '{}');
     } catch (error) {
       return {};
     }

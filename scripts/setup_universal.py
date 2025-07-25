@@ -326,7 +326,7 @@ def create_env_file():
 GOOGLE_API_KEY=your_google_api_key_here
 
 # Database Configuration (Optional for local development)
-DATABASE_URL=postgresql://your_username:your_password@localhost:5432/dealpal
+DATABASE_URL=postgresql://your_username:your_password@localhost:5432/dealmate
 
 # Auth0 Configuration (Required for authentication)
 AUTH0_SECRET=your-auth0-secret

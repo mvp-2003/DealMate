@@ -10,7 +10,7 @@ import httpx
 import time
 from typing import Dict, Any
 
-class DealPalIntegrationTest:
+class DealMateIntegrationTest:
     def __init__(self):
         self.base_url = "http://localhost:8001"
         self.client = httpx.AsyncClient(timeout=30.0)
@@ -256,7 +256,7 @@ class DealPalIntegrationTest:
 
 async def main():
     """Main test runner"""
-    tester = DealPalIntegrationTest()
+    tester = DealMateIntegrationTest()
     success = await tester.run_all_tests()
     return 0 if success else 1
 

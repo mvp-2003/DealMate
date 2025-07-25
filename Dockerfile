@@ -31,7 +31,7 @@ COPY backend/Cargo.toml backend/Cargo.lock ./
 COPY shared ../shared
 
 RUN mkdir src && echo "fn main() {}" > src/main.rs
-RUN cargo build --release && rm -rf src target/release/dealpal-backend*
+RUN cargo build --release && rm -rf src target/release/dealmate-backend*
 
 COPY backend/src ./src
 COPY backend/migrations ./migrations
@@ -104,20 +104,20 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home --shell /bin/bash dealpal
+RUN useradd --create-home --shell /bin/bash dealmate
 
 WORKDIR /app
 
-COPY --from=backend-builder --chown=dealpal:dealpal /app/target/release/dealpal-backend ./dealpal-backend
-COPY --from=backend-builder --chown=dealpal:dealpal /app/migrations ./migrations
+COPY --from=backend-builder --chown=dealmate:dealmate /app/target/release/dealmate-backend ./dealmate-backend
+COPY --from=backend-builder --chown=dealmate:dealmate /app/migrations ./migrations
 
-USER dealpal
+USER dealmate
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-CMD ["./dealpal-backend"]
+CMD ["./dealmate-backend"]
 
 # ====================
 # AI Service Runtime
@@ -134,12 +134,12 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home --shell /bin/bash dealpal
+RUN useradd --create-home --shell /bin/bash dealmate
 
 COPY --from=ai-builder /opt/venv /opt/venv
 
 WORKDIR /app
-COPY --chown=dealpal:dealpal backend/ai-service .
+COPY --chown=dealmate:dealmate backend/ai-service .
 
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
@@ -147,7 +147,7 @@ ENV PATH="/opt/venv/bin:$PATH" \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-USER dealpal
+USER dealmate
 EXPOSE 8001
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

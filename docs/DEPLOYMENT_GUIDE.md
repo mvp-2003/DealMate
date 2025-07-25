@@ -32,7 +32,7 @@ Create `.env` file in project root:
 
 ```bash
 # Database Configuration
-DATABASE_URL=postgresql://username:password@localhost:5432/dealpal_prod
+DATABASE_URL=postgresql://username:password@localhost:5432/dealmate_prod
 REDIS_URL=redis://localhost:6379
 
 # Authentication (Auth0)
@@ -73,7 +73,7 @@ SMTP_PASS=your_email_password
 
 # CDN & Storage
 CDN_URL=https://cdn.your-domain.com
-STORAGE_BUCKET=dealpal-assets
+STORAGE_BUCKET=dealmate-assets
 ```
 
 ### Environment-Specific Configurations
@@ -81,7 +81,7 @@ STORAGE_BUCKET=dealpal-assets
 #### Development (`.env.development`)
 ```bash
 NODE_ENV=development
-DATABASE_URL=postgresql://dealpal:dealpal@localhost:5432/dealpal_dev
+DATABASE_URL=postgresql://dealmate:dealmate@localhost:5432/dealmate_dev
 RUST_LOG=debug
 LOG_LEVEL=debug
 PERFORMANCE_MONITORING=false
@@ -90,7 +90,7 @@ PERFORMANCE_MONITORING=false
 #### Staging (`.env.staging`)
 ```bash
 NODE_ENV=staging
-DATABASE_URL=postgresql://dealpal:password@staging-db:5432/dealpal_staging
+DATABASE_URL=postgresql://dealmate:password@staging-db:5432/dealmate_staging
 RUST_LOG=info
 LOG_LEVEL=info
 PERFORMANCE_MONITORING=true
@@ -99,7 +99,7 @@ PERFORMANCE_MONITORING=true
 #### Production (`.env.production`)
 ```bash
 NODE_ENV=production
-DATABASE_URL=postgresql://dealpal:secure_password@prod-db:5432/dealpal_prod
+DATABASE_URL=postgresql://dealmate:secure_password@prod-db:5432/dealmate_prod
 RUST_LOG=warn
 LOG_LEVEL=warn
 PERFORMANCE_MONITORING=true
@@ -191,11 +191,11 @@ sudo sh get-docker.sh
 #### 2. Database Setup
 ```bash
 # Create production database
-sudo -u postgres createuser --interactive dealpal
-sudo -u postgres createdb dealpal_prod -O dealpal
+sudo -u postgres createuser --interactive dealmate
+sudo -u postgres createdb dealmate_prod -O dealmate
 
-# Set password for dealpal user
-sudo -u postgres psql -c "ALTER USER dealpal PASSWORD 'secure_password';"
+# Set password for dealmate user
+sudo -u postgres psql -c "ALTER USER dealmate PASSWORD 'secure_password';"
 
 # Configure PostgreSQL for production
 sudo nano /etc/postgresql/15/main/postgresql.conf
@@ -205,8 +205,8 @@ sudo nano /etc/postgresql/15/main/postgresql.conf
 #### 3. Application Deployment
 ```bash
 # Clone and build application
-git clone https://github.com/mvp-2003/DealMate.git /opt/dealpal
-cd /opt/dealpal
+git clone https://github.com/mvp-2003/DealMate.git /opt/dealmate
+cd /opt/dealmate
 
 # Setup environment
 cp .env.example .env.production
@@ -224,7 +224,7 @@ cp .env.example .env.production
 
 #### 4. Nginx Configuration
 ```nginx
-# /etc/nginx/sites-available/dealpal
+# /etc/nginx/sites-available/dealmate
 server {
     listen 80;
     server_name your-domain.com www.your-domain.com;
@@ -290,17 +290,17 @@ sudo certbot renew --dry-run
 Create systemd service files for each component:
 
 ```bash
-# /etc/systemd/system/dealpal-backend.service
+# /etc/systemd/system/dealmate-backend.service
 [Unit]
 Description=DealMate Backend Service
 After=network.target postgresql.service
 
 [Service]
 Type=simple
-User=dealpal
-WorkingDirectory=/opt/dealpal
+User=dealmate
+WorkingDirectory=/opt/dealmate
 Environment=RUST_LOG=info
-ExecStart=/opt/dealpal/target/release/dealpal-backend
+ExecStart=/opt/dealmate/target/release/dealmate-backend
 Restart=always
 RestartSec=5
 
@@ -310,9 +310,9 @@ WantedBy=multi-user.target
 
 ```bash
 # Enable and start services
-sudo systemctl enable dealpal-backend
-sudo systemctl start dealpal-backend
-sudo systemctl status dealpal-backend
+sudo systemctl enable dealmate-backend
+sudo systemctl start dealmate-backend
+sudo systemctl status dealmate-backend
 ```
 
 ## Cloud Deployment
@@ -353,19 +353,19 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_ecs_cluster" "dealpal" {
-  name = "dealpal-cluster"
+resource "aws_ecs_cluster" "dealmate" {
+  name = "dealmate-cluster"
 }
 
-resource "aws_rds_instance" "dealpal_db" {
-  identifier = "dealpal-postgres"
+resource "aws_rds_instance" "dealmate_db" {
+  identifier = "dealmate-postgres"
   engine     = "postgres"
   engine_version = "15.4"
   instance_class = "db.t3.medium"
   allocated_storage = 100
   
-  db_name  = "dealpal_prod"
-  username = "dealpal"
+  db_name  = "dealmate_prod"
+  username = "dealmate"
   password = var.db_password
   
   backup_retention_period = 7
@@ -400,13 +400,13 @@ jobs:
       
       - name: Build and push Docker images
         run: |
-          docker build -t dealpal/frontend .
-          docker tag dealpal/frontend:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/dealpal/frontend:latest
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/dealpal/frontend:latest
+          docker build -t dealmate/frontend .
+          docker tag dealmate/frontend:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/dealmate/frontend:latest
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/dealmate/frontend:latest
       
       - name: Deploy to ECS
         run: |
-          aws ecs update-service --cluster dealpal-cluster --service dealpal-frontend --force-new-deployment
+          aws ecs update-service --cluster dealmate-cluster --service dealmate-frontend --force-new-deployment
 ```
 
 ### Google Cloud Platform (GCP)
@@ -422,9 +422,9 @@ jobs:
 #### Deployment Command
 ```bash
 # Build and deploy to Cloud Run
-gcloud builds submit --tag gcr.io/your-project/dealpal-frontend
-gcloud run deploy dealpal-frontend \
-  --image gcr.io/your-project/dealpal-frontend \
+gcloud builds submit --tag gcr.io/your-project/dealmate-frontend
+gcloud run deploy dealmate-frontend \
+  --image gcr.io/your-project/dealmate-frontend \
   --platform managed \
   --region us-central1 \
   --allow-unauthenticated
@@ -492,8 +492,8 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_DB: dealpal_prod
-      POSTGRES_USER: dealpal
+      POSTGRES_DB: dealmate_prod
+      POSTGRES_USER: dealmate
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -531,27 +531,27 @@ volumes:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dealpal-frontend
+  name: dealmate-frontend
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: dealpal-frontend
+      app: dealmate-frontend
   template:
     metadata:
       labels:
-        app: dealpal-frontend
+        app: dealmate-frontend
     spec:
       containers:
       - name: frontend
-        image: dealpal/frontend:latest
+        image: dealmate/frontend:latest
         ports:
         - containerPort: 3000
         env:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: dealpal-secrets
+              name: dealmate-secrets
               key: database-url
         resources:
           requests:
@@ -648,11 +648,11 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'dealpal-backend'
+  - job_name: 'dealmate-backend'
     static_configs:
       - targets: ['localhost:8000']
   
-  - job_name: 'dealpal-ai-service'
+  - job_name: 'dealmate-ai-service'
     static_configs:
       - targets: ['localhost:8001']
 ```
@@ -670,17 +670,17 @@ scrape_configs:
 #!/bin/bash
 # backup-db.sh
 DATE=$(date +%Y%m%d_%H%M%S)
-pg_dump -h localhost -U dealpal dealpal_prod > /backups/dealpal_${DATE}.sql
-aws s3 cp /backups/dealpal_${DATE}.sql s3://dealpal-backups/
+pg_dump -h localhost -U dealmate dealmate_prod > /backups/dealmate_${DATE}.sql
+aws s3 cp /backups/dealmate_${DATE}.sql s3://dealmate-backups/
 ```
 
 #### Application Backups
 ```bash
 # Backup application data and configurations
-tar -czf dealpal_app_backup_$(date +%Y%m%d).tar.gz \
-  /opt/dealpal \
-  /etc/nginx/sites-available/dealpal \
-  /etc/systemd/system/dealpal-*
+tar -czf dealmate_app_backup_$(date +%Y%m%d).tar.gz \
+  /opt/dealmate \
+  /etc/nginx/sites-available/dealmate \
+  /etc/systemd/system/dealmate-*
 ```
 
 ### Log Management
@@ -688,9 +688,9 @@ tar -czf dealpal_app_backup_$(date +%Y%m%d).tar.gz \
 #### Centralized Logging
 ```bash
 # Configure log rotation
-sudo nano /etc/logrotate.d/dealpal
+sudo nano /etc/logrotate.d/dealmate
 
-/opt/dealpal/logs/*.log {
+/opt/dealmate/logs/*.log {
     daily
     missingok
     rotate 30
@@ -708,10 +708,10 @@ sudo nano /etc/logrotate.d/dealpal
 #### Service Won't Start
 ```bash
 # Check service status
-sudo systemctl status dealpal-backend
+sudo systemctl status dealmate-backend
 
 # Check logs
-sudo journalctl -u dealpal-backend -f
+sudo journalctl -u dealmate-backend -f
 
 # Check port availability
 sudo netstat -tlnp | grep :8000
@@ -720,7 +720,7 @@ sudo netstat -tlnp | grep :8000
 #### Database Connection Issues
 ```bash
 # Test database connection
-psql -h localhost -U dealpal -d dealpal_prod
+psql -h localhost -U dealmate -d dealmate_prod
 
 # Check PostgreSQL status
 sudo systemctl status postgresql
@@ -753,7 +753,7 @@ git checkout previous-stable-tag
 #### Database Recovery
 ```bash
 # Restore from backup
-pg_restore -h localhost -U dealpal -d dealpal_prod /backups/latest_backup.sql
+pg_restore -h localhost -U dealmate -d dealmate_prod /backups/latest_backup.sql
 
 # If corruption detected
 sudo -u postgres /usr/lib/postgresql/15/bin/pg_resetwal /var/lib/postgresql/15/main

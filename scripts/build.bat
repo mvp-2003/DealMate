@@ -76,7 +76,7 @@ cd "%PROJECT_ROOT%"
 echo.
 echo Build Complete!
 echo Frontend: .\frontend\.next
-echo Backend: .\backend\target\release\dealpal-backend.exe
+echo Backend: .\backend\target\release\dealmate-backend.exe
 echo AI Service: .\backend\ai-service\.venv
 echo.
 exit /b 0

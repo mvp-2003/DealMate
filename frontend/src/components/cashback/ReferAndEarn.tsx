@@ -43,8 +43,8 @@ export default function ReferAndEarn() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  const referralCode = 'DEALPAL2025';
-  const referralLink = 'https://dealpal.app/invite/DEALPAL2025';
+  const referralCode = 'DEALMATE2025';
+  const referralLink = 'https://dealmate.app/invite/DEALMATE2025';
 
   const stats: ReferralStats = {
     totalReferred: 23,

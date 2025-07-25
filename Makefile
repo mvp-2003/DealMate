@@ -131,7 +131,7 @@ exec-ai: ## Access AI service container shell
 
 .PHONY: exec-db
 exec-db: ## Access database with psql
-	@$(COMPOSE_CMD) -f $(COMPOSE_FILE) exec db psql -U dealpal -d dealpal
+	@$(COMPOSE_CMD) -f $(COMPOSE_FILE) exec db psql -U dealmate -d dealmate
 
 .PHONY: migrate
 migrate: ## Run database migrations
@@ -181,17 +181,17 @@ clean: down-volumes ## Clean up everything
 backup-db: ## Backup database
 	@echo "${GREEN}Backing up database...${NC}"
 	@mkdir -p backups
-	@$(COMPOSE_CMD) -f $(COMPOSE_FILE) exec -T db pg_dump -U dealpal dealpal > backups/dealpal_$$(date +%Y%m%d_%H%M%S).sql
-	@echo "${GREEN}Database backed up to backups/dealpal_$$(date +%Y%m%d_%H%M%S).sql${NC}"
+	@$(COMPOSE_CMD) -f $(COMPOSE_FILE) exec -T db pg_dump -U dealmate dealmate > backups/dealmate_$$(date +%Y%m%d_%H%M%S).sql
+	@echo "${GREEN}Database backed up to backups/dealmate_$$(date +%Y%m%d_%H%M%S).sql${NC}"
 
 .PHONY: restore-db
-restore-db: ## Restore database from backup (usage: make restore-db FILE=backups/dealpal_20240120_120000.sql)
+restore-db: ## Restore database from backup (usage: make restore-db FILE=backups/dealmate_20240120_120000.sql)
 	@if [ -z "$(FILE)" ]; then \
-		echo "${RED}Error: Please specify backup file. Usage: make restore-db FILE=backups/dealpal_20240120_120000.sql${NC}"; \
+		echo "${RED}Error: Please specify backup file. Usage: make restore-db FILE=backups/dealmate_20240120_120000.sql${NC}"; \
 		exit 1; \
 	fi
 	@echo "${YELLOW}Restoring database from $(FILE)...${NC}"
-	@$(COMPOSE_CMD) -f $(COMPOSE_FILE) exec -T db psql -U dealpal dealpal < $(FILE)
+	@$(COMPOSE_CMD) -f $(COMPOSE_FILE) exec -T db psql -U dealmate dealmate < $(FILE)
 	@echo "${GREEN}Database restored!${NC}"
 
 .PHONY: health
@@ -214,11 +214,11 @@ update-images: ## Update all base images
 .PHONY: build-multiarch
 build-multiarch: ## Build images for multiple architectures
 	@echo "${GREEN}Building multi-architecture images...${NC}"
-	@$(CONTAINER_RUNTIME) buildx create --use --name dealpal-builder 2>/dev/null || true
-	@$(CONTAINER_RUNTIME) buildx build --platform linux/amd64,linux/arm64 -t dealpal/backend:latest -f backend/Dockerfile backend
-	@$(CONTAINER_RUNTIME) buildx build --platform linux/amd64,linux/arm64 -t dealpal/ai-service:latest -f backend/ai-service/Dockerfile backend/ai-service
-	@$(CONTAINER_RUNTIME) buildx build --platform linux/amd64,linux/arm64 -t dealpal/frontend:latest -f frontend/Dockerfile .
-	@$(CONTAINER_RUNTIME) buildx build --platform linux/amd64,linux/arm64 -t dealpal/auth-service:latest -f backend/auth-service/Dockerfile .
+	@$(CONTAINER_RUNTIME) buildx create --use --name dealmate-builder 2>/dev/null || true
+	@$(CONTAINER_RUNTIME) buildx build --platform linux/amd64,linux/arm64 -t dealmate/backend:latest -f backend/Dockerfile backend
+	@$(CONTAINER_RUNTIME) buildx build --platform linux/amd64,linux/arm64 -t dealmate/ai-service:latest -f backend/ai-service/Dockerfile backend/ai-service
+	@$(CONTAINER_RUNTIME) buildx build --platform linux/amd64,linux/arm64 -t dealmate/frontend:latest -f frontend/Dockerfile .
+	@$(CONTAINER_RUNTIME) buildx build --platform linux/amd64,linux/arm64 -t dealmate/auth-service:latest -f backend/auth-service/Dockerfile .
 
 # Production deployment
 .PHONY: deploy-prod

@@ -25,12 +25,12 @@ pub struct KafkaTopics {
 impl Default for KafkaTopics {
     fn default() -> Self {
         Self {
-            deals: "dealpal.deals".to_string(),
-            prices: "dealpal.prices".to_string(),
-            user_events: "dealpal.user.events".to_string(),
-            notifications: "dealpal.notifications".to_string(),
-            inventory: "dealpal.inventory".to_string(),
-            analytics: "dealpal.analytics".to_string(),
+            deals: "dealmate.deals".to_string(),
+            prices: "dealmate.prices".to_string(),
+            user_events: "dealmate.user.events".to_string(),
+            notifications: "dealmate.notifications".to_string(),
+            inventory: "dealmate.inventory".to_string(),
+            analytics: "dealmate.analytics".to_string(),
         }
     }
 }
@@ -77,7 +77,7 @@ impl Default for DealEvent {
             tags: Vec::new(),
             metadata: std::collections::HashMap::new(),
             region: "US".to_string(),
-            source: "dealpal-backend".to_string(),
+            source: "dealmate-backend".to_string(),
         }
     }
 }

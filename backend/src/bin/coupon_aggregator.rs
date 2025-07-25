@@ -1,5 +1,5 @@
-use dealpal_backend::coupon_aggregator::CouponAggregator;
-use dealpal_backend::db;
+use dealmate_backend::coupon_aggregator::CouponAggregator;
+use dealmate_backend::db;
 use tokio::time::{sleep, Duration};
 
 #[tokio::main]

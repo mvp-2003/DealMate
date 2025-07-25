@@ -16,7 +16,7 @@ PORT = "8000"
 [environments.production.services.backend]
 source = "backend/"
 build = "cargo build --release"
-start = "./target/release/dealpal-backend"
+start = "./target/release/dealmate-backend"
 
 [environments.production.services.ai-service]
 source = "backend/ai-service/"

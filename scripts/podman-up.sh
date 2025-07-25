@@ -24,9 +24,9 @@ cd "$(dirname "$0")/.."
 
 # Create volumes if they don't exist
 echo "📦 Creating volumes..."
-podman volume create dealpal_postgres_data 2>/dev/null || true
-podman volume create dealpal_redis_data 2>/dev/null || true
-podman volume create dealpal_ai_models_cache 2>/dev/null || true
+podman volume create dealmate_postgres_data 2>/dev/null || true
+podman volume create dealmate_redis_data 2>/dev/null || true
+podman volume create dealmate_ai_models_cache 2>/dev/null || true
 
 # Build and start services with optimizations
 echo "🔨 Building and starting services..."

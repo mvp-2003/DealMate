@@ -295,7 +295,7 @@ class AutoCouponTester {
   showTestingNotification(couponCount) {
     // Create notification element
     const notification = document.createElement('div');
-    notification.id = 'dealpal-testing-notification';
+    notification.id = 'dealmate-testing-notification';
     notification.style.cssText = `
       position: fixed;
       top: 20px;
@@ -317,9 +317,9 @@ class AutoCouponTester {
         <div style="width: 20px; height: 20px; border: 2px solid #fff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px;"></div>
         <strong>🎯 DealMate Testing Coupons</strong>
       </div>
-      <div id="dealpal-progress-text">Testing ${couponCount} available coupons...</div>
+      <div id="dealmate-progress-text">Testing ${couponCount} available coupons...</div>
       <div style="background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; margin-top: 8px;">
-        <div id="dealpal-progress-bar" style="background: #fff; height: 100%; border-radius: 2px; width: 0%; transition: width 0.3s ease;"></div>
+        <div id="dealmate-progress-bar" style="background: #fff; height: 100%; border-radius: 2px; width: 0%; transition: width 0.3s ease;"></div>
       </div>
     `;
     
@@ -341,8 +341,8 @@ class AutoCouponTester {
   }
 
   updateTestingProgress(current, total, currentCode) {
-    const progressText = document.getElementById('dealpal-progress-text');
-    const progressBar = document.getElementById('dealpal-progress-bar');
+    const progressText = document.getElementById('dealmate-progress-text');
+    const progressBar = document.getElementById('dealmate-progress-bar');
     
     if (progressText) {
       progressText.textContent = `Testing ${current}/${total}: ${currentCode}`;
@@ -354,7 +354,7 @@ class AutoCouponTester {
   }
 
   showTestingComplete(bestCoupon) {
-    const notification = document.getElementById('dealpal-testing-notification');
+    const notification = document.getElementById('dealmate-testing-notification');
     if (!notification) return;
     
     setTimeout(() => {

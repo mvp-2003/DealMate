@@ -89,9 +89,9 @@ if exist "frontend\.next" (
     echo [X] Frontend not built - run build.bat
 )
 
-if exist "backend\target\release\dealpal-backend.exe" (
+if exist "backend\target\release\dealmate-backend.exe" (
     echo [OK] Backend release build exists
-) else if exist "backend\target\debug\dealpal-backend.exe" (
+) else if exist "backend\target\debug\dealmate-backend.exe" (
     echo [OK] Backend debug build exists
 ) else (
     echo [X] Backend not built - run build.bat

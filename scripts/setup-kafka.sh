@@ -7,7 +7,7 @@ echo "📋 Creating Kafka topics..."
 
 # Wait for Kafka to be ready
 echo "⏳ Waiting for Kafka to be ready..."
-until docker exec dealpal-kafka-1 kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1; do
+until docker exec dealmate-kafka-1 kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1; do
     echo "   Kafka not ready, waiting..."
     sleep 5
 done
@@ -15,89 +15,89 @@ done
 echo "✅ Kafka is ready! Creating topics..."
 
 # Create main topics
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.deals \
+    --topic dealmate.deals \
     --partitions 6 \
     --replication-factor 1 \
     --config retention.ms=604800000 \
     --config compression.type=lz4
 
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.prices \
+    --topic dealmate.prices \
     --partitions 6 \
     --replication-factor 1 \
     --config retention.ms=2592000000 \
     --config compression.type=lz4
 
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.user.events \
+    --topic dealmate.user.events \
     --partitions 8 \
     --replication-factor 1 \
     --config retention.ms=1209600000 \
     --config compression.type=lz4
 
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.notifications \
+    --topic dealmate.notifications \
     --partitions 4 \
     --replication-factor 1 \
     --config retention.ms=259200000 \
     --config compression.type=lz4
 
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.inventory \
+    --topic dealmate.inventory \
     --partitions 4 \
     --replication-factor 1 \
     --config retention.ms=604800000 \
     --config compression.type=lz4
 
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.analytics \
+    --topic dealmate.analytics \
     --partitions 3 \
     --replication-factor 1 \
     --config retention.ms=2592000000 \
     --config compression.type=lz4
 
 # Create enriched topics for processed data
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.enriched.deals \
+    --topic dealmate.enriched.deals \
     --partitions 6 \
     --replication-factor 1 \
     --config retention.ms=604800000 \
     --config compression.type=lz4
 
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.price.trends \
+    --topic dealmate.price.trends \
     --partitions 4 \
     --replication-factor 1 \
     --config retention.ms=2592000000 \
     --config compression.type=lz4
 
 # Create dead letter topics for error handling
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.deals.dlq \
+    --topic dealmate.deals.dlq \
     --partitions 2 \
     --replication-factor 1 \
     --config retention.ms=604800000
 
-docker exec dealpal-kafka-1 kafka-topics --create \
+docker exec dealmate-kafka-1 kafka-topics --create \
     --bootstrap-server localhost:9092 \
-    --topic dealpal.prices.dlq \
+    --topic dealmate.prices.dlq \
     --partitions 2 \
     --replication-factor 1 \
     --config retention.ms=604800000
 
 echo ""
 echo "📊 Created topics:"
-docker exec dealpal-kafka-1 kafka-topics --bootstrap-server localhost:9092 --list | grep dealpal
+docker exec dealmate-kafka-1 kafka-topics --bootstrap-server localhost:9092 --list | grep dealmate
 
 echo ""
 echo "✅ Kafka setup completed!"
@@ -106,9 +106,9 @@ echo "🔧 Schema Registry: http://localhost:8081"
 echo "🔌 Kafka Connect: http://localhost:8083"
 echo ""
 echo "📋 Topic retention policies:"
-echo "   • dealpal.deals: 7 days"
-echo "   • dealpal.prices: 30 days"
-echo "   • dealpal.user.events: 14 days"
-echo "   • dealpal.notifications: 3 days"
-echo "   • dealpal.inventory: 7 days"
-echo "   • dealpal.analytics: 30 days"
+echo "   • dealmate.deals: 7 days"
+echo "   • dealmate.prices: 30 days"
+echo "   • dealmate.user.events: 14 days"
+echo "   • dealmate.notifications: 3 days"
+echo "   • dealmate.inventory: 7 days"
+echo "   • dealmate.analytics: 30 days"

@@ -30,7 +30,7 @@ from models import GeminiAIManager, initialize_models, get_model_manager
 from services import ProductAnalysisService
 from config import settings
 
-class DealPalAITestSuite:
+class DealMateAITestSuite:
     def __init__(self):
         self.test_results = {}
         self.model_manager = None
@@ -494,7 +494,7 @@ class DealPalAITestSuite:
 
 async def main():
     """Run the complete test suite"""
-    test_suite = DealPalAITestSuite()
+    test_suite = DealMateAITestSuite()
     
     if await test_suite.setup():
         await test_suite.run_all_tests()

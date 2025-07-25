@@ -5,14 +5,14 @@ echo "🐳 Building Docker Images..."
 
 # Build Frontend
 echo "📦 Building Frontend Docker Image..."
-docker build -t dealpal-frontend ../frontend
+docker build -t dealmate-frontend ../frontend
 
 # Build Backend
 echo "🦀 Building Backend Docker Image..."
-docker build -t dealpal-backend ../backend
+docker build -t dealmate-backend ../backend
 
 echo "✅ Docker images built!"
-echo "Frontend: dealpal-frontend"
-echo "Backend: dealpal-backend"
+echo "Frontend: dealmate-frontend"
+echo "Backend: dealmate-backend"
 echo ""
 echo "Run with: docker-compose up"

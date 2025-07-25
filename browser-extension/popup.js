@@ -3,9 +3,9 @@ console.log('🎯 DealMate Popup: Script loaded');
 
 // Import the animated loader
 // Note: In a real extension, this would be loaded via manifest.json
-if (typeof window.DealPalLoader === 'undefined') {
+if (typeof window.DealMateLoader === 'undefined') {
   // Fallback loader implementation
-  window.DealPalLoader = {
+  window.DealMateLoader = {
     showLoaderInElement: function(elementId, type, size) {
       const element = document.getElementById(elementId);
       if (element) {
@@ -31,7 +31,7 @@ function updateStatus(message, type = 'info', showLoader = false) {
   const statusElement = document.getElementById('detection-status');
   if (statusElement) {
     if (showLoader) {
-      window.DealPalLoader.showLoaderInElement('detection-status', 'deals', 'sm');
+      window.DealMateLoader.showLoaderInElement('detection-status', 'deals', 'sm');
     } else {
       statusElement.textContent = message;
       statusElement.style.color = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#e2e8f0';

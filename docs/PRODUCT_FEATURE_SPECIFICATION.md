@@ -203,7 +203,7 @@ DealMate is a comprehensive, AI-powered savings platform designed to help users 
 #### Event Schema (Avro):
 ```json
 {
-  "namespace": "com.dealpal.events",
+  "namespace": "com.dealmate.events",
   "type": "record",
   "name": "DealEvent",
   "fields": [
@@ -238,15 +238,15 @@ DealMate is a comprehensive, AI-powered savings platform designed to help users 
 StreamsBuilder builder = new StreamsBuilder();
 
 // Deal enrichment stream
-KStream<String, DealEvent> dealStream = builder.stream("dealpal.deals");
-KTable<String, ProductInfo> productTable = builder.table("dealpal.products");
+KStream<String, DealEvent> dealStream = builder.stream("dealmate.deals");
+KTable<String, ProductInfo> productTable = builder.table("dealmate.products");
 
 KStream<String, EnrichedDeal> enrichedDeals = dealStream
     .join(productTable, (deal, product) -> new EnrichedDeal(deal, product))
     .filter((key, enrichedDeal) -> enrichedDeal.getDiscountPercentage() > 10.0)
     .mapValues(deal -> calculateSavingsMetrics(deal));
 
-enrichedDeals.to("dealpal.enriched.deals");
+enrichedDeals.to("dealmate.enriched.deals");
 ```
 
 ### 3.3 Real-Time Analytics Dashboard
@@ -293,7 +293,7 @@ enrichedDeals.to("dealpal.enriched.deals");
 #### Technical Implementation:
 ```javascript
 // Service Worker registration with advanced caching
-const CACHE_NAME = 'dealpal-v1';
+const CACHE_NAME = 'dealmate-v1';
 const urlsToCache = [
   '/',
   '/styles/main.css',
@@ -304,7 +304,7 @@ const urlsToCache = [
 
 // Stale-while-revalidate strategy for dynamic content
 workbox.routing.registerRoute(
-  /^https:\/\/api\.dealpal\.com/,
+  /^https:\/\/api\.dealmate\.com/,
   new workbox.strategies.StaleWhileRevalidate({
     cacheName: 'api-cache',
     plugins: [{

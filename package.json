@@ -1,7 +1,7 @@
 {
   "name": "dealmate",
   "version": "1.0.0",
-  "description": "Full-stack smart shopping assistant",
+  "description": "DealMate - AI-powered smart shopping assistant platform",
   "private": true,
   "workspaces": [
     "frontend"

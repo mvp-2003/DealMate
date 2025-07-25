@@ -22,35 +22,35 @@ function setupContextMenus() {
     chrome.contextMenus.removeAll(() => {
       // Create DealMate context menus
       chrome.contextMenus.create({
-        id: 'dealpal-main',
+        id: 'dealmate-main',
         title: 'DealMate',
         contexts: ['selection', 'link', 'page']
       });
       
       chrome.contextMenus.create({
-        id: 'dealpal-check-deals',
-        parentId: 'dealpal-main',
+        id: 'dealmate-check-deals',
+        parentId: 'dealmate-main',
         title: 'Check deals for "%s"',
         contexts: ['selection']
       });
       
       chrome.contextMenus.create({
-        id: 'dealpal-add-to-watchlist',
-        parentId: 'dealpal-main',
+        id: 'dealmate-add-to-watchlist',
+        parentId: 'dealmate-main',
         title: 'Add to watchlist',
         contexts: ['link', 'page']
       });
       
       chrome.contextMenus.create({
-        id: 'dealpal-compare-prices',
-        parentId: 'dealpal-main',
+        id: 'dealmate-compare-prices',
+        parentId: 'dealmate-main',
         title: 'Compare prices',
         contexts: ['link', 'page']
       });
       
       chrome.contextMenus.create({
-        id: 'dealpal-test-coupons',
-        parentId: 'dealpal-main',
+        id: 'dealmate-test-coupons',
+        parentId: 'dealmate-main',
         title: 'Test available coupons',
         contexts: ['page']
       });

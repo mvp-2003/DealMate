@@ -454,7 +454,7 @@ All environment variables are centralized in the root `.env` file containing con
 
 ```env
 # Database
-DATABASE_URL=postgresql://user:pass@localhost/dealpal
+DATABASE_URL=postgresql://user:pass@localhost/dealmate
 
 # AI Configuration
 GOOGLE_API_KEY=your_google_api_key_here
@@ -486,11 +486,11 @@ GOOGLE_ANALYTICS_ID=your_ga_id_here
 # Apache Kafka Configuration
 KAFKA_BROKERS=localhost:9092
 KAFKA_SCHEMA_REGISTRY=http://localhost:8081
-KAFKA_TOPICS_DEALS=dealpal.deals
-KAFKA_TOPICS_PRICES=dealpal.prices
-KAFKA_TOPICS_USER_EVENTS=dealpal.user.events
-KAFKA_TOPICS_NOTIFICATIONS=dealpal.notifications
-KAFKA_CONSUMER_GROUP=dealpal-consumers
+KAFKA_TOPICS_DEALS=dealmate.deals
+KAFKA_TOPICS_PRICES=dealmate.prices
+KAFKA_TOPICS_USER_EVENTS=dealmate.user.events
+KAFKA_TOPICS_NOTIFICATIONS=dealmate.notifications
+KAFKA_CONSUMER_GROUP=dealmate-consumers
 KAFKA_RETENTION_MS=604800000
 ```
 

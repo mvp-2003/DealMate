@@ -57,7 +57,7 @@
 ### Environment Variables
 ```env
 # Database Configuration
-DATABASE_URL=postgresql://user:pass@localhost/dealpal
+DATABASE_URL=postgresql://user:pass@localhost/dealmate
 
 # AI Service Configuration
 GOOGLE_API_KEY=your_google_api_key_here

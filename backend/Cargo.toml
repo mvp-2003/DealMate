@@ -1,5 +1,5 @@
 [package]
-name = "dealpal-backend"
+name = "dealmate-backend"
 version = "0.1.0"
 edition = "2021"
 

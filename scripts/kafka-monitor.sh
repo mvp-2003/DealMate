@@ -9,13 +9,13 @@ get_topic_info() {
     echo "📋 Topic: $topic"
     
     # Get partition count
-    partitions=$(docker exec dealpal-kafka-1 kafka-topics --bootstrap-server localhost:9092 --describe --topic $topic 2>/dev/null | grep "PartitionCount" | awk '{print $4}')
+    partitions=$(docker exec dealmate-kafka-1 kafka-topics --bootstrap-server localhost:9092 --describe --topic $topic 2>/dev/null | grep "PartitionCount" | awk '{print $4}')
     
     # Get message count (approximate)
     total_messages=0
     if [ ! -z "$partitions" ]; then
         for ((i=0; i<$partitions; i++)); do
-            offset=$(docker exec dealpal-kafka-1 kafka-run-class kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic $topic --partition $i --time -1 2>/dev/null | cut -d: -f3)
+            offset=$(docker exec dealmate-kafka-1 kafka-run-class kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic $topic --partition $i --time -1 2>/dev/null | cut -d: -f3)
             if [ ! -z "$offset" ] && [ "$offset" != "" ]; then
                 total_messages=$((total_messages + offset))
             fi
@@ -33,14 +33,14 @@ check_consumer_lag() {
     echo "------------------------------"
     
     # Check if consumer groups exist
-    groups=$(docker exec dealpal-kafka-1 kafka-consumer-groups --bootstrap-server localhost:9092 --list 2>/dev/null | grep dealpal)
+    groups=$(docker exec dealmate-kafka-1 kafka-consumer-groups --bootstrap-server localhost:9092 --list 2>/dev/null | grep dealmate)
     
     if [ -z "$groups" ]; then
         echo "   No active consumer groups found"
     else
         for group in $groups; do
             echo "👥 Consumer Group: $group"
-            docker exec dealpal-kafka-1 kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group $group 2>/dev/null || echo "   No lag information available"
+            docker exec dealmate-kafka-1 kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group $group 2>/dev/null || echo "   No lag information available"
             echo ""
         done
     fi
@@ -52,11 +52,11 @@ show_broker_info() {
     echo "----------------------------"
     
     # Check if Kafka is running
-    if docker exec dealpal-kafka-1 kafka-broker-api-versions --bootstrap-server localhost:9092 &>/dev/null; then
+    if docker exec dealmate-kafka-1 kafka-broker-api-versions --bootstrap-server localhost:9092 &>/dev/null; then
         echo "✅ Kafka broker is healthy"
         
         # Get broker metadata
-        metadata=$(docker exec dealpal-kafka-1 kafka-metadata-shell --snapshot /var/lib/kafka/data/__cluster_metadata-0/00000000000000000000.log --print-brokers 2>/dev/null || echo "Metadata not available")
+        metadata=$(docker exec dealmate-kafka-1 kafka-metadata-shell --snapshot /var/lib/kafka/data/__cluster_metadata-0/00000000000000000000.log --print-brokers 2>/dev/null || echo "Metadata not available")
         echo "   Metadata: Ready"
     else
         echo "❌ Kafka broker is not responding"
@@ -72,7 +72,7 @@ show_recent_messages() {
     echo "📬 Recent messages from $topic (last $count):"
     echo "--------------------------------------------"
     
-    timeout 3s docker exec dealpal-kafka-1 kafka-console-consumer \
+    timeout 3s docker exec dealmate-kafka-1 kafka-console-consumer \
         --bootstrap-server localhost:9092 \
         --topic $topic \
         --from-beginning \
@@ -91,10 +91,10 @@ if [ "$1" = "--watch" ]; then
         
         echo "📊 Topic Statistics"
         echo "==================="
-        get_topic_info "dealpal.deals"
-        get_topic_info "dealpal.prices" 
-        get_topic_info "dealpal.user.events"
-        get_topic_info "dealpal.notifications"
+        get_topic_info "dealmate.deals"
+        get_topic_info "dealmate.prices" 
+        get_topic_info "dealmate.user.events"
+        get_topic_info "dealmate.notifications"
         
         check_consumer_lag
         
@@ -107,12 +107,12 @@ else
     
     echo "📊 Topic Statistics"
     echo "==================="
-    get_topic_info "dealpal.deals"
-    get_topic_info "dealpal.prices"
-    get_topic_info "dealpal.user.events" 
-    get_topic_info "dealpal.notifications"
-    get_topic_info "dealpal.inventory"
-    get_topic_info "dealpal.analytics"
+    get_topic_info "dealmate.deals"
+    get_topic_info "dealmate.prices"
+    get_topic_info "dealmate.user.events" 
+    get_topic_info "dealmate.notifications"
+    get_topic_info "dealmate.inventory"
+    get_topic_info "dealmate.analytics"
     
     check_consumer_lag
     
@@ -120,9 +120,9 @@ else
     if [ "$1" = "--samples" ]; then
         echo "📬 Sample Messages"
         echo "=================="
-        show_recent_messages "dealpal.deals" 3
-        show_recent_messages "dealpal.prices" 3
-        show_recent_messages "dealpal.user.events" 3
+        show_recent_messages "dealmate.deals" 3
+        show_recent_messages "dealmate.prices" 3
+        show_recent_messages "dealmate.user.events" 3
     fi
     
     echo "💡 Tips:"

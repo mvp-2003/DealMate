@@ -17,7 +17,7 @@ if [ "$BUILD_DEV" = "True" ]; then
     echo "🚀 Starting DealMate in Development Mode..."
     
     # Check if dependencies are installed
-    if [ ! -d "backend/ai-service/.venv" ] || [ ! -f "backend/target/release/dealpal-backend" ]; then
+    if [ ! -d "backend/ai-service/.venv" ] || [ ! -f "backend/target/release/dealmate-backend" ]; then
         echo "📦 Building project first..."
         "$SCRIPT_DIR/build.sh"
     fi
@@ -37,7 +37,7 @@ if [ "$BUILD_DEV" = "True" ]; then
     # Start Backend in background
     echo "🦀 Starting Backend..."
     cd backend
-    ./target/release/dealpal-backend &
+    ./target/release/dealmate-backend &
     BACKEND_PID=$!
     cd "$PROJECT_ROOT"
     
@@ -60,7 +60,7 @@ else
     echo "🚀 Starting DealMate in Production Mode..."
     
     # Build if needed
-    if [ ! -f "backend/target/release/dealpal-backend" ] || [ ! -d "frontend/.next" ] || [ ! -d "backend/ai-service/.venv" ]; then
+    if [ ! -f "backend/target/release/dealmate-backend" ] || [ ! -d "frontend/.next" ] || [ ! -d "backend/ai-service/.venv" ]; then
         echo "📦 Building project first..."
         "$SCRIPT_DIR/build.sh"
     fi
@@ -80,7 +80,7 @@ else
     # Start Backend in background
     echo "🦀 Starting Backend..."
     cd backend
-    ./target/release/dealpal-backend &
+    ./target/release/dealmate-backend &
     BACKEND_PID=$!
     cd "$PROJECT_ROOT"
     

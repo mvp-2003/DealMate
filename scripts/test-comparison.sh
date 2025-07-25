@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# DealMate Comparison Feature Test Scriptbin/bash
+
 # DealMate Comparison Feature Test Script
 # This script tests the comparison feature functionality
 

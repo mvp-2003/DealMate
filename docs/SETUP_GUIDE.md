@@ -134,7 +134,7 @@ After setup, create a `.env` file in the project root:
 GOOGLE_API_KEY=your_gemini_api_key_here
 
 # Database (optional for local dev)
-DATABASE_URL=postgresql://user:pass@localhost:5432/dealpal
+DATABASE_URL=postgresql://user:pass@localhost:5432/dealmate
 
 # Auth0 Configuration
 AUTH0_SECRET=your-auth0-secret

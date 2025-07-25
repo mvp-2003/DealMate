@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # DealMate Build Script - Unix/Linux/macOS
+# Builds all components of the DealMate platformin/bash
+
+# DealMate Build Script - Unix/Linux/macOS
 # Builds all components of the DealMate platform
 
 set -e
@@ -113,6 +116,6 @@ cd "$PROJECT_ROOT"
 echo -e "\n${GREEN}✅ Build Complete!${NC}"
 echo -e "${BLUE}Build artifacts:${NC}"
 echo "  Frontend: ./frontend/.next"
-echo "  Backend:  ./backend/target/release/dealpal-backend"
+echo "  Backend:  ./backend/target/release/dealmate-backend"
 echo "  AI Service: ./backend/ai-service/.venv"
 echo ""

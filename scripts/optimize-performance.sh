@@ -66,12 +66,12 @@ COPY shared/Cargo.toml shared/
 # Build dependencies first (for caching)
 RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
-RUN rm -f target/release/deps/dealpal_backend*
+RUN rm -f target/release/deps/dealmate_backend*
 
 # Build the actual application
 COPY backend/src ./src
 COPY shared ./shared
-RUN cargo build --release --bin dealpal_backend
+RUN cargo build --release --bin dealmate_backend
 
 # Runtime stage
 FROM debian:bookworm-slim
@@ -83,14 +83,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /app/target/release/dealpal_backend /usr/local/bin/dealpal_backend
+COPY --from=builder /app/target/release/dealmate_backend /usr/local/bin/dealmate_backend
 
 # Create non-root user
-RUN useradd -r -s /bin/false dealpal
-USER dealpal
+RUN useradd -r -s /bin/false dealmate
+USER dealmate
 
 EXPOSE 8000
-CMD ["dealpal_backend"]
+CMD ["dealmate_backend"]
 EOF
 
 # Create performance configuration

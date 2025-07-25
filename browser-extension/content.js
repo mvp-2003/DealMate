@@ -389,7 +389,7 @@ function extractValue(text) {
 
 function injectDealNotification(productData, deals, metadata) {
   // Remove existing notification
-  const existing = document.getElementById('dealpal-notification');
+  const existing = document.getElementById('dealmate-notification');
   if (existing) existing.remove();
   
   // Only show if we found actual deals
@@ -400,7 +400,7 @@ function injectDealNotification(productData, deals, metadata) {
   const confidence = metadata?.confidence ? `${Math.round(metadata.confidence * 100)}%` : '';
   
   const notification = document.createElement('div');
-  notification.id = 'dealpal-notification';
+  notification.id = 'dealmate-notification';
   notification.innerHTML = `
     <div style="
       position: fixed;
@@ -485,7 +485,7 @@ function injectDealNotification(productData, deals, metadata) {
   
   // Auto-hide after 10 seconds
   setTimeout(() => {
-    if (document.getElementById('dealpal-notification')) {
+    if (document.getElementById('dealmate-notification')) {
       notification.remove();
     }
   }, 10000);
@@ -658,7 +658,7 @@ function handleSuccessfulDetection(productData, deals, metadata) {
       showErrorNotification("Extension connection error");
       // Store data locally as fallback
       try {
-        localStorage.setItem('dealpal_last_detection', JSON.stringify(enhancedData));
+        localStorage.setItem('dealmate_last_detection', JSON.stringify(enhancedData));
       } catch (e) {
         console.warn('🎯 DealMate: Could not store detection data locally');
       }
@@ -671,7 +671,7 @@ function handleSuccessfulDetection(productData, deals, metadata) {
         showSuccessNotification(productData, deals, metadata);
         // Clear any stored fallback data
         try {
-          localStorage.removeItem('dealpal_last_detection');
+          localStorage.removeItem('dealmate_last_detection');
         } catch (e) {}
       }
     } else {
@@ -731,7 +731,7 @@ function showErrorNotification(message) {
 }
 
 // Enhanced detection with AI and multiple triggers
-function initDealPal() {
+function initDealMate() {
   console.log('🎯 DealMate: Initializing with enhanced AI capabilities...');
   
   // Initialize AI service
@@ -798,7 +798,7 @@ function initDealPal() {
       console.log('🎯 DealMate: URL changed from', oldUrl.substring(0, 50), 'to', currentUrl.substring(0, 50));
       
       // Clear any existing notifications
-      const existing = document.getElementById('dealpal-notification');
+      const existing = document.getElementById('dealmate-notification');
       if (existing) existing.remove();
       
       // Re-analyze with appropriate delay
@@ -856,9 +856,9 @@ window.addEventListener('error', (e) => {
 
 // Initialize when ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initDealPal);
+  document.addEventListener('DOMContentLoaded', initDealMate);
 } else {
-  initDealPal();
+  initDealMate();
 }
 
 console.log('🎯 DealMate: Content script fully loaded and ready');

@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # DealMate Docker Setup Script
+# This script sets up the development environment for DealMate using Docker/Podmanin/bash
+
+# DealMate Docker Setup Script
 # This script sets up the development environment for DealMate using Docker/Podman
 
 set -e
@@ -150,7 +153,7 @@ setup_env() {
         # Update PostgreSQL password
         PG_PASS=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
         sed -i.bak "s/POSTGRES_PASSWORD=changeme_in_production/POSTGRES_PASSWORD=$PG_PASS/g" .env
-        sed -i.bak "s/changeme_in_production@localhost:5432/dealpal:$PG_PASS@localhost:5432/g" .env
+        sed -i.bak "s/changeme_in_production@localhost:5432/dealmate:$PG_PASS@localhost:5432/g" .env
         
         # Update Redis password
         REDIS_PASS=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
@@ -201,7 +204,7 @@ init_database() {
     sleep 10
     
     # Check if database is healthy
-    if $COMPOSE_CMD exec db pg_isready -U dealpal -d dealpal &> /dev/null; then
+    if $COMPOSE_CMD exec db pg_isready -U dealmate -d dealmate &> /dev/null; then
         print_success "Database is ready"
     else
         print_error "Database failed to start"

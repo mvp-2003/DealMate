@@ -40,7 +40,7 @@ class AIEvent:
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: int = field(default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000))
     event_type: AIEventType = AIEventType.PRODUCT_DETECTED
-    source: str = "dealpal-ai-service"
+    source: str = "dealmate-ai-service"
     metadata: Dict[str, Any] = field(default_factory=lambda: {})
 
 
@@ -115,7 +115,7 @@ class KafkaAIProducer:
         # Kafka producer configuration
         producer_config: Dict[str, Any] = {
             'bootstrap.servers': self.brokers,
-            'client.id': 'dealpal-ai-service',
+            'client.id': 'dealmate-ai-service',
             'acks': '1',
             'retries': 3,
             'retry.backoff.ms': 100,
@@ -129,11 +129,11 @@ class KafkaAIProducer:
         
         # Topic names
         self.topics = {
-            'ai_events': os.getenv("KAFKA_TOPIC_AI_EVENTS", "dealpal.ai.events"),
-            'product_detection': os.getenv("KAFKA_TOPIC_PRODUCT_DETECTION", "dealpal.ai.product.detection"),
-            'sentiment_analysis': os.getenv("KAFKA_TOPIC_SENTIMENT", "dealpal.ai.sentiment"),
-            'price_prediction': os.getenv("KAFKA_TOPIC_PRICE_PREDICTION", "dealpal.ai.price.prediction"),
-            'recommendations': os.getenv("KAFKA_TOPIC_RECOMMENDATIONS", "dealpal.ai.recommendations"),
+            'ai_events': os.getenv("KAFKA_TOPIC_AI_EVENTS", "dealmate.ai.events"),
+            'product_detection': os.getenv("KAFKA_TOPIC_PRODUCT_DETECTION", "dealmate.ai.product.detection"),
+            'sentiment_analysis': os.getenv("KAFKA_TOPIC_SENTIMENT", "dealmate.ai.sentiment"),
+            'price_prediction': os.getenv("KAFKA_TOPIC_PRICE_PREDICTION", "dealmate.ai.price.prediction"),
+            'recommendations': os.getenv("KAFKA_TOPIC_RECOMMENDATIONS", "dealmate.ai.recommendations"),
         }
         
         logger.info(f"Kafka AI Producer initialized with brokers: {self.brokers}")

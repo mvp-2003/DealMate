@@ -410,7 +410,7 @@ else
         if [[ "$response" =~ ^([yY][eS]|[yY])$ ]]; then
             echo -e "${YELLOW}🛑 Stopping existing services...${NC}"
             # Kill existing services
-            pkill -f "dealpal-backend" 2>/dev/null || true
+            pkill -f "dealmate-backend" 2>/dev/null || true
             pkill -f "python main.py" 2>/dev/null || true
             pkill -f "node.*auth-service" 2>/dev/null || true
             pkill -f "npm.*start\|next.*start" 2>/dev/null || true
@@ -492,7 +492,7 @@ else
     # Start Backend
     echo -e "${YELLOW}🦀 Starting Backend...${NC}"
     cd backend
-    nohup ./target/release/dealpal-backend > ../logs/backend.log 2>&1 &
+    nohup ./target/release/dealmate-backend > ../logs/backend.log 2>&1 &
     BACKEND_PID=$!
     cd ..
     echo "Backend PID: $BACKEND_PID"

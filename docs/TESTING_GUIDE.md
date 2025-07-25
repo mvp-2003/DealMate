@@ -336,7 +336,7 @@ htop
 docker stats
 
 # Memory leak detection
-valgrind --tool=memcheck ./target/release/dealpal-backend
+valgrind --tool=memcheck ./target/release/dealmate-backend
 ```
 
 ## 7. Security Testing
@@ -466,7 +466,7 @@ Use the following test data for consistent results:
 ```bash
 # Setup test environment
 export NODE_ENV=test
-export DATABASE_URL=postgresql://test:test@localhost/dealpal_test
+export DATABASE_URL=postgresql://test:test@localhost/dealmate_test
 
 # Initialize test database
 ./scripts/setup-test-db.sh
@@ -495,7 +495,7 @@ tail -f logs/ai-service.log
 
 ```bash
 # Test database connection
-psql -h localhost -U dealpal -d dealpal_dev
+psql -h localhost -U dealmate -d dealmate_dev
 
 # Check database status
 ./scripts/status_check.sh
