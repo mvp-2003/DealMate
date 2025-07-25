@@ -1,4 +1,4 @@
-# DealPal Docker/Podman Makefile
+# DealMate Docker/Podman Makefile
 # Supports cross-platform development with Docker and Podman
 
 # Detect container runtime
@@ -26,7 +26,7 @@ NC := \033[0m # No Color
 
 .PHONY: help
 help: ## Show this help message
-	@echo "DealPal Container Management"
+	@echo "DealMate Container Management"
 	@echo "============================"
 	@echo ""
 	@echo "Available commands:"
@@ -47,7 +47,7 @@ check-env: ## Check if .env file exists
 
 .PHONY: setup
 setup: check-env ## Initial project setup
-	@echo "${GREEN}Setting up DealPal development environment...${NC}"
+	@echo "${GREEN}Setting up DealMate development environment...${NC}"
 	@$(COMPOSE_CMD) -f $(COMPOSE_FILE) pull
 	@echo "${GREEN}Setup complete!${NC}"
 

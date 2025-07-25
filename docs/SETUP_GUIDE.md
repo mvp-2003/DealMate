@@ -1,6 +1,6 @@
-# DealPal Cross-Platform Setup Guide
+# DealMate Cross-Platform Setup Guide
 
-This guide provides detailed instructions for setting up DealPal on Windows, macOS, and Linux systems.
+This guide provides detailed instructions for setting up DealMate on Windows, macOS, and Linux systems.
 
 ## 📋 Prerequisites
 
@@ -259,7 +259,7 @@ If you encounter issues:
 - [Node.js Documentation](https://nodejs.org/docs/)
 - [Rust Book](https://doc.rust-lang.org/book/)
 - [Python Virtual Environments](https://docs.python.org/3/tutorial/venv.html)
-- [DealPal Project Documentation](../README.md)
+- [DealMate Project Documentation](../README.md)
 
 ---
 

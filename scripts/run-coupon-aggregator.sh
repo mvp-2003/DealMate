@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# DealPal Coupon Aggregator Runner
+# DealMate Coupon Aggregator Runner
 # This script runs the coupon aggregation service
 
 set -e
 
-echo "🎯 Starting DealPal Coupon Aggregator..."
+echo "🎯 Starting DealMate Coupon Aggregator..."
 
 # Change to backend directory
 cd "$(dirname "$0")/../backend"

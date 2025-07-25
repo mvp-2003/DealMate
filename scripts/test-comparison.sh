@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# DealPal Comparison Feature Test Script
+# DealMate Comparison Feature Test Script
 # This script tests the comparison feature functionality
 
-echo "🚀 Testing DealPal Comparison Feature..."
+echo "🚀 Testing DealMate Comparison Feature..."
 echo "========================================"
 
 # Colors for output

@@ -7,7 +7,7 @@ export default function Header() {
       <div className="flex items-center gap-2 xs:gap-3">
         <ShoppingBag className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
         <h1 className="text-lg xs:text-xl sm:text-2xl font-headline font-semibold text-primary truncate">
-          DealPal
+          DealMate
         </h1>
       </div>
       

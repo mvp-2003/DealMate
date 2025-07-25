@@ -1,4 +1,4 @@
-// DealPal Auto Coupon Tester - Automatically tests and applies the best coupon codes
+// DealMate Auto Coupon Tester - Automatically tests and applies the best coupon codes
 
 class AutoCouponTester {
   constructor() {
@@ -192,13 +192,13 @@ class AutoCouponTester {
 
   async autoTestCoupons() {
     if (this.isTestingInProgress) {
-      console.log('🎯 DealPal: Coupon testing already in progress');
+      console.log('🎯 DealMate: Coupon testing already in progress');
       return this.testResults;
     }
 
     const isCheckout = await this.detectCheckoutPage();
     if (!isCheckout) {
-      console.log('🎯 DealPal: Not on checkout page, skipping auto-test');
+      console.log('🎯 DealMate: Not on checkout page, skipping auto-test');
       return [];
     }
 
@@ -208,17 +208,17 @@ class AutoCouponTester {
 
     const merchant = this.getMerchantFromURL();
     if (!merchant) {
-        console.warn('🎯 DealPal: Could not determine merchant from URL.');
+        console.warn('🎯 DealMate: Could not determine merchant from URL.');
         this.isTestingInProgress = false;
         return [];
     }
 
-    console.log(`🎯 DealPal: Starting automatic coupon testing for ${merchant}...`);
+    console.log(`🎯 DealMate: Starting automatic coupon testing for ${merchant}...`);
 
     const availableCoupons = await this.fetchCouponsForMerchant(merchant);
 
     if (availableCoupons.length === 0) {
-        console.log('🎯 DealPal: No coupons found for this merchant.');
+        console.log('🎯 DealMate: No coupons found for this merchant.');
         this.isTestingInProgress = false;
         return [];
     }
@@ -230,7 +230,7 @@ class AutoCouponTester {
     const applyButton = this.findElement(this.applyButtonSelectors);
     
     if (!couponInput || !applyButton) {
-      console.warn('🎯 DealPal: Could not find coupon input or apply button');
+      console.warn('🎯 DealMate: Could not find coupon input or apply button');
       this.isTestingInProgress = false;
       return [];
     }
@@ -238,7 +238,7 @@ class AutoCouponTester {
     // Test each coupon
     for (let i = 0; i < availableCoupons.length; i++) {
       const coupon = availableCoupons[i];
-      console.log(`🎯 DealPal: Testing coupon ${i + 1}/${availableCoupons.length}: ${coupon.coupon_code}`);
+      console.log(`🎯 DealMate: Testing coupon ${i + 1}/${availableCoupons.length}: ${coupon.coupon_code}`);
       
       this.updateTestingProgress(i + 1, availableCoupons.length, coupon.coupon_code);
       
@@ -278,7 +278,7 @@ class AutoCouponTester {
   }
 
   async applyBestCoupon(bestCoupon, couponInput, applyButton) {
-    console.log('🎯 DealPal: Applying best coupon:', bestCoupon.code);
+    console.log('🎯 DealMate: Applying best coupon:', bestCoupon.code);
     
     // Clear and apply the best coupon
     couponInput.value = '';
@@ -315,7 +315,7 @@ class AutoCouponTester {
     notification.innerHTML = `
       <div style="display: flex; align-items: center; margin-bottom: 8px;">
         <div style="width: 20px; height: 20px; border: 2px solid #fff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px;"></div>
-        <strong>🎯 DealPal Testing Coupons</strong>
+        <strong>🎯 DealMate Testing Coupons</strong>
       </div>
       <div id="dealpal-progress-text">Testing ${couponCount} available coupons...</div>
       <div style="background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; margin-top: 8px;">
@@ -393,11 +393,11 @@ class AutoCouponTester {
       const domain = window.location.hostname;
       const response = await fetch(`http://localhost:8000/api/v1/coupons/search?merchant_domain=${domain}&active_only=true`);
       if (!response.ok) {
-        console.error('🎯 DealPal: Failed to fetch coupons from backend');
+        console.error('🎯 DealMate: Failed to fetch coupons from backend');
         return [];
       }
       const coupons = await response.json();
-      console.log(`🎯 DealPal: Fetched ${coupons.length} coupons for ${domain}`);
+      console.log(`🎯 DealMate: Fetched ${coupons.length} coupons for ${domain}`);
       return coupons.map(coupon => ({
         coupon_code: coupon.code,
         title: coupon.title,
@@ -406,7 +406,7 @@ class AutoCouponTester {
         discount_value: coupon.discount_value
       }));
     } catch (error) {
-      console.error('🎯 DealPal: Error fetching coupons:', error);
+      console.error('🎯 DealMate: Error fetching coupons:', error);
       return [];
     }
   }
@@ -425,4 +425,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-console.log('🎯 DealPal: Auto Coupon Tester loaded');
+console.log('🎯 DealMate: Auto Coupon Tester loaded');

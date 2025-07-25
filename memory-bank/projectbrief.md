@@ -1,7 +1,7 @@
-# DealPal Project Brief
+# DealMate Project Brief
 
 ## Project Overview
-DealPal is a comprehensive cross-platform full-stack application designed to help users discover the best shopping deals, stackable discounts, bank offers, and real-world savings opportunities.
+DealMate is a comprehensive cross-platform full-stack application designed to help users discover the best shopping deals, stackable discounts, bank offers, and real-world savings opportunities.
 
 ## Core Mission
 To create an intelligent deal optimization platform that maximizes user savings through:

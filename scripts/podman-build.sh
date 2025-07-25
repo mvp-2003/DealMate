@@ -2,7 +2,7 @@
 
 set -e
 
-echo "🔨 Building DealPal containers with Podman..."
+echo "🔨 Building DealMate containers with Podman..."
 
 # Navigate to project root
 cd "$(dirname "$0")/.."

@@ -146,7 +146,7 @@ export default function CashbackPartnershipsPage() {
             Application Submitted Successfully!
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
-            Thank you for your interest in partnering with DealPal. Our business development team will review your application and contact you within 2-3 business days.
+            Thank you for your interest in partnering with DealMate. Our business development team will review your application and contact you within 2-3 business days.
           </p>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
             <h3 className="text-xl font-semibold mb-4">What happens next?</h3>
@@ -186,7 +186,7 @@ export default function CashbackPartnershipsPage() {
       <div className="pt-16 pb-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            Partner with <span className="text-blue-600">DealPal</span>
+            Partner with <span className="text-blue-600">DealMate</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             Join our cashback network and reach millions of deal-savvy shoppers. 
@@ -213,7 +213,7 @@ export default function CashbackPartnershipsPage() {
       <div className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
-            Why Partner with DealPal?
+            Why Partner with DealMate?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => {
@@ -254,7 +254,7 @@ export default function CashbackPartnershipsPage() {
             <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg p-8 text-white">
               <h3 className="text-2xl font-bold mb-4">Success Story</h3>
               <blockquote className="text-lg italic mb-4">
-                "DealPal increased our customer acquisition by 35% in just 3 months. 
+                "DealMate increased our customer acquisition by 35% in just 3 months. 
                 The quality of traffic is exceptional, and the analytics help us optimize our offers."
               </blockquote>
               <div className="flex items-center space-x-3">
@@ -278,7 +278,7 @@ export default function CashbackPartnershipsPage() {
             <CardHeader>
               <CardTitle className="text-2xl">Partnership Application</CardTitle>
               <CardDescription>
-                Fill out the form below to start your partnership with DealPal
+                Fill out the form below to start your partnership with DealMate
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -435,7 +435,7 @@ export default function CashbackPartnershipsPage() {
                         id="description"
                         value={formData.description}
                         onChange={(e) => handleInputChange('description', e.target.value)}
-                        placeholder="Tell us about your business, target audience, and why you'd like to partner with DealPal..."
+                        placeholder="Tell us about your business, target audience, and why you'd like to partner with DealMate..."
                         rows={4}
                       />
                     </div>

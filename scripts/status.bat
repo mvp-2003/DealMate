@@ -1,7 +1,7 @@
 @echo off
-REM DealPal Status Check Script for Windows
+REM DealMate Status Check Script for Windows
 
-echo DealPal Platform Status Check
+echo DealMate Platform Status Check
 echo =============================
 echo.
 

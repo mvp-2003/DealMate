@@ -1,7 +1,7 @@
 @echo off
-REM DealPal Clean Script for Windows
+REM DealMate Clean Script for Windows
 
-echo Cleaning DealPal project...
+echo Cleaning DealMate project...
 echo ==========================
 echo.
 

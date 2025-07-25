@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Complete Authentication Flow Test for DealPal
+Complete Authentication Flow Test for DealMate
 Tests the entire Auth0 integration flow between Frontend and Backend
 """
 
@@ -164,7 +164,7 @@ class AuthFlowTester:
     
     def run_all_tests(self):
         """Run all authentication flow tests"""
-        print("🚀 Starting DealPal Authentication Flow Tests\n")
+        print("🚀 Starting DealMate Authentication Flow Tests\n")
         
         tests = [
             ("Environment Variables", self.test_environment_variables),

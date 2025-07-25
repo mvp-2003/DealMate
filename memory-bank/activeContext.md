@@ -1,4 +1,4 @@
-# DealPal Active Context
+# DealMate Active Context
 
 ## Current Work Focus
 
@@ -141,7 +141,7 @@ The cashback system is designed with:
 3. **Trust Signals**: Transparency in cashback tracking and processing
 4. **Mobile Optimization**: Touch-friendly interfaces for on-the-go usage
 
-The Cashback feature successfully adds a comprehensive monetization and engagement layer to DealPal, incorporating best practices from all major cashback platforms while maintaining the core value proposition of smart deal discovery and optimization.
+The Cashback feature successfully adds a comprehensive monetization and engagement layer to DealMate, incorporating best practices from all major cashback platforms while maintaining the core value proposition of smart deal discovery and optimization.
 
 ## Card Templates Endpoint Fix (2025-01-21)
 

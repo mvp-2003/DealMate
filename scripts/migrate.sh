@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# DealPal Database Migration Script
+# DealMate Database Migration Script
 # Runs SQLx migrations for the backend database
 
 set -e
@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🗄️  DealPal Database Migration${NC}"
+echo -e "${BLUE}🗄️  DealMate Database Migration${NC}"
 echo "================================="
 
 # Load environment variables
@@ -69,4 +69,4 @@ fi
 
 echo ""
 echo -e "${GREEN}🎉 Database migration completed successfully!${NC}"
-echo -e "${BLUE}💡 Your database is now ready for the DealPal backend${NC}"
+echo -e "${BLUE}💡 Your database is now ready for the DealMate backend${NC}"

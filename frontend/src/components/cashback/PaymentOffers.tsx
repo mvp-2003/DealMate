@@ -288,7 +288,7 @@ export default function PaymentOffers() {
             <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg flex items-start gap-2">
               <Star className="h-4 w-4 text-purple-600 dark:text-purple-400 mt-0.5" />
               <p className="text-xs text-purple-600 dark:text-purple-400">
-                Link your wallet to DealPal for automatic cashback tracking.
+                Link your wallet to DealMate for automatic cashback tracking.
               </p>
             </div>
           </TabsContent>

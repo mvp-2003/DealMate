@@ -7,7 +7,7 @@ PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 # Change to project root for consistent paths
 cd "$PROJECT_ROOT"
 
-echo "🔍 DealPal Build Status"
+echo "🔍 DealMate Build Status"
 echo "======================="
 
 # Read the buildDev flag from the feature toggles file

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# DealPal Python AI Service Startup Script
+# DealMate Python AI Service Startup Script
 
 set -e
 
-echo "🚀 Starting DealPal Python AI Service..."
+echo "🚀 Starting DealMate Python AI Service..."
 
 # Activate virtual environment
 echo "⚙️ Activating virtual environment..."
@@ -62,7 +62,7 @@ if lsof -Pi :8001 -sTCP:LISTEN -t >/dev/null ; then
 fi
 
 # Start the service
-echo "🤖 Starting DealPal AI Service on http://localhost:8001"
+echo "🤖 Starting DealMate AI Service on http://localhost:8001"
 echo "📖 API documentation will be available at http://localhost:8001/docs"
 echo ""
 echo "Press Ctrl+C to stop the service"
@@ -82,7 +82,7 @@ echo "🏃 Running tests..."
 TEST_EXIT_CODE=$?
 
 # Stop the server
-echo "🛑 Stopping DealPal AI Service..."
+echo "🛑 Stopping DealMate AI Service..."
 kill $SERVER_PID
 
 # Exit with the test result

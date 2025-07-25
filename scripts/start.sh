@@ -14,7 +14,7 @@ BUILD_DEV=$(python3 -c "import json; print(json.load(open('feature-toggles.json'
 echo "BUILD_DEV flag is set to: $BUILD_DEV"
 
 if [ "$BUILD_DEV" = "True" ]; then
-    echo "🚀 Starting DealPal in Development Mode..."
+    echo "🚀 Starting DealMate in Development Mode..."
     
     # Check if dependencies are installed
     if [ ! -d "backend/ai-service/.venv" ] || [ ! -f "backend/target/release/dealpal-backend" ]; then
@@ -57,7 +57,7 @@ if [ "$BUILD_DEV" = "True" ]; then
     echo "🎯 Ready for development!"
     echo "Press Ctrl+C to stop all servers"
 else
-    echo "🚀 Starting DealPal in Production Mode..."
+    echo "🚀 Starting DealMate in Production Mode..."
     
     # Build if needed
     if [ ! -f "backend/target/release/dealpal-backend" ] || [ ! -d "frontend/.next" ] || [ ! -d "backend/ai-service/.venv" ]; then

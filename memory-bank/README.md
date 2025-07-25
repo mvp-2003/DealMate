@@ -1,6 +1,6 @@
-# DealPal Memory Bank
+# DealMate Memory Bank
 
-This memory bank contains comprehensive documentation about the DealPal project to maintain context across development sessions. As per the memory bank guidelines, these files should be read at the start of every development session to understand the project state and continue work effectively.
+This memory bank contains comprehensive documentation about the DealMate project to maintain context across development sessions. As per the memory bank guidelines, these files should be read at the start of every development session to understand the project state and continue work effectively.
 
 ## Memory Bank Structure
 
@@ -13,7 +13,7 @@ This memory bank contains comprehensive documentation about the DealPal project 
    - Legal and ethical framework
 
 2. **[productContext.md](./productContext.md)** - Product Vision
-   - Why DealPal exists and problems it solves
+   - Why DealMate exists and problems it solves
    - User experience goals for different user types
    - Product philosophy and competitive advantages
    - Success metrics and business impact

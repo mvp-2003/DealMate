@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting DealPal Development..."
+echo "🚀 Starting DealMate Development..."
 
 # Start AI Service in background (development mode with hot reload)
 echo "🤖 Starting AI Service with Hot Reload..."

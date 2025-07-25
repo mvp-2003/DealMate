@@ -1,4 +1,4 @@
-// Real Vendor API Integration for DealPal Comparison Feature
+// Real Vendor API Integration for DealMate Comparison Feature
 // Replace the mock data in /api/comparison/search/route.ts with these implementations
 
 import { Product } from '@/types/comparison';

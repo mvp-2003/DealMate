@@ -1,6 +1,6 @@
 #!/usr/bin/env ./.venv/bin/python
 """
-DealPal Python AI Service Test Script
+DealMate Python AI Service Test Script
 
 This script tests the AI service endpoints to ensure they're working correctly.
 """
@@ -186,7 +186,7 @@ class AIServiceTester:
     
     async def run_all_tests(self):
         """Run all tests"""
-        print("🧪 Starting DealPal AI Service Tests")
+        print("🧪 Starting DealMate AI Service Tests")
         print("=" * 50)
         
         results = {}
@@ -228,7 +228,7 @@ class AIServiceTester:
 
 async def main():
     """Main test function"""
-    print("🤖 DealPal Python AI Service Tester")
+    print("🤖 DealMate Python AI Service Tester")
     print("This script will test all AI service endpoints\n")
     
     async with AIServiceTester() as tester:

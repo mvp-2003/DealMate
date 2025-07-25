@@ -1,4 +1,4 @@
-// DealPal Rewards Integration Hub
+// DealMate Rewards Integration Hub
 // Connects with multiple reward programs and loyalty systems
 
 class RewardsIntegrationHub {
@@ -556,4 +556,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-console.log('🎯 DealPal: Rewards Integration Hub loaded');
+console.log('🎯 DealMate: Rewards Integration Hub loaded');

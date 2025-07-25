@@ -8,7 +8,7 @@ if [ $? -eq 0 ]; then
     echo "✅ Railway PostgreSQL connection configured correctly"
     echo "✅ All compilation errors fixed"
     echo ""
-    echo "Your DealPal backend is ready to use Railway's free PostgreSQL tier!"
+    echo "Your DealMate backend is ready to use Railway's free PostgreSQL tier!"
     echo ""
     echo "To start the server, run: cargo run"
     echo "The server will run on http://localhost:8000"

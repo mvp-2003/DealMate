@@ -1,6 +1,6 @@
-# DealPal Deployment Guide
+# DealMate Deployment Guide
 
-This guide provides comprehensive instructions for deploying DealPal across different environments and platforms.
+This guide provides comprehensive instructions for deploying DealMate across different environments and platforms.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ This guide provides comprehensive instructions for deploying DealPal across diff
 
 ## Deployment Overview
 
-DealPal supports multiple deployment modes:
+DealMate supports multiple deployment modes:
 
 - **🔧 Development**: Local development with hot reload
 - **🧪 Staging**: Production-like environment for testing
@@ -111,8 +111,8 @@ METRICS_ENABLED=true
 ### Quick Start
 ```bash
 # Clone repository
-git clone https://github.com/mvp-2003/DealPal.git
-cd DealPal
+git clone https://github.com/mvp-2003/DealMate.git
+cd DealMate
 
 # Setup environment
 cp .env.example .env
@@ -205,7 +205,7 @@ sudo nano /etc/postgresql/15/main/postgresql.conf
 #### 3. Application Deployment
 ```bash
 # Clone and build application
-git clone https://github.com/mvp-2003/DealPal.git /opt/dealpal
+git clone https://github.com/mvp-2003/DealMate.git /opt/dealpal
 cd /opt/dealpal
 
 # Setup environment
@@ -292,7 +292,7 @@ Create systemd service files for each component:
 ```bash
 # /etc/systemd/system/dealpal-backend.service
 [Unit]
-Description=DealPal Backend Service
+Description=DealMate Backend Service
 After=network.target postgresql.service
 
 [Service]
@@ -786,7 +786,7 @@ safety check
 
 ---
 
-This deployment guide provides comprehensive instructions for deploying DealPal across various environments. Choose the deployment method that best fits your infrastructure and requirements.
+This deployment guide provides comprehensive instructions for deploying DealMate across various environments. Choose the deployment method that best fits your infrastructure and requirements.
 
 **Last Updated**: July 26, 2025  
 **Next Review**: August 26, 2025

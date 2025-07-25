@@ -1,4 +1,4 @@
-// DealPal Animated Loading Utilities for Browser Extension
+// DealMate Animated Loading Utilities for Browser Extension
 // This file provides animated loading components that can be used throughout the extension
 
 class DealPalLoader {

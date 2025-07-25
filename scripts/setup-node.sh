@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🔧 DealPal Node.js Version Setup"
+echo "🔧 DealMate Node.js Version Setup"
 echo "================================"
 
 # Check if nvm is installed

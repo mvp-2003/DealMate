@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 DealPal Authentication Test Suite"
+echo "🚀 DealMate Authentication Test Suite"
 echo "===================================="
 
 # Check if Python is available

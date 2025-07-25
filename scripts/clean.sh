@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# DealPal Clean and Reset Script
+# DealMate Clean and Reset Script
 # Cleans build artifacts and resets the development environment
 
 set -e
 
-echo "🧹 DealPal Clean and Reset"
+echo "🧹 DealMate Clean and Reset"
 echo "=========================="
 
 # Get the script directory and project root

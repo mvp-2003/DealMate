@@ -1,4 +1,4 @@
-// Python AI Service Integration for DealPal Browser Extension
+// Python AI Service Integration for DealMate Browser Extension
 // This module handles communication with the backend Python AI service
 
 class PythonAIService {

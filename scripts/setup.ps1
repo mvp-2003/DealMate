@@ -1,7 +1,7 @@
-# DealPal Windows PowerShell Setup Script
+# DealMate Windows PowerShell Setup Script
 # This is a wrapper that calls the universal Python setup script
 
-Write-Host "DealPal Development Environment Setup for Windows" -ForegroundColor Blue
+Write-Host "DealMate Development Environment Setup for Windows" -ForegroundColor Blue
 Write-Host "==============================================" -ForegroundColor Blue
 Write-Host ""
 

@@ -1,5 +1,5 @@
 /**
- * DealPal Browser Extension Configuration
+ * DealMate Browser Extension Configuration
  * IMPORTANT: API keys and secrets must be configured through the build process
  * DO NOT hardcode any secrets in this file!
  */

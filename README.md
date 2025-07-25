@@ -1,10 +1,10 @@
-# DealPal - AI-Powered Smart Shopping Assistant
+# DealMate - AI-Powered Smart Shopping Assistant
 
 [![Lighthouse Performance](https://img.shields.io/badge/Lighthouse-Performance-brightgreen)](https://web.dev/lighthouse/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-blue)](https://web.dev/progressive-web-apps/)
 [![Accessibility](https://img.shields.io/badge/Accessibility-WCAG%202.1-green)](https://www.w3.org/WAI/WCAG21/quickref/)
 
-DealPal is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, product comparison, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension.
+DealMate is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, product comparison, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension.
 
 ## 📊 Performance & Quality
 
@@ -49,8 +49,8 @@ Choose one of the following container runtimes:
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/mvp-2003/DealPal.git
-cd DealPal
+git clone https://github.com/mvp-2003/DealMate.git
+cd DealMate
 ```
 
 #### 2. One-Command Setup and Run
@@ -89,7 +89,7 @@ Development tools (when using `make up-dev`):
 
 ### For New Developers
 
-Welcome to DealPal! For a complete development setup:
+Welcome to DealMate! For a complete development setup:
 
 1. **Environment Setup**
    - Copy `.env.example` to `.env`
@@ -122,7 +122,7 @@ Welcome to DealPal! For a complete development setup:
 ### Script Comparison
 
 #### `run_app.sh` (Unified Application Launcher)
-- **Purpose**: Single entry point to run DealPal in any environment
+- **Purpose**: Single entry point to run DealMate in any environment
 - **Deployment modes**: Defaults to native development for speed
 - **Usage Examples:**
   ```bash
@@ -165,7 +165,7 @@ Welcome to DealPal! For a complete development setup:
 ## 🏗️ Project Structure
 
 ```
-DealPal/
+DealMate/
 ├── frontend/                 # Next.js React application
 ├── backend/
 │   └── ai-service/          # Python FastAPI AI service
@@ -176,7 +176,7 @@ DealPal/
 
 ## 🐳 Containerized Architecture
 
-DealPal uses a single master Dockerfile with multi-stage builds for all services, simplifying maintenance and ensuring consistency across environments.
+DealMate uses a single master Dockerfile with multi-stage builds for all services, simplifying maintenance and ensuring consistency across environments.
 
 ### Container Services
 
@@ -374,7 +374,7 @@ docker system df
 
 ### Frontend (Next.js App)
 
-The Next.js frontend provides the main web interface for DealPal. It's a modern React application built with TypeScript and Tailwind CSS.
+The Next.js frontend provides the main web interface for DealMate. It's a modern React application built with TypeScript and Tailwind CSS.
 
 **Key Features:**
 - Comprehensive dashboard for deal management
@@ -393,7 +393,7 @@ Visit `http://localhost:3000` to see the application.
 
 ### Backend AI Service (Python FastAPI)
 
-A FastAPI-based microservice that provides advanced AI capabilities for the DealPal ecosystem.
+A FastAPI-based microservice that provides advanced AI capabilities for the DealMate ecosystem.
 
 **🧠 Features:**
 - **Advanced Product Detection**: Multi-modal analysis with text, images, and structured data
@@ -798,4 +798,4 @@ lighthouse http://localhost:3000 --only-categories=performance,accessibility,bes
 
 ---
 
-DealPal combines cutting-edge AI technology with practical user value to revolutionize how consumers discover and maximize savings opportunities across all shopping platforms.
+DealMate combines cutting-edge AI technology with practical user value to revolutionize how consumers discover and maximize savings opportunities across all shopping platforms.

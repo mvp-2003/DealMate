@@ -1,6 +1,6 @@
 # New Developer Guide
 
-Welcome to DealPal! This guide will help you get started quickly with our AI-powered smart shopping assistant platform.
+Welcome to DealMate! This guide will help you get started quickly with our AI-powered smart shopping assistant platform.
 
 ## 🚀 Quick Setup
 
@@ -12,8 +12,8 @@ Welcome to DealPal! This guide will help you get started quickly with our AI-pow
 
 ### 1. Clone and Navigate
 ```bash
-git clone https://github.com/mvp-2003/DealPal.git
-cd DealPal
+git clone https://github.com/mvp-2003/DealMate.git
+cd DealMate
 ```
 
 ### 2. Environment Setup
@@ -55,7 +55,7 @@ Once started, access these URLs:
 
 ## 🏗️ Architecture Overview
 
-DealPal uses a modern microservices architecture:
+DealMate uses a modern microservices architecture:
 
 ### Core Services
 - **Frontend**: Next.js 15 React app with TypeScript (port 3000)
@@ -80,7 +80,7 @@ DealPal uses a modern microservices architecture:
 ## 📁 Project Structure
 
 ```
-DealPal/
+DealMate/
 ├── frontend/                 # Next.js React application
 │   ├── src/app/(app)/compare/   # Product comparison pages
 │   ├── src/components/comparison/  # Comparison UI components
@@ -231,4 +231,4 @@ tail -f logs/ai-service.log
 4. **Ask Questions**: Reach out to team members with specific error messages
 5. **Check Logs**: Always include relevant log output when reporting issues
 
-Welcome to the team! DealPal is building the future of smart shopping, and your contributions will help millions of users save money and time.
+Welcome to the team! DealMate is building the future of smart shopping, and your contributions will help millions of users save money and time.

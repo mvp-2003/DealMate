@@ -1,4 +1,4 @@
-# DealPal System Patterns & Architecture
+# DealMate System Patterns & Architecture
 
 ## Overall System Architecture
 

@@ -37,7 +37,7 @@ browsers.forEach(browserName => {
       // 'http://host.docker.internal:3000' or 'http://localhost:3000'
       await driver.get('http://frontend:3000');
       const title = await driver.getTitle();
-      expect(title).toBe('DealPal');
+      expect(title).toBe('DealMate');
     }, 30000);
   });
 });

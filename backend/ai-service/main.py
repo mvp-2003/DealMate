@@ -41,8 +41,8 @@ async def lifespan(app: FastAPI):
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="DealPal AI Service",
-    description="Provides AI-powered features for the DealPal ecosystem.",
+    title="DealMate AI Service",
+    description="Provides AI-powered features for the DealMate ecosystem.",
     version="0.1.0",
     lifespan=lifespan,
 )

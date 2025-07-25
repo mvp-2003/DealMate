@@ -1,8 +1,8 @@
 @echo off
-REM DealPal Windows Setup Script
+REM DealMate Windows Setup Script
 REM This is a wrapper that calls the universal Python setup script
 
-echo DealPal Development Environment Setup for Windows
+echo DealMate Development Environment Setup for Windows
 echo ==============================================
 echo.
 

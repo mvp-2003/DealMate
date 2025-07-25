@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Performance optimization script for DealPal
+# Performance optimization script for DealMate
 # This script implements various optimizations across the project
 
-echo "🚀 DealPal Performance Optimization Script"
+echo "🚀 DealMate Performance Optimization Script"
 echo "=========================================="
 
 # Check if we're in the right directory
 if [ ! -f "../package.json" ]; then
-    echo "❌ Error: Please run this script from the DealPal/scripts directory, or make sure package.json exists in parent directory"
+    echo "❌ Error: Please run this script from the DealMate/scripts directory, or make sure package.json exists in parent directory"
     echo "Current directory: $(pwd)"
-    echo "Expected: DealPal/scripts/"
+    echo "Expected: DealMate/scripts/"
     exit 1
 fi
 
@@ -95,7 +95,7 @@ EOF
 
 # Create performance configuration
 cat > ../performance-config.toml << 'EOF'
-# DealPal Performance Configuration
+# DealMate Performance Configuration
 
 [database]
 max_connections = 20
@@ -155,10 +155,10 @@ EOF
 
 echo "📝 Creating performance documentation..."
 cat > ../PERFORMANCE.md << 'EOF'
-# DealPal Performance Optimizations
+# DealMate Performance Optimizations
 
 ## Overview
-This document outlines the performance optimizations implemented in DealPal to improve application speed, reduce load times, and enhance user experience.
+This document outlines the performance optimizations implemented in DealMate to improve application speed, reduce load times, and enhance user experience.
 
 ## Frontend Optimizations
 

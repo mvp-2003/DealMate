@@ -1,4 +1,4 @@
-// DealPal Browser-Native Integration
+// DealMate Browser-Native Integration
 // This module provides deep browser integration features
 
 class BrowserNativeIntegration {
@@ -25,9 +25,9 @@ class BrowserNativeIntegration {
       this.setupStorageSync();
       
       this.isInitialized = true;
-      console.log('🎯 DealPal: Browser-native integration initialized');
+      console.log('🎯 DealMate: Browser-native integration initialized');
     } catch (error) {
-      console.error('🎯 DealPal: Failed to initialize browser integration:', error);
+      console.error('🎯 DealMate: Failed to initialize browser integration:', error);
     }
   }
 
@@ -36,10 +36,10 @@ class BrowserNativeIntegration {
       if ('Notification' in window) {
         const permission = await Notification.requestPermission();
         this.notificationPermission = permission;
-        console.log('🎯 DealPal: Notification permission:', permission);
+        console.log('🎯 DealMate: Notification permission:', permission);
       }
     } catch (error) {
-      console.error('🎯 DealPal: Notification permission error:', error);
+      console.error('🎯 DealMate: Notification permission error:', error);
     }
   }
 
@@ -72,7 +72,7 @@ class BrowserNativeIntegration {
         new Notification(title, defaultOptions);
       }
     } catch (error) {
-      console.error('🎯 DealPal: Notification error:', error);
+      console.error('🎯 DealMate: Notification error:', error);
     }
   }
 
@@ -86,7 +86,7 @@ class BrowserNativeIntegration {
   setupKeyboardShortcuts() {
     // Listen for keyboard shortcuts
     document.addEventListener('keydown', (event) => {
-      // Ctrl+Shift+D (or Cmd+Shift+D on Mac) to open DealPal
+      // Ctrl+Shift+D (or Cmd+Shift+D on Mac) to open DealMate
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'D') {
         event.preventDefault();
         this.openDealPalPopup();
@@ -104,7 +104,7 @@ class BrowserNativeIntegration {
     // Setup Chrome storage sync for cross-device synchronization
     chrome.storage.onChanged.addListener((changes, namespace) => {
       if (namespace === 'sync') {
-        console.log('🎯 DealPal: Sync storage changed:', changes);
+        console.log('🎯 DealMate: Sync storage changed:', changes);
         this.handleStorageSync(changes);
       }
     });
@@ -129,9 +129,9 @@ class BrowserNativeIntegration {
   async saveToSync(key, data) {
     try {
       await chrome.storage.sync.set({ [key]: data });
-      console.log(`🎯 DealPal: Saved ${key} to sync storage`);
+      console.log(`🎯 DealMate: Saved ${key} to sync storage`);
     } catch (error) {
-      console.error(`🎯 DealPal: Failed to save ${key} to sync:`, error);
+      console.error(`🎯 DealMate: Failed to save ${key} to sync:`, error);
       // Fallback to local storage
       await chrome.storage.local.set({ [key]: data });
     }
@@ -143,7 +143,7 @@ class BrowserNativeIntegration {
       const result = await chrome.storage.sync.get(key);
       return result[key];
     } catch (error) {
-      console.error(`🎯 DealPal: Failed to get ${key} from sync:`, error);
+      console.error(`🎯 DealMate: Failed to get ${key} from sync:`, error);
       // Fallback to local storage
       const result = await chrome.storage.local.get(key);
       return result[key];
@@ -169,13 +169,13 @@ class BrowserNativeIntegration {
             if (response.coupons && response.coupons.length > 0) {
               window.autoCouponTester.autoTestCoupons(response.coupons);
             } else {
-              this.showNativeNotification('DealPal', {
+              this.showNativeNotification('DealMate', {
                 body: 'No coupons available to test on this page'
               });
             }
           });
         } else {
-          this.showNativeNotification('DealPal', {
+          this.showNativeNotification('DealMate', {
             body: 'Coupon testing is only available on checkout pages'
           });
         }
@@ -195,11 +195,11 @@ class BrowserNativeIntegration {
         }
       });
       
-      this.showNativeNotification('DealPal', {
+      this.showNativeNotification('DealMate', {
         body: 'Payment method saved securely'
       });
     } catch (error) {
-      console.error('🎯 DealPal: Failed to save payment method:', error);
+      console.error('🎯 DealMate: Failed to save payment method:', error);
     }
   }
 
@@ -207,13 +207,13 @@ class BrowserNativeIntegration {
   async addToBookmarks(productData) {
     try {
       if (chrome.bookmarks) {
-        // Create DealPal folder if it doesn't exist
-        const folders = await chrome.bookmarks.search({ title: 'DealPal Deals' });
+        // Create DealMate folder if it doesn't exist
+        const folders = await chrome.bookmarks.search({ title: 'DealMate Deals' });
         let folderId;
         
         if (folders.length === 0) {
           const folder = await chrome.bookmarks.create({
-            title: 'DealPal Deals'
+            title: 'DealMate Deals'
           });
           folderId = folder.id;
         } else {
@@ -227,12 +227,12 @@ class BrowserNativeIntegration {
           url: productData.url
         });
         
-        this.showNativeNotification('DealPal', {
-          body: 'Product added to DealPal bookmarks'
+        this.showNativeNotification('DealMate', {
+          body: 'Product added to DealMate bookmarks'
         });
       }
     } catch (error) {
-      console.error('🎯 DealPal: Bookmark error:', error);
+      console.error('🎯 DealMate: Bookmark error:', error);
     }
   }
 
@@ -252,11 +252,11 @@ class BrowserNativeIntegration {
       
       URL.revokeObjectURL(url);
       
-      this.showNativeNotification('DealPal', {
+      this.showNativeNotification('DealMate', {
         body: 'Deal report downloaded'
       });
     } catch (error) {
-      console.error('🎯 DealPal: Download error:', error);
+      console.error('🎯 DealMate: Download error:', error);
     }
   }
 
@@ -266,7 +266,7 @@ class BrowserNativeIntegration {
       deals: dealData,
       browser: navigator.userAgent,
       platform: window.location.hostname,
-      generatedBy: 'DealPal Browser Extension'
+      generatedBy: 'DealMate Browser Extension'
     };
   }
 
@@ -292,7 +292,7 @@ class BrowserNativeIntegration {
       });
       
     } catch (error) {
-      console.error('🎯 DealPal: History tracking error:', error);
+      console.error('🎯 DealMate: History tracking error:', error);
     }
   }
 
@@ -320,12 +320,12 @@ class BrowserNativeIntegration {
       query: selectedText
     }, (response) => {
       if (response.deals && response.deals.length > 0) {
-        this.showNativeNotification('DealPal', {
+        this.showNativeNotification('DealMate', {
           body: `Found ${response.deals.length} deals for "${selectedText}"`,
           actions: [{ title: 'View Deals' }]
         });
       } else {
-        this.showNativeNotification('DealPal', {
+        this.showNativeNotification('DealMate', {
           body: `No deals found for "${selectedText}"`
         });
       }
@@ -333,17 +333,17 @@ class BrowserNativeIntegration {
   }
 
   updateUserPreferences(preferences) {
-    console.log('🎯 DealPal: Updated user preferences:', preferences);
+    console.log('🎯 DealMate: Updated user preferences:', preferences);
     // Apply preferences to current page
   }
 
   updateWatchlist(watchlist) {
-    console.log('🎯 DealPal: Updated watchlist:', watchlist);
+    console.log('🎯 DealMate: Updated watchlist:', watchlist);
     // Update any watchlist-related UI
   }
 
   updateCreditCards(creditCards) {
-    console.log('🎯 DealPal: Updated credit cards:', creditCards);
+    console.log('🎯 DealMate: Updated credit cards:', creditCards);
     // Update payment method suggestions
   }
 }
@@ -363,4 +363,4 @@ if (document.readyState === 'loading') {
 // Export for use in other scripts
 window.browserIntegration = browserIntegration;
 
-console.log('🎯 DealPal: Browser-native integration module loaded');
+console.log('🎯 DealMate: Browser-native integration module loaded');

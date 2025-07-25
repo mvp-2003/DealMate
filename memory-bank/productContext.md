@@ -1,6 +1,6 @@
-# DealPal Product Context
+# DealMate Product Context
 
-## Why DealPal Exists
+## Why DealMate Exists
 
 ### Problem Statement
 Modern online shopping presents several challenges for consumers:
@@ -16,7 +16,7 @@ Modern online shopping presents several challenges for consumers:
 - Credit card rewards worth $100+ billion annually go unredeemed
 - Price comparison tools lack intelligent stacking capabilities
 
-## How DealPal Solves These Problems
+## How DealMate Solves These Problems
 
 ### Core Solutions
 1. **Unified Deal Discovery**: Aggregates deals from 50+ sources including e-commerce sites, coupon platforms, and bank offers

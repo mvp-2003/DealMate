@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DealPal AI Enhancement Test Suite
+DealMate AI Enhancement Test Suite
 
 Comprehensive testing of the enhanced AI features including:
 - Gemini integration
@@ -38,7 +38,7 @@ class DealPalAITestSuite:
     
     async def setup(self):
         """Initialize AI services for testing"""
-        print("🧪 Setting up DealPal AI Test Suite...")
+        print("🧪 Setting up DealMate AI Test Suite...")
         
         try:
             await initialize_models()

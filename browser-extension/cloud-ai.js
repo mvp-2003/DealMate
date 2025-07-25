@@ -1,4 +1,4 @@
-// Cloud AI Integration for DealPal
+// Cloud AI Integration for DealMate
 // This module handles integration with Google Gemini AI
 
 class GeminiAIService {

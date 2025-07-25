@@ -1,7 +1,7 @@
 @echo off
-REM DealPal Development Server Script for Windows
+REM DealMate Development Server Script for Windows
 
-echo Starting DealPal Development Servers...
+echo Starting DealMate Development Servers...
 echo =====================================
 echo.
 
@@ -21,13 +21,13 @@ if not exist ".env" (
 
 REM Start services in new windows
 echo Starting Backend Server...
-start "DealPal Backend" cmd /k "cd backend && cargo run"
+start "DealMate Backend" cmd /k "cd backend && cargo run"
 
 echo Starting AI Service...
-start "DealPal AI Service" cmd /k "cd backend\ai-service && .venv\Scripts\activate.bat && python main.py"
+start "DealMate AI Service" cmd /k "cd backend\ai-service && .venv\Scripts\activate.bat && python main.py"
 
 echo Starting Frontend Server...
-start "DealPal Frontend" cmd /k "cd frontend && npm run dev"
+start "DealMate Frontend" cmd /k "cd frontend && npm run dev"
 
 echo.
 echo All services are starting in separate windows!

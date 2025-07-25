@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-DealPal Platform Testing Script
+DealMate Platform Testing Script
 
-This script tests all major features of the DealPal platform including:
+This script tests all major features of the DealMate platform including:
 - AI-powered product detection
 - StackSmart deal optimization
 - Price comparison service
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class DealPalTester:
-    """Comprehensive testing suite for DealPal platform"""
+    """Comprehensive testing suite for DealMate platform"""
     
     def __init__(self, base_url: str = "http://localhost:8000", ai_url: str = "http://localhost:8001"):
         self.base_url = base_url
@@ -46,7 +46,7 @@ class DealPalTester:
     
     async def run_all_tests(self) -> Dict[str, Any]:
         """Run all platform tests"""
-        logger.info("🚀 Starting DealPal Platform Tests...")
+        logger.info("🚀 Starting DealMate Platform Tests...")
         
         test_suite = [
             ("Backend Health", self.test_backend_health),
@@ -447,7 +447,7 @@ class DealPalTester:
 
 async def main():
     """Main testing function"""
-    parser = argparse.ArgumentParser(description="DealPal Platform Testing Suite")
+    parser = argparse.ArgumentParser(description="DealMate Platform Testing Suite")
     parser.add_argument("--component", help="Test specific component only")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     parser.add_argument("--backend-url", default="http://localhost:8000", help="Backend URL")
@@ -494,7 +494,7 @@ async def main():
             # Print summary
             summary = results["summary"]
             print(f"\n{'='*50}")
-            print(f"DealPal Platform Test Results")
+            print(f"DealMate Platform Test Results")
             print(f"{'='*50}")
             print(f"Total Tests: {summary['total_tests']}")
             print(f"Passed: {summary['passed_tests']}")

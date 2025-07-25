@@ -1,4 +1,4 @@
-# Master Dockerfile for DealPal
+# Master Dockerfile for DealMate
 # Multi-stage build for all services
 # Supports: linux/amd64, linux/arm64
 

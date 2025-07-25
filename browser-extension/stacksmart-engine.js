@@ -1,7 +1,7 @@
 /**
  * StackSmart Engine - AI-Powered Offer Optimization
  * 
- * The core intelligence behind DealPal's offer stacking and optimization.
+ * The core intelligence behind DealMate's offer stacking and optimization.
  * Uses mathematical optimization and AI to find the best combination of deals.
  */
 

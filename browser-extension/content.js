@@ -1,5 +1,5 @@
-// DealPal Content Script - AI-Powered Product & Coupon Detection
-console.log('🎯 DealPal: Content script loaded on', window.location.hostname);
+// DealMate Content Script - AI-Powered Product & Coupon Detection
+console.log('🎯 DealMate: Content script loaded on', window.location.hostname);
 
 // Initialize AI services
 let aiService = null;
@@ -12,15 +12,15 @@ let autoCouponTester = null;
   try {
     // Initialize local AI service
     aiService = new AIProductDetectionService();
-    console.log('🤖 DealPal: Local AI service initialized');
+    console.log('🤖 DealMate: Local AI service initialized');
     
     // Initialize Python AI service
     pythonAIService = new PythonAIService();
-    console.log('🐍 DealPal: Python AI service initialized');
+    console.log('🐍 DealMate: Python AI service initialized');
     
     // Initialize Auto Coupon Tester
     autoCouponTester = new AutoCouponTester();
-    console.log('🎯 DealPal: Auto Coupon Tester initialized');
+    console.log('🎯 DealMate: Auto Coupon Tester initialized');
     
     // Health check for Python AI service
     const health = await pythonAIService.healthCheck();
@@ -31,9 +31,9 @@ let autoCouponTester = null;
       pythonAIService.setEnabled(false);
     }
     
-    console.log('🎯 DealPal: AI-powered detection enabled');
+    console.log('🎯 DealMate: AI-powered detection enabled');
   } catch (error) {
-    console.warn('🎯 DealPal: AI service unavailable, falling back to rule-based detection');
+    console.warn('🎯 DealMate: AI service unavailable, falling back to rule-based detection');
     isAIEnabled = false;
   }
 })();
@@ -103,7 +103,7 @@ function isEcommerceSite() {
   const isEcommerce = isDomainMatch || hasEcommerceElements || hasEcommerceURL;
   
   if (isEcommerce) {
-    console.log('🎯 DealPal: E-commerce detected -', {
+    console.log('🎯 DealMate: E-commerce detected -', {
       domain: isDomainMatch,
       elements: hasEcommerceElements,
       url: hasEcommerceURL,
@@ -218,7 +218,7 @@ function extractProductInfo() {
           };
         }
       } catch (e) {
-        console.debug('🎯 DealPal: Selector error:', selector, e);
+        console.debug('🎯 DealMate: Selector error:', selector, e);
       }
     }
     return null;
@@ -235,7 +235,7 @@ function extractProductInfo() {
           return element.getAttribute('content');
         }
       } catch (e) {
-        console.debug('🎯 DealPal: Image selector error:', selector, e);
+        console.debug('🎯 DealMate: Image selector error:', selector, e);
       }
     }
     return '';
@@ -248,7 +248,7 @@ function extractProductInfo() {
   const discount = getElement(selectors.discount)?.textContent?.trim() || '';
   const image = getImageSrc(selectors.image);
   
-  console.log('🎯 DealPal: Extracted product info:', {
+  console.log('🎯 DealMate: Extracted product info:', {
     title: title.substring(0, 50) + '...',
     price,
     originalPrice,
@@ -273,7 +273,7 @@ function detectCouponsAndOffers() {
   const coupons = [];
   const offers = [];
   
-  console.log('🎯 DealPal: Starting coupon/offer detection...');
+  console.log('🎯 DealMate: Starting coupon/offer detection...');
   
   // Find all elements that might contain coupon/offer information
   DEAL_SELECTORS.forEach(selector => {
@@ -304,12 +304,12 @@ function detectCouponsAndOffers() {
               offers.push(dealInfo);
             }
             
-            console.log('🎯 DealPal: Found deal:', dealInfo);
+            console.log('🎯 DealMate: Found deal:', dealInfo);
           }
         }
       });
     } catch (e) {
-      console.debug('🎯 DealPal: Selector error:', selector, e);
+      console.debug('🎯 DealMate: Selector error:', selector, e);
     }
   });
   
@@ -331,14 +331,14 @@ function detectCouponsAndOffers() {
       });
     }
   } catch (e) {
-    console.debug('🎯 DealPal: Text analysis error:', e);
+    console.debug('🎯 DealMate: Text analysis error:', e);
   }
   
   // Remove duplicates based on text similarity
   const uniqueCoupons = removeDuplicateDeals(coupons);
   const uniqueOffers = removeDuplicateDeals(offers);
   
-  console.log('🎯 DealPal: Detection complete:', {
+  console.log('🎯 DealMate: Detection complete:', {
     coupons: uniqueCoupons.length,
     offers: uniqueOffers.length,
     total: uniqueCoupons.length + uniqueOffers.length
@@ -430,7 +430,7 @@ function injectDealNotification(productData, deals, metadata) {
           font-size: 12px;
         ">🎯</div>
         <div style="flex: 1;">
-          <strong style="font-size: 14px;">DealPal Found Deals!</strong>
+          <strong style="font-size: 14px;">DealMate Found Deals!</strong>
           <div style="font-size: 10px; color: #c084fc; margin-top: 2px;">
             ${detectionBadge} Detection ${confidence}
           </div>
@@ -477,7 +477,7 @@ function injectDealNotification(productData, deals, metadata) {
         text-align: center;
         font-size: 12px;
         margin-top: 8px;
-      ">View All Deals in DealPal</a>
+      ">View All Deals in DealMate</a>
     </div>
   `;
   
@@ -493,11 +493,11 @@ function injectDealNotification(productData, deals, metadata) {
 
 function detectProductPage() {
   if (!isEcommerceSite()) {
-    console.log('🎯 DealPal: Not an e-commerce site');
+    console.log('🎯 DealMate: Not an e-commerce site');
     return;
   }
   
-  console.log('🎯 DealPal: E-commerce site detected, starting AI-powered analysis...');
+  console.log('🎯 DealMate: E-commerce site detected, starting AI-powered analysis...');
   
   try {
     if (isAIEnabled && aiService && aiService.isInitialized) {
@@ -505,18 +505,18 @@ function detectProductPage() {
       detectProductWithAI();
     } else {
       // Fallback to rule-based detection
-      console.log('🎯 DealPal: Using fallback rule-based detection');
+      console.log('🎯 DealMate: Using fallback rule-based detection');
       detectProductLegacy();
     }
   } catch (error) {
-    console.error('🎯 DealPal: Error in product detection:', error);
+    console.error('🎯 DealMate: Error in product detection:', error);
     // Always fallback to legacy detection
     detectProductLegacy();
   }
 }
 
 async function detectProductWithAI() {
-  console.log('🤖 DealPal: Running AI-powered product detection...');
+  console.log('🤖 DealMate: Running AI-powered product detection...');
   
   try {
     // Prepare content for AI analysis
@@ -561,12 +561,12 @@ async function detectProductWithAI() {
 }
 
 function detectProductLegacy() {
-  console.log('🎯 DealPal: Running legacy rule-based detection...');
+  console.log('🎯 DealMate: Running legacy rule-based detection...');
   
   const productData = extractProductInfo();
   const deals = detectCouponsAndOffers();
   
-  console.log('🎯 DealPal: Legacy detection results:', {
+  console.log('🎯 DealMate: Legacy detection results:', {
     product: productData.productName?.substring(0, 50) + '...',
     deals: deals.coupons.length + deals.offers.length
   });
@@ -579,7 +579,7 @@ function detectProductLegacy() {
 }
 
 function handleSuccessfulDetection(productData, deals, metadata) {
-  console.log('🎯 DealPal: Product detection successful!');
+  console.log('🎯 DealMate: Product detection successful!');
   console.log('🎯 Product:', productData);
   console.log('🎯 Deals:', deals);
   console.log('🎯 Metadata:', metadata);
@@ -589,19 +589,19 @@ function handleSuccessfulDetection(productData, deals, metadata) {
   
   if (!productData.productName || productData.productName === 'Unknown Product') {
     validationIssues.push('product_name');
-    console.warn('🎯 DealPal: Could not extract product name properly');
+    console.warn('🎯 DealMate: Could not extract product name properly');
   }
   
   if (!productData.price || productData.price === 'Price not found') {
     validationIssues.push('price');
-    console.warn('🎯 DealPal: Could not extract price properly');
+    console.warn('🎯 DealMate: Could not extract price properly');
   }
   
   // Auto-test coupons if we're on a checkout page and have testable coupons
   if (autoCouponTester && deals.coupons && deals.coupons.length > 0) {
     autoCouponTester.detectCheckoutPage().then(isCheckout => {
       if (isCheckout) {
-        console.log('🎯 DealPal: Checkout detected, starting auto coupon testing...');
+        console.log('🎯 DealMate: Checkout detected, starting auto coupon testing...');
         const testableCoupons = deals.coupons.filter(coupon => 
           coupon.value && coupon.value.length > 2 && coupon.value.length < 50
         ).map(coupon => ({
@@ -654,18 +654,18 @@ function handleSuccessfulDetection(productData, deals, metadata) {
     data: enhancedData
   }, (response) => {
     if (chrome.runtime.lastError) {
-      console.error("🎯 DealPal Error:", chrome.runtime.lastError.message);
+      console.error("🎯 DealMate Error:", chrome.runtime.lastError.message);
       showErrorNotification("Extension connection error");
       // Store data locally as fallback
       try {
         localStorage.setItem('dealpal_last_detection', JSON.stringify(enhancedData));
       } catch (e) {
-        console.warn('🎯 DealPal: Could not store detection data locally');
+        console.warn('🎯 DealMate: Could not store detection data locally');
       }
     } else if (response) {
-      console.log("🎯 DealPal: Data sent successfully", response);
+      console.log("🎯 DealMate: Data sent successfully", response);
       if (response.warning) {
-        console.warn("🎯 DealPal Warning:", response.warning);
+        console.warn("🎯 DealMate Warning:", response.warning);
       }
       if (response.status === 'success') {
         showSuccessNotification(productData, deals, metadata);
@@ -675,7 +675,7 @@ function handleSuccessfulDetection(productData, deals, metadata) {
         } catch (e) {}
       }
     } else {
-      console.log("🎯 DealPal: No response from background script");
+      console.log("🎯 DealMate: No response from background script");
       showInfoNotification("Product detected, but backend unavailable");
     }
   });
@@ -705,7 +705,7 @@ function handleSuccessfulDetection(productData, deals, metadata) {
       detectionMethod: metadata.source,
       validationIssues: validationIssues.length
     };
-    console.log('📊 DealPal Analytics:', analyticsData);
+    console.log('📊 DealMate Analytics:', analyticsData);
   } catch (e) {
     console.warn('📊 Analytics tracking failed:', e);
   }
@@ -719,28 +719,28 @@ function showSuccessNotification(productData, deals, metadata) {
     `${detectionType} found ${dealCount} deals for ${productData.productName.substring(0, 30)}...` :
     `${detectionType} detected: ${productData.productName.substring(0, 30)}...`;
     
-  console.log(`🎯 DealPal: ${message}`);
+  console.log(`🎯 DealMate: ${message}`);
 }
 
 function showInfoNotification(message) {
-  console.log(`🎯 DealPal: ${message}`);
+  console.log(`🎯 DealMate: ${message}`);
 }
 
 function showErrorNotification(message) {
-  console.error(`🎯 DealPal: ${message}`);
+  console.error(`🎯 DealMate: ${message}`);
 }
 
 // Enhanced detection with AI and multiple triggers
 function initDealPal() {
-  console.log('🎯 DealPal: Initializing with enhanced AI capabilities...');
+  console.log('🎯 DealMate: Initializing with enhanced AI capabilities...');
   
   // Initialize AI service
   if (isAIEnabled) {
     try {
       aiService = new AIProductDetectionService();
-      console.log('🤖 DealPal: AI service initialized');
+      console.log('🤖 DealMate: AI service initialized');
     } catch (error) {
-      console.warn('🤖 DealPal: AI service failed to initialize, using fallback:', error);
+      console.warn('🤖 DealMate: AI service failed to initialize, using fallback:', error);
       isAIEnabled = false;
     }
   }
@@ -795,7 +795,7 @@ function initDealPal() {
     if (window.location.href !== currentUrl) {
       const oldUrl = currentUrl;
       currentUrl = window.location.href;
-      console.log('🎯 DealPal: URL changed from', oldUrl.substring(0, 50), 'to', currentUrl.substring(0, 50));
+      console.log('🎯 DealMate: URL changed from', oldUrl.substring(0, 50), 'to', currentUrl.substring(0, 50));
       
       // Clear any existing notifications
       const existing = document.getElementById('dealpal-notification');
@@ -811,7 +811,7 @@ function initDealPal() {
     setInterval(() => {
       const metrics = aiService.getMetrics();
       if (metrics.totalDetections > 0) {
-        console.log('🤖 DealPal AI Metrics:', {
+        console.log('🤖 DealMate AI Metrics:', {
           detections: metrics.totalDetections,
           accuracy: metrics.accuracy,
           avgProcessingTime: metrics.avgProcessingTime
@@ -828,12 +828,12 @@ function initDealPal() {
   
   // Enhanced error handling
   window.addEventListener('error', (e) => {
-    if (e.error && e.error.message && e.error.message.includes('DealPal')) {
-      console.error('🎯 DealPal Error:', e.error);
+    if (e.error && e.error.message && e.error.message.includes('DealMate')) {
+      console.error('🎯 DealMate Error:', e.error);
       // Attempt to reinitialize if critical error
       if (e.error.message.includes('AI service')) {
         isAIEnabled = false;
-        console.log('🎯 DealPal: Falling back to rule-based detection');
+        console.log('🎯 DealMate: Falling back to rule-based detection');
       }
     }
   });
@@ -842,7 +842,7 @@ function initDealPal() {
 // Message listener for popup communication
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'rescan') {
-    console.log('🎯 DealPal: Popup requested rescan');
+    console.log('🎯 DealMate: Popup requested rescan');
     detectProductPage();
     sendResponse({ success: true });
   }
@@ -851,7 +851,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Enhanced error handling for extension messaging
 window.addEventListener('error', (e) => {
-  console.error('🎯 DealPal Content Script Error:', e.error);
+  console.error('🎯 DealMate Content Script Error:', e.error);
 });
 
 // Initialize when ready
@@ -861,4 +861,4 @@ if (document.readyState === 'loading') {
   initDealPal();
 }
 
-console.log('🎯 DealPal: Content script fully loaded and ready');
+console.log('🎯 DealMate: Content script fully loaded and ready');

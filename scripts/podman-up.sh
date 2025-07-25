@@ -2,7 +2,7 @@
 
 set -e
 
-echo "🚀 Starting DealPal with Podman..."
+echo "🚀 Starting DealMate with Podman..."
 
 # Check if podman-compose is installed
 if ! command -v podman-compose &> /dev/null
@@ -48,7 +48,7 @@ echo "📊 Service Status:"
 podman-compose -f docker-compose.yml ps
 
 echo ""
-echo "🎉 DealPal is running!"
+echo "🎉 DealMate is running!"
 echo "📱 Frontend: http://localhost:9002"
 echo "🔧 Backend API: http://localhost:8000"
 echo "🤖 AI Service: http://localhost:8001"

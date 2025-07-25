@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "📊 DealPal Kafka Monitoring Dashboard"
+echo "📊 DealMate Kafka Monitoring Dashboard"
 echo "======================================"
 
 # Function to get topic info

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Build script for DealPal Browser Extension
+ * Build script for DealMate Browser Extension
  * Injects environment variables from .env file into the extension config
  */
 

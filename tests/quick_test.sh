@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# DealPal Quick Test Script
-# This script provides a quick way to test the DealPal platform
+# DealMate Quick Test Script
+# This script provides a quick way to test the DealMate platform
 
 set -e
 
@@ -17,7 +17,7 @@ BACKEND_URL="http://localhost:8000"
 AI_SERVICE_URL="http://localhost:8001"
 FRONTEND_URL="http://localhost:3000"
 
-echo -e "${BLUE}🚀 DealPal Platform Quick Test${NC}"
+echo -e "${BLUE}🚀 DealMate Platform Quick Test${NC}"
 echo "=================================="
 
 # Function to check if a service is running

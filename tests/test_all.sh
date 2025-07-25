@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# DealPal Complete Test Suite
+# DealMate Complete Test Suite
 # Tests all components: Backend, Frontend, AI Service, and Browser Extension
 
 set -e
@@ -18,7 +18,7 @@ BACKEND_URL="http://localhost:8000"
 AI_SERVICE_URL="http://localhost:8001"
 FRONTEND_URL="http://localhost:3000"
 
-echo -e "${BLUE}🧪 DealPal Complete Test Suite${NC}"
+echo -e "${BLUE}🧪 DealMate Complete Test Suite${NC}"
 echo "========================================"
 
 # Function to check if a service is running
@@ -150,7 +150,7 @@ echo -e "\n${BLUE}📊 Test Results Summary${NC}"
 echo "========================================"
 if [ "$all_tests_passed" = true ] && [ "$api_tests_passed" = true ]; then
     echo -e "${GREEN}🎉 ALL TESTS PASSED!${NC}"
-    echo -e "${GREEN}✅ DealPal platform is ready for use${NC}"
+    echo -e "${GREEN}✅ DealMate platform is ready for use${NC}"
     exit 0
 else
     echo -e "${RED}❌ SOME TESTS FAILED${NC}"

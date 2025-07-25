@@ -10,9 +10,9 @@ interface AppLoadingScreenProps {
   words?: string[];
 }
 
-// Reusable full-screen loading component with DealPal branding
+// Reusable full-screen loading component with DealMate branding
 export function AppLoadingScreen({
-  title = "DealPal",
+  title = "DealMate",
   size = "lg",
   loadingText,
   words

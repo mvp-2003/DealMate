@@ -1,10 +1,10 @@
-# DealPal Testing Guide
+# DealMate Testing Guide
 
-This guide provides comprehensive testing procedures for all DealPal features and components.
+This guide provides comprehensive testing procedures for all DealMate features and components.
 
 ## Testing Overview
 
-DealPal uses a multi-layered testing approach:
+DealMate uses a multi-layered testing approach:
 
 - **Unit Tests**: Individual component and function testing
 - **Integration Tests**: Service-to-service communication testing
@@ -144,7 +144,7 @@ curl "http://localhost:3000/api/comparison/suggestions?q=iph"
 Import the API collection:
 ```json
 {
-  "name": "DealPal Comparison API",
+  "name": "DealMate Comparison API",
   "requests": [
     {
       "name": "Search Products",
@@ -565,7 +565,7 @@ lighthouse http://localhost:3000 --output html --output-path=./reports/lighthous
 
 ---
 
-This testing guide ensures comprehensive coverage of all DealPal features and helps maintain high quality and reliability across the platform.
+This testing guide ensures comprehensive coverage of all DealMate features and helps maintain high quality and reliability across the platform.
 
 **Last Updated**: July 26, 2025  
 **Next Review**: August 26, 2025

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# DealPal Build Script - Unix/Linux/macOS
-# Builds all components of the DealPal platform
+# DealMate Build Script - Unix/Linux/macOS
+# Builds all components of the DealMate platform
 
 set -e
 
@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🔨 DealPal Build Script${NC}"
+echo -e "${BLUE}🔨 DealMate Build Script${NC}"
 echo "========================="
 echo ""
 
@@ -36,9 +36,9 @@ BUILD_DEV=$(python3 -c "import json; print(json.load(open('feature-toggles.json'
 echo "BUILD_DEV flag is set to: $BUILD_DEV"
 
 if [ "$BUILD_DEV" = "True" ]; then
-    echo -e "${BLUE}🚀 Building DealPal for Development${NC}"
+    echo -e "${BLUE}🚀 Building DealMate for Development${NC}"
 else
-    echo -e "${BLUE}🚀 Building DealPal for Production${NC}"
+    echo -e "${BLUE}🚀 Building DealMate for Production${NC}"
 fi
 
 # Frontend Build

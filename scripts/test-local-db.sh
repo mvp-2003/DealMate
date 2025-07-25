@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Testing local PostgreSQL setup for DealPal..."
+echo "Testing local PostgreSQL setup for DealMate..."
 echo "============================================"
 
 # Load environment variables from .env file

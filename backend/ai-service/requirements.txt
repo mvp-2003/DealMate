@@ -1,4 +1,4 @@
-# DealPal Python AI Service Dependencies - Gemini Only
+# DealMate Python AI Service Dependencies - Gemini Only
 
 # Web framework
 fastapi==0.104.1

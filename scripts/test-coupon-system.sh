@@ -3,7 +3,7 @@
 # Test script for the coupon system
 set -e
 
-echo "🎯 Testing DealPal Coupon System..."
+echo "🎯 Testing DealMate Coupon System..."
 
 # Start the backend in the background
 cd "$(dirname "$0")/../backend"

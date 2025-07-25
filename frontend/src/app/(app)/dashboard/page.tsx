@@ -48,7 +48,7 @@ export default function DashboardPage() {
         {/* Welcome Section - Mobile Optimized */}
         <div className="glass-card p-3 xs:p-4 sm:p-6 mb-4 xs:mb-6">
           <h1 className="text-xl xs:text-2xl sm:text-3xl lg:text-4xl font-headline font-bold tracking-tight bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-            Welcome to DealPal
+            Welcome to DealMate
           </h1>
           <p className="text-sm xs:text-base text-muted-foreground/80">
             Your personalized deals dashboard

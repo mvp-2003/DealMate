@@ -23,7 +23,7 @@ export async function explainDealRank(input: ExplainDealRankInput): Promise<Expl
   return explainDealRankFlow(input);
 }
 
-const promptTemplate = `You are DealPal's AI Deal Explainer. A user wants a clear, concise, and friendly explanation for why a specific deal for "{{offer.productName}}" is ranked highly.
+const promptTemplate = `You are DealMate's AI Deal Explainer. A user wants a clear, concise, and friendly explanation for why a specific deal for "{{offer.productName}}" is ranked highly.
 The deal's attractiveness is based on its "Composite Score" ({{offer.compositeScore}}), which considers direct savings, cashback, card bonuses, any future perks unlocked, and alignment with user's financial goals.
 The user is NOT asking for general deal advice, but specifically about THIS deal.
 
@@ -43,7 +43,7 @@ Focus on:
 3. If and how this deal aligns with the user's active reward goals.
 4. Why the overall "Composite Score" ({{offer.compositeScore}}) is good.
 
-Be positive and reinforce the value DealPal provides.`;
+Be positive and reinforce the value DealMate provides.`;
 
 const prompt = ai.definePrompt({
   name: 'explainDealRankPrompt',

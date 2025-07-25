@@ -1,4 +1,4 @@
-// DealPal AI-Powered Product Detection Service - Enhanced with Real AI
+// DealMate AI-Powered Product Detection Service - Enhanced with Real AI
 class AIProductDetectionService {
   constructor() {
     this.isInitialized = false;
@@ -16,7 +16,7 @@ class AIProductDetectionService {
     this.stackSmartEngine = null;
     this.priceIntelligence = null;
     
-    console.log('🤖 DealPal AI Service: Initializing Enhanced AI System...');
+    console.log('🤖 DealMate AI Service: Initializing Enhanced AI System...');
     this.initialize();
   }
 
@@ -35,9 +35,9 @@ class AIProductDetectionService {
       await this.loadCache();
       
       this.isInitialized = true;
-      console.log('🤖 DealPal AI Service: Enhanced system ready with StackSmart & Price Intelligence');
+      console.log('🤖 DealMate AI Service: Enhanced system ready with StackSmart & Price Intelligence');
     } catch (error) {
-      console.error('🤖 DealPal AI Service: Initialization failed:', error);
+      console.error('🤖 DealMate AI Service: Initialization failed:', error);
       this.isInitialized = false;
     }
   }
@@ -587,7 +587,7 @@ class AIProductDetectionService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-DealPal-Source': 'browser-extension'
+          'X-DealMate-Source': 'browser-extension'
         },
         body: JSON.stringify(enhancementData),
         timeout: 10000

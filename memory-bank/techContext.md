@@ -1,4 +1,4 @@
-# DealPal Technical Context
+# DealMate Technical Context
 
 ## Technology Stack Overview
 

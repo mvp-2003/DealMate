@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DealPal AI Enhancement Test Suite - Integration Tests
+DealMate AI Enhancement Test Suite - Integration Tests
 Simple integration tests for the AI service endpoints
 """
 
@@ -190,7 +190,7 @@ class DealPalIntegrationTest:
 
     async def run_all_tests(self):
         """Run all integration tests"""
-        print("🧪 DealPal AI Service Integration Tests")
+        print("🧪 DealMate AI Service Integration Tests")
         print("=" * 50)
         
         tests = [

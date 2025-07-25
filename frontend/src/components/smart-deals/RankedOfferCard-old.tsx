@@ -164,7 +164,7 @@ export default function RankedOfferCard({ offer }: RankedOfferCardProps) {
             <DialogHeader>
               <DialogTitle className="text-xl text-primary">AI Deal Rank Explanation</DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                Here's why DealPal ranked this deal for {offer.productName}:
+                Here's why DealMate ranked this deal for {offer.productName}:
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[60vh] pr-2">

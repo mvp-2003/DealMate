@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# DealPal Docker Setup Script
-# This script sets up the development environment for DealPal using Docker/Podman
+# DealMate Docker Setup Script
+# This script sets up the development environment for DealMate using Docker/Podman
 
 set -e
 
@@ -108,7 +108,7 @@ check_requirements() {
     fi
     
     if (( $(echo "$total_mem < 4" | bc -l) )); then
-        print_error "System has less than 4GB RAM. DealPal requires at least 4GB."
+        print_error "System has less than 4GB RAM. DealMate requires at least 4GB."
         exit 1
     else
         print_success "System has ${total_mem}GB RAM"
@@ -117,7 +117,7 @@ check_requirements() {
     # Check available disk space
     available_space=$(df -BG . | awk 'NR==2 {print $4}' | sed 's/G//')
     if (( available_space < 10 )); then
-        print_error "Less than 10GB disk space available. DealPal requires at least 10GB."
+        print_error "Less than 10GB disk space available. DealMate requires at least 10GB."
         exit 1
     else
         print_success "Available disk space: ${available_space}GB"
@@ -220,7 +220,7 @@ create_directories() {
 # Main setup
 main() {
     echo "======================================"
-    echo "DealPal Docker Setup"
+    echo "DealMate Docker Setup"
     echo "======================================"
     echo
     

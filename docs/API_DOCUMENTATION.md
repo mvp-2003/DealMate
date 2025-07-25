@@ -1,6 +1,6 @@
-# DealPal API Documentation
+# DealMate API Documentation
 
-This document provides comprehensive documentation for all DealPal APIs across our microservices architecture.
+This document provides comprehensive documentation for all DealMate APIs across our microservices architecture.
 
 ## Base URLs
 

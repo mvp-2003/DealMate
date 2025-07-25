@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# DealPal Master Run Script
+# DealMate Master Run Script
 # This is the ONE SCRIPT to run everything - build, start, test, and monitor
 # Usage: ./run_prod.sh
 
@@ -22,7 +22,7 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 DealPal Master Application Runner (Production Mode)${NC}"
+echo -e "${BLUE}🚀 DealMate Master Application Runner (Production Mode)${NC}"
 echo "====================================="
 echo -e "${CYAN}This script will:${NC}"
 echo "1. 🔧 Build all components for production"
@@ -209,9 +209,9 @@ echo "=========================="
 echo ""
 
 # Step 5: Keep running and show info
-echo -e "${BLUE}🎯 Step 5: DealPal Platform Running${NC}"
+echo -e "${BLUE}🎯 Step 5: DealMate Platform Running${NC}"
 echo "==================================="
-echo -e "${GREEN}🎉 DealPal platform is now fully operational!${NC}"
+echo -e "${GREEN}🎉 DealMate platform is now fully operational!${NC}"
 echo ""
 echo -e "${CYAN}📱 Application URLs:${NC}"
 echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
@@ -243,10 +243,10 @@ echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
 # Cleanup function
 cleanup() {
     echo ""
-    echo -e "${YELLOW}🛑 Shutting down DealPal platform...${NC}"
+    echo -e "${YELLOW}🛑 Shutting down DealMate platform...${NC}"
     kill $AI_SERVICE_PID $AUTH_SERVICE_PID $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
     echo -e "${GREEN}✅ All services stopped${NC}"
-    echo -e "${BLUE}👋 Thank you for using DealPal!${NC}"
+    echo -e "${BLUE}👋 Thank you for using DealMate!${NC}"
     exit 0
 }
 

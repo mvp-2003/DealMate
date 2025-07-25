@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Environment Validation Script for DealPal
+Environment Validation Script for DealMate
 Validates Railway and Gemini configuration
 """
 
@@ -82,7 +82,7 @@ async def test_railway_database(db_url: str) -> bool:
         return False
 
 async def main():
-    print("🔍 DealPal Environment Validation")
+    print("🔍 DealMate Environment Validation")
     print("=" * 40)
     
     all_good = True
@@ -155,7 +155,7 @@ async def main():
     print("\n" + "=" * 40)
     if all_good:
         print("✅ All validations passed!")
-        print("🚀 DealPal is ready for deployment")
+        print("🚀 DealMate is ready for deployment")
     else:
         print("❌ Some validations failed")
         print("🔧 Please fix the issues above")

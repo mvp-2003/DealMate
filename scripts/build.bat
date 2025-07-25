@@ -1,7 +1,7 @@
 @echo off
-REM DealPal Build Script for Windows
+REM DealMate Build Script for Windows
 
-echo Building DealPal for Windows...
+echo Building DealMate for Windows...
 echo ==============================
 echo.
 
@@ -25,9 +25,9 @@ for /f "delims=" %%i in ('python -c "import json; print(json.load(open('feature-
 echo BUILD_DEV flag is set to: %BUILD_DEV%
 
 if "%BUILD_DEV%"=="True" (
-    echo Building DealPal for Development...
+    echo Building DealMate for Development...
 ) else (
-    echo Building DealPal for Production...
+    echo Building DealMate for Production...
 )
 
 REM Frontend Build

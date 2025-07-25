@@ -1,6 +1,6 @@
-# DealPal Documentation Index
+# DealMate Documentation Index
 
-Welcome to the DealPal documentation! This index helps you find the right documentation for your needs.
+Welcome to the DealMate documentation! This index helps you find the right documentation for your needs.
 
 ## 🚀 Getting Started
 
@@ -155,7 +155,7 @@ curl http://localhost:8000/health
 
 ---
 
-**Welcome to DealPal!** 🎉
+**Welcome to DealMate!** 🎉
 
 Start with [NEW_DEVS.md](NEW_DEVS.md) if you're new to the project, or jump to the specific documentation you need using the links above.
 

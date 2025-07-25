@@ -1,4 +1,4 @@
-# DealPal: Next-Generation Product Deals & Savings Platform
+# DealMate: Next-Generation Product Deals & Savings Platform
 ## Complete Feature Specification & Technical Architecture
 
 **Last Updated**: July 26, 2025  
@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-DealPal is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, **real-time product comparison**, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension, ensuring users can access powerful savings features wherever they shop.
+DealMate is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, **real-time product comparison**, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension, ensuring users can access powerful savings features wherever they shop.
 
 ### Core Value Proposition
 - **Intelligent Product Comparison**: Real-time price comparison across multiple vendors with advanced filtering
@@ -170,7 +170,7 @@ DealPal is a comprehensive, AI-powered savings platform designed to help users d
 ## 4. 🔄 PLANNED FEATURES
 
 ### 4.1 Real-Time Event Streaming Engine
-**Purpose**: Process and distribute real-time events across the DealPal ecosystem
+**Purpose**: Process and distribute real-time events across the DealMate ecosystem
 **Status**: 🔄 Architecture Designed, Implementation Pending
 
 #### Event Types:
@@ -364,7 +364,7 @@ workbox.routing.registerRoute(
   "validThrough": "2025-07-21",
   "seller": {
     "@type": "Organization",
-    "name": "DealPal"
+    "name": "DealMate"
   }
 }
 ```
@@ -785,4 +785,4 @@ For local development, the project uses a `.env` file in the root directory. For
 
 ---
 
-This comprehensive specification provides a strategic foundation for building DealPal as a next-generation savings platform that combines cutting-edge AI technology with practical user value to revolutionize how consumers discover and maximize savings opportunities.
+This comprehensive specification provides a strategic foundation for building DealMate as a next-generation savings platform that combines cutting-edge AI technology with practical user value to revolutionize how consumers discover and maximize savings opportunities.

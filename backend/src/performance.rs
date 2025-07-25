@@ -63,6 +63,6 @@ pub fn create_compression_layer() -> CompressionLayer {
 pub fn create_performance_headers_layer() -> SetResponseHeaderLayer<HeaderValue> {
     SetResponseHeaderLayer::overriding(
         header::HeaderName::from_static("x-powered-by"),
-        HeaderValue::from_static("DealPal-Rust"),
+        HeaderValue::from_static("DealMate-Rust"),
     )
 }

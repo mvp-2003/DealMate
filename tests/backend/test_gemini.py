@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple test for DealPal Gemini AI integration
+Simple test for DealMate Gemini AI integration
 """
 
 import sys
@@ -23,7 +23,7 @@ except Exception as e:
     print(f"❌ Gemini configuration failed: {e}")
 
 # Summary
-print("\n🎉 DealPal AI Service Setup Complete!")
+print("\n🎉 DealMate AI Service Setup Complete!")
 print("\n📋 Summary:")
 print("✅ Removed PyTorch and heavy ML dependencies")
 print("✅ Simplified to Gemini-only AI approach") 
@@ -37,4 +37,4 @@ print("2. All services will use the master .env file for configuration")
 print("3. Test the browser extension on e-commerce sites")
 print("4. Optionally run the Python AI service for advanced features")
 
-print("\n🚀 All AI tasks in DealPal now use only Google Gemini!")
+print("\n🚀 All AI tasks in DealMate now use only Google Gemini!")

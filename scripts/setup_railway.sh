@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# DealPal Railway Setup Script
+# DealMate Railway Setup Script
 # Sets up environment variables for Railway deployment
 
 set -e
 
-echo "🚂 DealPal Railway Setup"
+echo "🚂 DealMate Railway Setup"
 echo "======================="
 
 # Check if Railway CLI is installed
@@ -68,7 +68,7 @@ echo "🌐 Service URLs:"
 railway status
 
 echo ""
-echo "🎉 DealPal is now deployed on Railway!"
+echo "🎉 DealMate is now deployed on Railway!"
 echo ""
 echo "Next steps:"
 echo "1. Test your deployed services"

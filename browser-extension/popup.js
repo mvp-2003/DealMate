@@ -1,5 +1,5 @@
-// DealPal Popup Script - Enhanced functionality
-console.log('🎯 DealPal Popup: Script loaded');
+// DealMate Popup Script - Enhanced functionality
+console.log('🎯 DealMate Popup: Script loaded');
 
 // Import the animated loader
 // Note: In a real extension, this would be loaded via manifest.json
@@ -63,7 +63,7 @@ function showDeals(deals) {
 function loadCurrentProduct() {
   chrome.storage.local.get(['currentProduct', 'lastUpdate'], (result) => {
     if (chrome.runtime.lastError) {
-      console.error('🎯 DealPal Popup: Storage error:', chrome.runtime.lastError);
+      console.error('🎯 DealMate Popup: Storage error:', chrome.runtime.lastError);
       updateStatus('Error loading data', 'error');
       return;
     }
@@ -116,7 +116,7 @@ function refreshScan() {
   // Send message to content script to re-scan
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     if (chrome.runtime.lastError) {
-      console.error('🎯 DealPal Popup: Tab query error:', chrome.runtime.lastError);
+      console.error('🎯 DealMate Popup: Tab query error:', chrome.runtime.lastError);
       updateStatus('Unable to access current tab', 'error');
       return;
     }
@@ -124,10 +124,10 @@ function refreshScan() {
     if (tabs[0]) {
       chrome.tabs.sendMessage(tabs[0].id, {action: 'rescan'}, (response) => {
         if (chrome.runtime.lastError) {
-          console.error('🎯 DealPal Popup: Message error:', chrome.runtime.lastError);
+          console.error('🎯 DealMate Popup: Message error:', chrome.runtime.lastError);
           updateStatus('Unable to scan this page', 'error');
         } else {
-          console.log('🎯 DealPal Popup: Rescan requested successfully');
+          console.log('🎯 DealMate Popup: Rescan requested successfully');
           setTimeout(loadCurrentProduct, 2000);
         }
       });
@@ -137,7 +137,7 @@ function refreshScan() {
 
 // Initialize popup when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🎯 DealPal Popup: DOM loaded');
+  console.log('🎯 DealMate Popup: DOM loaded');
   
   // Event listeners
   const refreshButton = document.getElementById('refresh-scan');
@@ -162,15 +162,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // Auto-refresh status
   setTimeout(() => {
     if (!currentProduct) {
-      updateStatus('DealPal is ready! Visit any e-commerce site.');
+      updateStatus('DealMate is ready! Visit any e-commerce site.');
     }
   }, 3000);
 });
 
 // Handle popup errors
 window.addEventListener('error', (e) => {
-  console.error('🎯 DealPal Popup Error:', e.error);
+  console.error('🎯 DealMate Popup Error:', e.error);
   updateStatus('Popup error occurred', 'error');
 });
 
-console.log('🎯 DealPal Popup: Script ready');
+console.log('🎯 DealMate Popup: Script ready');

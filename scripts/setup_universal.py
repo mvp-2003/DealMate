@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DealPal Universal Setup Script
+DealMate Universal Setup Script
 Works on Windows, macOS, and Linux
 """
 
@@ -48,7 +48,7 @@ def print_colored(message, color=Colors.RESET):
 
 def print_header():
     """Print setup header"""
-    print_colored("\n🚀 DealPal Development Environment Setup", Colors.BLUE)
+    print_colored("\n🚀 DealMate Development Environment Setup", Colors.BLUE)
     print_colored("=" * 50, Colors.BLUE)
     print(f"Platform: {platform.system()} {platform.machine()}")
     print(f"Python: {sys.version.split()[0]}")
@@ -319,7 +319,7 @@ def create_env_file():
         print_colored("✅ .env file already exists", Colors.GREEN)
         return True
     
-    env_template = """# DealPal Environment Configuration
+    env_template = """# DealMate Environment Configuration
 # Copy this to .env and fill in your values
 
 # Gemini AI API Key (Required)

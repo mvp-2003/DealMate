@@ -31,7 +31,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .allow_headers(Any);
 
     let app = Router::new()
-        .route("/", get(|| async { "DealPal Auth Server" }))
+        .route("/", get(|| async { "DealMate Auth Server" }))
         .route("/auth/login", get(login_handler))
         .route("/auth/signup", get(signup_handler))
         .route("/auth/callback", get(callback_handler))

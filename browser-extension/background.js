@@ -1,5 +1,5 @@
-// DealPal Background Script - Enhanced Data Processing
-console.log('🎯 DealPal: Background script loaded');
+// DealMate Background Script - Enhanced Data Processing
+console.log('🎯 DealMate: Background script loaded');
 
 const API_BASE_URL = 'http://localhost:8000';
 const FRONTEND_URL = 'http://localhost:9002';
@@ -20,10 +20,10 @@ function setupContextMenus() {
   try {
     // Remove existing menus first
     chrome.contextMenus.removeAll(() => {
-      // Create DealPal context menus
+      // Create DealMate context menus
       chrome.contextMenus.create({
         id: 'dealpal-main',
-        title: 'DealPal',
+        title: 'DealMate',
         contexts: ['selection', 'link', 'page']
       });
       
@@ -56,16 +56,16 @@ function setupContextMenus() {
       });
       
       contextMenusCreated = true;
-      console.log('🎯 DealPal: Context menus created');
+      console.log('🎯 DealMate: Context menus created');
     });
   } catch (error) {
-    console.error('🎯 DealPal: Context menu error:', error);
+    console.error('🎯 DealMate: Context menu error:', error);
   }
 }
 
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  console.log('🎯 DealPal: Context menu clicked:', info.menuItemId);
+  console.log('🎯 DealMate: Context menu clicked:', info.menuItemId);
   
   // Send message to content script to handle the action
   chrome.tabs.sendMessage(tab.id, {
@@ -107,7 +107,7 @@ async function handleProductDetection(data, sender, sendResponse) {
     
     // Try to send data to backend API with proper error handling
     try {
-      console.log('🎯 DealPal: Sending data to backend API...');
+      console.log('🎯 DealMate: Sending data to backend API...');
       
       const requestBody = {
         product: {
@@ -134,7 +134,7 @@ async function handleProductDetection(data, sender, sendResponse) {
         timestamp: timestamp
       };
       
-      console.log('🎯 DealPal: Request body:', JSON.stringify(requestBody, null, 2));
+      console.log('🎯 DealMate: Request body:', JSON.stringify(requestBody, null, 2));
       
       const response = await fetch(`${API_BASE_URL}/api/deals`, {
         method: 'POST',
@@ -145,11 +145,11 @@ async function handleProductDetection(data, sender, sendResponse) {
         body: JSON.stringify(requestBody)
       });
       
-      console.log('🎯 DealPal: API response status:', response.status);
+      console.log('🎯 DealMate: API response status:', response.status);
       
       if (response.ok) {
         const apiResponse = await response.json();
-        console.log('🎯 DealPal: Data sent to backend successfully', apiResponse);
+        console.log('🎯 DealMate: Data sent to backend successfully', apiResponse);
         
         sendResponse({ 
           status: "success", 
@@ -158,11 +158,11 @@ async function handleProductDetection(data, sender, sendResponse) {
         });
       } else {
         const errorText = await response.text();
-        console.error('🎯 DealPal: API error response:', errorText);
+        console.error('🎯 DealMate: API error response:', errorText);
         throw new Error(`API response: ${response.status} - ${errorText}`);
       }
     } catch (apiError) {
-      console.warn('🎯 DealPal: Backend API error:', apiError.message);
+      console.warn('🎯 DealMate: Backend API error:', apiError.message);
       
       // Even if API fails, we still detected deals successfully
       sendResponse({ 
@@ -185,12 +185,12 @@ async function handleProductDetection(data, sender, sendResponse) {
           tabId: sender.tab.id
         });
       } catch (badgeError) {
-        console.warn('🎯 DealPal: Badge update failed:', badgeError);
+        console.warn('🎯 DealMate: Badge update failed:', badgeError);
       }
     }
     
   } catch (error) {
-    console.error('🎯 DealPal Background Error:', error);
+    console.error('🎯 DealMate Background Error:', error);
     sendResponse({ 
       status: "error", 
       error: error.message 
@@ -207,12 +207,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // Handle extension icon click
 chrome.action.onClicked.addListener((tab) => {
-  // Open DealPal dashboard
+  // Open DealMate dashboard
   chrome.tabs.create({ url: `${FRONTEND_URL}/smart-deals` });
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log('🎯 DealPal Background: Received message', request.action);
+  console.log('🎯 DealMate Background: Received message', request.action);
   
   if (request.action === "productDetected") {
     handleProductDetection(request.data, sender, sendResponse);
@@ -249,4 +249,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-console.log('🎯 DealPal: Background script ready');
+console.log('🎯 DealMate: Background script ready');

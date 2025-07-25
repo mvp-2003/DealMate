@@ -247,7 +247,7 @@ export default function WalletPage() {
       </Tabs>
       
       <p className="text-xs text-center text-muted-foreground/60 pt-4">
-        DealPal securely stores only card metadata (like bank and type) to personalize deals. Full card numbers are never stored.
+        DealMate securely stores only card metadata (like bank and type) to personalize deals. Full card numbers are never stored.
       </p>
         </div>
       </div>

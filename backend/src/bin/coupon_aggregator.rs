@@ -10,7 +10,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pool = db::create_pool().await?;
     let aggregator = CouponAggregator::new(pool);
     
-    println!("🎯 DealPal Coupon Aggregator starting...");
+    println!("🎯 DealMate Coupon Aggregator starting...");
     
     loop {
         println!("🔄 Starting coupon aggregation cycle...");

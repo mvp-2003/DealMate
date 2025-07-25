@@ -479,4 +479,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-console.log('🎯 DealPal: Enhanced Credit Card Integration loaded');
+console.log('🎯 DealMate: Enhanced Credit Card Integration loaded');

@@ -138,7 +138,7 @@ export default function ClubMemberships() {
   const clubMemberships: ClubMembership[] = [
     {
       id: 'dealpal_club',
-      name: 'DealPal Club',
+      name: 'DealMate Club',
       type: 'free',
       icon: <Trophy className="h-6 w-6" />,
       color: 'from-blue-500 to-purple-600',

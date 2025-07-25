@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# DealPal Development Environment Setup Script - Unix/Linux/macOS
+# DealMate Development Environment Setup Script - Unix/Linux/macOS
 # This script wraps the universal Python setup script
 
 set -e
@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 DealPal Development Environment Setup${NC}"
+echo -e "${BLUE}🚀 DealMate Development Environment Setup${NC}"
 echo "=============================================="
 echo ""
 

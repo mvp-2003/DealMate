@@ -1,5 +1,5 @@
 """
-Kafka event producer for DealPal AI Service
+Kafka event producer for DealMate AI Service
 Handles publishing AI-related events to Kafka topics
 """
 

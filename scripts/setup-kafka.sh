@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "🚀 Setting up Apache Kafka for DealPal..."
+echo "🚀 Setting up Apache Kafka for DealMate..."
 
-# Create Kafka topics for DealPal
+# Create Kafka topics for DealMate
 echo "📋 Creating Kafka topics..."
 
 # Wait for Kafka to be ready

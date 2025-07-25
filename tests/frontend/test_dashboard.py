@@ -7,8 +7,8 @@ def test_dashboard_loads_and_has_correct_title(driver):
     Tests if the dashboard page loads correctly and has the expected title.
     """
     driver.get("http://localhost:3000/dashboard")
-    WebDriverWait(driver, 10).until(EC.title_contains("DealPal"))
-    assert "DealPal" in driver.title
+    WebDriverWait(driver, 10).until(EC.title_contains("DealMate"))
+    assert "DealMate" in driver.title
 
 def test_dashboard_displays_header_and_chart(driver):
     """

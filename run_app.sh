@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# DealPal Master Run Script
+# DealMate Master Run Script
 # This is the ONE SCRIPT to run everything - build, start, test, and monitor
 # Usage: ./run_app.sh [--docker|--containerized|-c|--native|-n]
 
@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --help|-h)
-            echo "DealPal Application Runner"
+            echo "DealMate Application Runner"
             echo ""
             echo "Usage: $0 [OPTIONS]"
             echo ""
@@ -69,7 +69,7 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 DealPal Master Application Runner${NC}"
+echo -e "${BLUE}🚀 DealMate Master Application Runner${NC}"
 echo "====================================="
 
 # Check required commands
@@ -275,7 +275,7 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
             echo ""
             make health
             echo ""
-            echo -e "${GREEN}🎉 DealPal platform is running!${NC}"
+            echo -e "${GREEN}🎉 DealMate platform is running!${NC}"
             echo -e "${CYAN}📱 Application URLs:${NC}"
             echo -e "  🌐 Frontend:       ${YELLOW}http://localhost:9002${NC}"
             echo -e "  🦀 Backend API:    ${YELLOW}http://localhost:8000/api${NC}"
@@ -305,7 +305,7 @@ if [[ "$DEPLOYMENT_MODE" == "containerized" ]]; then
     make health
     
     echo ""
-    echo -e "${GREEN}🎉 DealPal platform is now fully operational!${NC}"
+    echo -e "${GREEN}🎉 DealMate platform is now fully operational!${NC}"
     echo ""
     echo -e "${CYAN}📱 Application URLs:${NC}"
     echo -e "  🌐 Frontend:       ${YELLOW}http://localhost:9002${NC}"
@@ -562,9 +562,9 @@ else
     echo ""
 
     # Step 6: Keep running and show info
-    echo -e "${BLUE}🎯 Step 6: DealPal Platform Running${NC}"
+    echo -e "${BLUE}🎯 Step 6: DealMate Platform Running${NC}"
     echo "==================================="
-    echo -e "${GREEN}🎉 DealPal platform is now fully operational!${NC}"
+    echo -e "${GREEN}🎉 DealMate platform is now fully operational!${NC}"
     echo ""
     echo -e "${CYAN}📱 Application URLs:${NC}"
     echo -e "  🤖 AI Service:     ${YELLOW}http://localhost:8001${NC}"
@@ -596,7 +596,7 @@ else
     # Cleanup function for native deployment
     cleanup() {
         echo ""
-        echo -e "${YELLOW}🛑 Shutting down DealPal platform...${NC}"
+        echo -e "${YELLOW}🛑 Shutting down DealMate platform...${NC}"
         
         # Kill processes gracefully
         if [ ! -z "$AI_SERVICE_PID" ]; then
@@ -630,7 +630,7 @@ else
         fi
         
         echo -e "${GREEN}✅ All services stopped${NC}"
-        echo -e "${BLUE}👋 Thank you for using DealPal!${NC}"
+        echo -e "${BLUE}👋 Thank you for using DealMate!${NC}"
         exit 0
     }
 
