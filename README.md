@@ -1,10 +1,10 @@
-# DealMate - AI-Powered Smart Shopping Assistant
+# DealPal - AI-Powered Smart Shopping Assistant
 
 [![Lighthouse Performance](https://img.shields.io/badge/Lighthouse-Performance-brightgreen)](https://web.dev/lighthouse/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-blue)](https://web.dev/progressive-web-apps/)
 [![Accessibility](https://img.shields.io/badge/Accessibility-WCAG%202.1-green)](https://www.w3.org/WAI/WCAG21/quickref/)
 
-DealMate is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension.
+DealPal is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, product comparison, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension.
 
 ## 📊 Performance & Quality
 
@@ -49,8 +49,8 @@ Choose one of the following container runtimes:
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/mvp-2003/DealMate.git
-cd DealMate
+git clone https://github.com/mvp-2003/DealPal.git
+cd DealPal
 ```
 
 #### 2. One-Command Setup and Run
@@ -89,7 +89,7 @@ Development tools (when using `make up-dev`):
 
 ### For New Developers
 
-Welcome to DealMate! For a complete development setup:
+Welcome to DealPal! For a complete development setup:
 
 1. **Environment Setup**
    - Copy `.env.example` to `.env`
@@ -647,6 +647,94 @@ uvicorn main:app --host 0.0.0.0 --port 8001
 
 ## 🚀 Performance Optimization
 
+## 🔧 API Documentation
+
+### Comparison API Endpoints
+
+#### Search Products
+```http
+GET /api/comparison/search?q={query}&category={category}&priceMin={min}&priceMax={max}
+```
+
+**Parameters:**
+- `q` (required): Search query
+- `category` (optional): Product category filter
+- `priceMin`, `priceMax` (optional): Price range filters
+- `vendors` (optional): Comma-separated vendor list
+- `minRating` (optional): Minimum rating filter
+- `inStock` (optional): In-stock filter (true/false)
+- `sortBy` (optional): Sort field (price, rating, name, discount)
+- `sortOrder` (optional): Sort order (asc, desc)
+
+**Response:**
+```json
+{
+  "products": [...],
+  "category": "Electronics",
+  "searchQuery": "laptop",
+  "totalResults": 50,
+  "priceRange": { "min": 299.99, "max": 2499.99 },
+  "avgRating": 4.2,
+  "timestamp": "2025-07-26T..."
+}
+```
+
+#### Get Categories
+```http
+GET /api/comparison/categories
+```
+
+#### Get Search Suggestions
+```http
+GET /api/comparison/suggestions?q={query}
+```
+
+#### Get Vendor Information
+```http
+GET /api/comparison/vendors/{vendorId}
+```
+
+### Coupon API Endpoints
+
+#### Search Coupons
+```http
+GET /api/v1/coupons/search?domain={domain}
+```
+
+#### Test Coupons
+```http
+POST /api/v1/coupons/test
+Content-Type: application/json
+
+{
+  "codes": ["CODE1", "CODE2"],
+  "cartTotal": 100.00,
+  "merchant": "example.com"
+}
+```
+
+### AI Service Endpoints
+
+#### Price Comparison
+```http
+POST /api/ai/price-comparison
+Content-Type: application/json
+
+{
+  "product_name": "iPhone 15",
+  "platforms": ["amazon", "walmart", "bestbuy"]
+}
+```
+
+## 📊 Performance Metrics
+
+### Core Web Vitals Targets
+- **Largest Contentful Paint (LCP)**: < 2.5s
+- **First Input Delay (FID)**: < 100ms
+- **Cumulative Layout Shift (CLS)**: < 0.1
+- **First Contentful Paint (FCP)**: < 1.8s
+- **Time to Interactive (TTI)**: < 3.5s
+
 ### Lighthouse Integration
 Run Google Lighthouse audits to ensure optimal performance:
 
@@ -681,16 +769,33 @@ lighthouse http://localhost:3000 --only-categories=performance,accessibility,bes
 
 ## 📄 Documentation
 
-- `PRODUCT_FEATURE_SPECIFICATION.md` - Complete feature specifications and technical architecture
-- `NEW_DEVS.md` - Quick start guide for new developers
+**📋 [Documentation Index](docs/INDEX.md)** - **Complete guide to all documentation**
+
+### Quick Start Guides
+- [`docs/NEW_DEVS.md`](docs/NEW_DEVS.md) - **New Developer Quick Start** - Get up and running in minutes
+- [`docs/SETUP_GUIDE.md`](docs/SETUP_GUIDE.md) - **Cross-Platform Setup** - Detailed setup for Windows, macOS, Linux
+
+### Technical Documentation
+- [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) - **Complete API Reference** - All endpoints, examples, and SDKs
+- [`docs/PRODUCT_FEATURE_SPECIFICATION.md`](docs/PRODUCT_FEATURE_SPECIFICATION.md) - **Feature Specifications** - Comprehensive technical architecture
+- [`docs/TESTING_GUIDE.md`](docs/TESTING_GUIDE.md) - **Testing Procedures** - Unit, integration, and E2E testing
+- [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md) - **Deployment Guide** - Local, cloud, and production deployment
+
+### Feature Documentation
+- [`docs/demo-coupon-system.md`](docs/demo-coupon-system.md) - **Coupon System** - Implementation details and usage
+
+### Project Context
+- [`memory-bank/`](memory-bank/) - **Project Context & History** - Essential reading for understanding project evolution
+- [`memory-bank/README.md`](memory-bank/README.md) - **Memory Bank Guide** - How to use the project context system
 
 ## 📞 Need Help?
 
-- Check existing documentation
-- Review the codebase structure
+- Check existing documentation in the [`docs/`](docs/) directory
+- Review the codebase structure and [`memory-bank/`](memory-bank/) for context
 - Ask team members for guidance
-- Visit API documentation at `http://localhost:8001/docs`
+- Visit API documentation at `http://localhost:8001/docs` (AI Service)
+- Test comparison features at `http://localhost:3000/compare`
 
 ---
 
-DealMate combines cutting-edge AI technology with practical user value to revolutionize how consumers discover and maximize savings opportunities across all shopping platforms.
+DealPal combines cutting-edge AI technology with practical user value to revolutionize how consumers discover and maximize savings opportunities across all shopping platforms.

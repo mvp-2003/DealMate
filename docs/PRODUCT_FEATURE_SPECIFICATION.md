@@ -1,20 +1,177 @@
 # DealPal: Next-Generation Product Deals & Savings Platform
 ## Complete Feature Specification & Technical Architecture
 
-**Last Updated**: July 2025  
-**Version**: 2.0  
-**Status**: Active Development
+**Last Updated**: July 26, 2025  
+**Version**: 2.1  
+**Status**: Active Development - Comparison Engine Live
 
 ---
 
 ## 1. Executive Summary
 
-DealPal is a comprehensive, AI-powered savings---
+DealPal is a comprehensive, AI-powered savings platform designed to help users discover and maximize real savings through intelligent deal discovery, **real-time product comparison**, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension, ensuring users can access powerful savings features wherever they shop.
 
-## 5. Core Feature Specifications
+### Core Value Proposition
+- **Intelligent Product Comparison**: Real-time price comparison across multiple vendors with advanced filtering
+- **Smart Deal Discovery**: AI-powered scanning across multiple e-commerce platforms
+- **Automated Coupon Testing**: Browser extension that finds and applies the best coupons automatically
+- **Personalized Value Optimization**: Recommendations based on individual spending patterns and reward programs
+- **Real-Time Price Intelligence**: Dynamic price comparison and trend analysis
+- **Performance Excellence**: Sub-second response times with 99.9% uptime
+- **Accessibility First**: WCAG 2.1 AA compliant for inclusive user experience
 
-### 5.1 Real-Time Event Streaming Engine
+---
+
+## 2. Platform Architecture Overview
+
+### 2.1 Multi-Platform Ecosystem
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Web Platform  │    │   Mobile App    │    │Browser Extension│
+│   (Next.js)     │    │  (iOS/Android)  │    │   (Chrome/FF)   │
+│                 │    │                 │    │                 │
+│ ✅ Comparison   │    │ 🔄 Planned      │    │ ✅ Auto-Coupons │
+│ ✅ Search       │    │                 │    │ ✅ Price Alerts │
+│ ✅ Filters      │    │                 │    │ ✅ Smart Test   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+         ┌─────────────────────────────────────────────────┐
+         │              Backend Services                   │
+         │  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
+         │  │   Rust API  │  │  Python AI  │  │Database │ │
+         │  │   Service   │  │   Service   │  │(Postgres│ │
+         │  │ ✅ Coupons  │  │ ✅ Price AI │  │✅ Schema │ │
+         │  │ ✅ Search   │  │ ✅ Gemini   │  │✅ Migr.  │ │
+         │  └─────────────┘  └─────────────┘  └─────────┘ │
+         └─────────────────────────────────────────────────┘
+```
+
+### 2.2 Technology Stack
+- **Frontend**: Next.js 15, TypeScript 5, Tailwind CSS 3, Radix UI
+  - ✅ SSR/SSG for optimal SEO and performance
+  - ✅ Progressive Web App (PWA) capabilities
+  - ✅ Advanced image optimization and lazy loading
+  - ✅ Automatic code splitting and tree shaking
+  - ✅ Real-time product comparison interface
+- **Backend**: Rust (Axum), Python (FastAPI for AI), Node.js (Auth)
+  - ✅ High-performance, memory-safe architecture
+  - ✅ Microservices with async/await patterns
+  - ✅ Auto-scaling and load balancing ready
+  - ✅ RESTful APIs with comprehensive documentation
+- **Database**: PostgreSQL 15 with Redis 7 caching
+  - ✅ Optimized queries with connection pooling
+  - ✅ Read replicas for improved performance
+  - ✅ Automated backup and disaster recovery
+  - ✅ Full coupon and merchant schema implemented
+- **Message Streaming**: Apache Kafka 3.5 with Schema Registry
+  - 🔄 Real-time event streaming architecture
+  - 🔄 High-throughput, fault-tolerant messaging
+  - 🔄 Event sourcing and CQRS patterns
+  - 🔄 Stream processing with Kafka Streams
+- **AI/ML**: Google Gemini 1.5, Custom ML models
+  - ✅ Real-time price comparison analysis
+  - ✅ Smart deal recommendations
+  - ✅ Edge computing for reduced latency
+  - ✅ Model optimization and quantization
+- **Browser Extension**: Vanilla JavaScript with Web Extensions API
+  - ✅ Manifest V3 compliance for security
+  - ✅ Automated coupon discovery and testing
+  - ✅ Content Script optimization
+  - ✅ Service Worker for background processing
+- **Infrastructure**: Docker/Podman containers, Kubernetes ready
+  - ✅ Multi-stage builds for minimal image sizes
+  - ✅ Health checks and graceful shutdowns
+  - ✅ Horizontal pod autoscaling
+- **Monitoring**: Prometheus, Grafana, Lighthouse CI
+  - ✅ Real-time performance monitoring
+  - ✅ Automated alerts and incident response
+  - ✅ Continuous performance optimization
+
+---
+
+## 3. ✅ IMPLEMENTED FEATURES
+
+### 3.1 Product Comparison Engine (LIVE)
+**Status**: ✅ Fully Implemented and Tested
+
+#### Core Functionality:
+- **Multi-Vendor Search**: Search across Amazon, Walmart, Target, Best Buy, eBay
+- **Advanced Filtering**: Price range, vendor selection, rating, stock status
+- **Smart Sorting**: By price, rating, name, discount percentage
+- **Real-Time Results**: Sub-second response times with caching
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+
+#### Key Features:
+- **Search Interface**: Full-text search with category filtering
+- **Product Grid/List Views**: Toggle between display modes
+- **Comparison Stats**: Best price, highest rated, best value analysis
+- **Category Browsing**: Quick access to popular product categories
+- **Search Suggestions**: Trending and popular search terms
+
+#### Technical Implementation:
+```typescript
+// frontend/src/app/(app)/compare/page.tsx - Main comparison interface
+// frontend/src/services/comparison.ts - API service layer
+// frontend/src/app/api/comparison/search/route.ts - Backend API
+// frontend/src/components/comparison/ - UI components
+```
+
+#### API Endpoints:
+- `GET /api/comparison/search` - Product search with filters
+- `GET /api/comparison/categories` - Product categories
+- `GET /api/comparison/suggestions` - Search suggestions
+- `GET /api/comparison/vendors/{id}` - Vendor information
+
+### 3.2 Coupon Aggregation System (LIVE)
+**Status**: ✅ Fully Implemented with Database Schema
+
+#### Core Components:
+- **Database Schema**: Comprehensive merchant and coupon tracking
+- **API Endpoints**: Search, test, and manage coupons
+- **Aggregation Service**: Automated coupon discovery from affiliate networks
+- **Browser Extension**: Auto-testing on checkout pages
+
+#### Database Schema:
+```sql
+-- Merchants table with affiliate network integration
+-- Coupons table with comprehensive metadata
+-- Coupon tests table for performance tracking
+-- User coupon usage for duplicate prevention
+-- Affiliate networks for API management
+```
+
+#### Browser Extension Features:
+- **Auto-Detection**: Identifies checkout pages across sites
+- **Smart Testing**: Tests all available coupons automatically
+- **Best Selection**: Applies highest-value working coupon
+- **Real-Time Feedback**: Shows progress and savings to users
+
+### 3.3 AI-Powered Price Analysis (LIVE)
+**Status**: ✅ Implemented with Gemini Integration
+
+#### Features:
+- **Real-Time Price Comparison**: Cross-platform price analysis
+- **Shipping & Tax Calculation**: Total cost comparison including fees
+- **Deal Validation**: AI determines if deals are genuinely good value
+- **Smart Recommendations**: Personalized product suggestions
+
+#### Implementation:
+```python
+# backend/ai-service/price_comparison.py
+# Real-time price analysis across multiple retailers
+# Confidence scoring and deal validation
+# Shipping and tax calculation integration
+```
+
+---
+
+## 4. 🔄 PLANNED FEATURES
+
+### 4.1 Real-Time Event Streaming Engine
 **Purpose**: Process and distribute real-time events across the DealPal ecosystem
+**Status**: 🔄 Architecture Designed, Implementation Pending
 
 #### Event Types:
 - **Deal Discovery Events**: New deals found across e-commerce platforms
@@ -30,124 +187,18 @@ DealPal is a comprehensive, AI-powered savings---
 - **Schema Evolution**: Backward compatible schema changes
 - **Real-Time Processing**: Sub-second event processing latency
 
-#### Implementation Example:
-```rust
-// Kafka producer in Rust backend
-use rdkafka::producer::{FutureProducer, FutureRecord};
+### 4.2 Mobile Application
+**Platform**: iOS and Android (React Native)
+**Status**: 🔄 Planned for Q4 2025
 
-pub struct DealEventProducer {
-    producer: FutureProducer,
-}
-
-impl DealEventProducer {
-    pub async fn publish_deal_event(&self, deal: &Deal) -> Result<(), KafkaError> {
-        let event = DealEvent::from(deal);
-        let record = FutureRecord::to("dealpal.deals")
-            .key(&deal.id)
-            .payload(&serde_json::to_string(&event)?);
-        
-        self.producer.send(record, Duration::from_secs(5)).await?;
-        Ok(())
-    }
-}
-```
-
-### 5.2 Global Offer Scannerform designed to help users discover and maximize real savings through intelligent deal discovery, offer stacking, and personalized value-based recommendations. The platform operates across three key touchpoints: web application, mobile app, and browser extension, ensuring users can access powerful savings features wherever they shop.
-
-### Core Value Proposition
-- **Intelligent Deal Discovery**: AI-powered scanning across multiple e-commerce platforms
-- **Smart Offer Stacking**: Automated combination of multiple offers for maximum savings
-- **Personalized Value Optimization**: Recommendations based on individual spending patterns and reward programs
-- **Real-Time Price Intelligence**: Dynamic price comparison and trend analysis
-- **Performance Excellence**: Sub-second response times with 99.9% uptime
-- **Accessibility First**: WCAG 2.1 AA compliant for inclusive user experience
+#### Core Features:
+- **Native Comparison**: Full product comparison functionality
+- **Push Notifications**: Real-time deal alerts
+- **Barcode Scanning**: Instant price comparison in stores
+- **Location-Based Deals**: Geo-targeted offers
+- **Offline Mode**: Cached data for limited connectivity
 
 ---
-
-## 2. Platform Architecture Overview
-
-### 2.1 Multi-Platform Ecosystem
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Web Platform  │    │   Mobile App    │    │Browser Extension│
-│   (Next.js)     │    │  (iOS/Android)  │    │   (Chrome/FF)   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-         ┌─────────────────────────────────────────────────┐
-         │              Backend Services                   │
-         │  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
-         │  │   Rust API  │  │  Python AI  │  │Database │ │
-         │  │   Service   │  │   Service   │  │(Postgres│ │
-         │  └─────────────┘  └─────────────┘  └─────────┘ │
-         └─────────────────────────────────────────────────┘
-```
-
-### 2.2 Technology Stack
-- **Frontend**: Next.js 15, TypeScript 5, Tailwind CSS 3
-  - SSR/SSG for optimal SEO and performance
-  - Progressive Web App (PWA) capabilities
-  - Advanced image optimization and lazy loading
-  - Automatic code splitting and tree shaking
-- **Backend**: Rust (Axum), Python (FastAPI for AI), Node.js (Auth)
-  - High-performance, memory-safe architecture
-  - Microservices with async/await patterns
-  - Auto-scaling and load balancing ready
-- **Database**: PostgreSQL 15 with Redis 7 caching
-  - Optimized queries with connection pooling
-  - Read replicas for improved performance
-  - Automated backup and disaster recovery
-- **Message Streaming**: Apache Kafka 3.5 with Schema Registry
-  - Real-time event streaming architecture
-  - High-throughput, fault-tolerant messaging
-  - Event sourcing and CQRS patterns
-  - Stream processing with Kafka Streams
-- **AI/ML**: Google Gemini 1.5, Custom ML models
-  - Edge computing for reduced latency
-  - Model optimization and quantization
-  - Real-time inference with caching
-- **Browser Extension**: Vanilla JavaScript with Web Extensions API
-  - Manifest V3 compliance for security
-  - Content Script optimization
-  - Service Worker for background processing
-- **Infrastructure**: Docker/Podman containers, Kubernetes ready
-  - Multi-stage builds for minimal image sizes
-  - Health checks and graceful shutdowns
-  - Horizontal pod autoscaling
-- **Monitoring**: Prometheus, Grafana, Lighthouse CI, Kafka UI
-  - Real-time performance monitoring
-  - Automated alerts and incident response
-  - Continuous performance optimization
-
----
-
-## 3. Real-Time Event Streaming Architecture
-
-### 3.1 Apache Kafka Integration
-**Purpose**: Enable real-time data streaming for immediate deal discovery and user notifications
-
-#### Event-Driven Architecture:
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Data Sources  │───▶│  Apache Kafka   │───▶│   Consumers     │
-│                 │    │                 │    │                 │
-│ • E-commerce    │    │ ┌─────────────┐ │    │ • Frontend      │
-│   APIs          │    │ │Deal Events  │ │    │ • Notifications │
-│ • Web Scrapers  │    │ │Price Changes│ │    │ • Analytics     │
-│ • User Actions  │    │ │User Events  │ │    │ • ML Models     │
-│ • Price Feeds   │    │ │Inventory    │ │    │ • Dashboards    │
-└─────────────────┘    │ └─────────────┘ │    └─────────────────┘
-                       └─────────────────┘
-```
-
-#### Kafka Topics Structure:
-- **`dealpal.deals`**: New deal discoveries and updates
-- **`dealpal.prices`**: Price change events across retailers
-- **`dealpal.user.events`**: User interactions and behaviors
-- **`dealpal.notifications`**: Real-time alerts and notifications
-- **`dealpal.inventory`**: Stock level changes and availability
-- **`dealpal.analytics`**: Aggregated metrics and insights
 
 #### Event Schema (Avro):
 ```json
