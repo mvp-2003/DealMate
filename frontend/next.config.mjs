@@ -94,13 +94,6 @@ const nextConfig = {
       // Enable tree shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
-      
-      // Minimize bundle size
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'react': 'react/index.js',
-        'react-dom': 'react-dom/index.js',
-      };
     }
     
     return config;
