@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Heart, BotMessageSquare, Settings, Sparkles, Wallet, Package2, Coins } from 'lucide-react'; // Added Sparkles, Wallet, Package2, and Coins
+import { LayoutDashboard, Heart, BotMessageSquare, Settings, Sparkles, Wallet, Package2, Coins, GitCompare } from 'lucide-react'; // Added Sparkles, Wallet, Package2, Coins, and GitCompare
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const tabs = [
   { name: 'Home', href: '/home', icon: LayoutDashboard },
+  { name: 'Compare', href: '/compare', icon: GitCompare },
   { name: 'Smart Deals', href: '/smart-deals', icon: Sparkles },
   { name: 'Cashback', href: '/cashback', icon: Coins },
   { name: 'LootPacks', href: '/lootpacks', icon: Package2 },
