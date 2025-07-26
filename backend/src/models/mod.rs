@@ -2,6 +2,7 @@
 
 pub mod card_vault;
 pub mod coupon;
+pub mod offer_ranking;
 pub mod partnership;
 pub mod purchase;
 pub mod reward;

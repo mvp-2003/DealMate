@@ -23,7 +23,7 @@ pub mod stacksmart;
 pub mod analyzer;
 pub mod performance;
 
-use crate::routes::{card_vault, coupons, deals, health_check, settings, user, wallet};
+use crate::routes::{card_vault, coupons, deals, health_check, offer_ranking, settings, wallet};
 use crate::auth::{login_handler, signup_handler, callback_handler, logout_handler, protected_handler};
 use crate::middleware::auth_middleware;
 use crate::proxy::{auth_proxy, ai_proxy, AppState};
@@ -64,14 +64,15 @@ fn coupon_routes(pool: PgPool) -> Router {
 }
 
 fn user_routes(pool: PgPool) -> Router {
+    // TODO: Implement user routes
     Router::new()
-        .route("/", post(user::create_user))
-        .route(
-            "/:user_id",
-            get(user::get_user)
-                .put(user::update_user)
-                .delete(user::delete_user),
-        )
+        // .route("/", post(user::create_user))
+        // .route(
+        //     "/:user_id",
+        //     get(user::get_user)
+        //         .put(user::update_user)
+        //         .delete(user::delete_user),
+        // )
         .with_state(pool)
 }
 
@@ -104,6 +105,7 @@ pub fn app(pool: PgPool, app_state: AppState) -> Router {
         // .nest("/partnerships", partnerships_routes(pool.clone()))
         .nest("/users", user_routes(pool.clone()))
         .nest("/coupons", coupon_routes(pool.clone()))
+        .nest("/offers", offer_ranking::offer_ranking_routes(pool.clone()))
         .merge(card_vault::routes(pool.clone()))
         .layer(Extension(lazy_db_service))
         .route_layer(from_fn(auth_middleware));

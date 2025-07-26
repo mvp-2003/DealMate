@@ -1,5 +1,15 @@
-use axum::{http::StatusCode, response::IntoResponse};
+use axum::Json;
+use serde::Serialize;
 
-pub async fn health_check() -> impl IntoResponse {
-    (StatusCode::OK, "OK")
+#[derive(Serialize)]
+pub struct HealthResponse {
+    pub status: String,
+    pub version: String,
+}
+
+pub async fn health_check() -> Json<HealthResponse> {
+    Json(HealthResponse {
+        status: "ok".to_string(),
+        version: env!("CARGO_PKG_VERSION").to_string(),
+    })
 }
