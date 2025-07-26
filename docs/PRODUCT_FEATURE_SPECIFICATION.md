@@ -165,6 +165,52 @@ DealMate is a comprehensive, AI-powered savings platform designed to help users 
 # Shipping and tax calculation integration
 ```
 
+### 3.4 Personalized Product Recommendations (LIVE)
+**Status**: ✅ Fully Implemented with User Activity Tracking
+
+#### Core Features:
+- **User Activity Tracking**: Browse history, purchases, wishlist, searches
+- **Smart Recommendation Types**:
+  - Recently Viewed: Products user browsed with last viewed timestamp
+  - Similar Products: Based on purchase history and interests
+  - Price Drop Alerts: Wishlist items with significant price reductions
+  - Category-Based: Recommendations from frequently browsed categories
+  - Trending Deals: Popular products for new users or fallback
+  - Personalized: AI-driven recommendations based on behavior
+
+#### Technical Implementation:
+```typescript
+// frontend/src/types/recommendations.ts - Type definitions
+// frontend/src/services/recommendations.ts - API service layer
+// frontend/src/hooks/useRecommendations.ts - React hook for data fetching
+// frontend/src/components/home/RecommendedProductCard.tsx - Enhanced product card
+// frontend/src/components/home/RecommendationSection.tsx - Section layout
+// frontend/src/app/api/recommendations/[userId]/route.ts - User-specific API
+// frontend/src/app/api/recommendations/trending/route.ts - Trending products API
+// frontend/src/app/api/activity/track/route.ts - Activity tracking API
+```
+
+#### User Experience Features:
+- **Dynamic Home Page**: Personalized product sections on home page
+- **"Not Interested" Option**: Users can dismiss irrelevant products
+- **View More Links**: Navigate to filtered views of recommendation types
+- **Loading States**: Smooth skeleton loaders during data fetching
+- **Error Handling**: Fallback recommendations on API failures
+- **Auto-Refresh**: Updates recommendations every 5 minutes
+- **Responsive Design**: Horizontal scrolling on mobile, grid on desktop
+
+#### Data Collection & Privacy:
+- **Activity Tracking**: View, click, purchase, wishlist actions
+- **Metadata Collection**: Search queries, categories, platforms
+- **Privacy Controls**: Users can opt-out of tracking
+- **Data Retention**: 30-day activity history for recommendations
+
+#### Business Impact:
+- **Increased Engagement**: Personalized content increases time on site
+- **Higher Conversion**: Relevant recommendations improve purchase rates
+- **User Retention**: Tailored experience encourages return visits
+- **Cross-Selling**: Similar product recommendations boost basket size
+
 ---
 
 ## 4. 🔄 PLANNED FEATURES

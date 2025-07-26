@@ -71,6 +71,15 @@ export const LazyRankedOfferCard = lazy(() =>
   import('@/components/smart-deals/RankedOfferCard').then(module => ({ default: module.default }))
 );
 
+// Lazy load recommendation components
+export const LazyRecommendedProductCard = lazy(() => 
+  import('@/components/home/RecommendedProductCard').then(module => ({ default: module.default }))
+);
+
+export const LazyRecommendationSection = lazy(() => 
+  import('@/components/home/RecommendationSection').then(module => ({ default: module.default }))
+);
+
 // Component wrapper with suspense
 export function WithSuspense({ 
   children, 

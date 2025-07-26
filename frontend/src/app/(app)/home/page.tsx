@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { TicketPercent, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
@@ -10,11 +11,14 @@ import {
   LazySavingsScore,
   LazyPriceHistoryChart,
   LazyMonthlySavingsChart,
+  LazyRecommendationSection,
   WithSuspense
 } from '@/components/common/LazyComponents';
 import { ComponentLoader, CardSkeleton } from '@/components/ui/component-loader';
+import { useRecommendations } from '@/hooks/useRecommendations';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [visibleSections, setVisibleSections] = useState({
     hero: true,
@@ -23,6 +27,13 @@ export default function DashboardPage() {
     offers: false,
     actions: false
   });
+
+  const { 
+    data: recommendations, 
+    loading: recommendationsLoading, 
+    markNotInterested,
+    trackActivity 
+  } = useRecommendations({ autoRefresh: true });
 
   useEffect(() => {
     setIsLoaded(true);
@@ -40,6 +51,27 @@ export default function DashboardPage() {
       clearTimeout(timer4);
     };
   }, []);
+
+  const handleProductClick = (productId: string) => {
+    trackActivity(productId, 'click');
+    // Navigate to product details or comparison page
+    router.push(`/compare?product=${productId}`);
+  };
+
+  const handleAddToWishlist = (productId: string) => {
+    trackActivity(productId, 'wishlist');
+    // Add to wishlist logic
+  };
+
+  const handleCompare = (productId: string) => {
+    trackActivity(productId, 'click');
+    router.push(`/compare?product=${productId}`);
+  };
+
+  const handleViewMore = (sectionType: string) => {
+    // Navigate to dedicated page for that recommendation type
+    router.push(`/smart-deals?type=${sectionType}`);
+  };
   return (
     <div className="min-h-screen-safe">
       <div className={cn("space-responsive", isLoaded ? 'animate-fade-in' : 'opacity-0')}>
@@ -54,45 +86,43 @@ export default function DashboardPage() {
           </p>
         </div>
         
-        {/* Hero Section with Product Cards - Responsive Grid */}
-        {visibleSections.hero && (
-          <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-8 mb-12 xs:mb-16">
-            <div className="relative">
-              <WithSuspense>
-                <LazyProductInfoCard
-                  title="Cool Gadget Pro X"
-                  currentPrice="₹999"
-                  originalPrice="₹1,299"
-                  discount="23%"
-                  platform="Amazon.in"
-                  imageUrl="https://placehold.co/600x400.png"
-                />
-              </WithSuspense>
-            </div>
-            <div className="relative" style={{animationDelay: '0.1s'}}>
-              <WithSuspense>
-                <LazyProductInfoCard
-                  title="Smart Headphones Ultra"
-                  currentPrice="₹1,499"
-                  originalPrice="₹2,299"
-                  discount="35%"
-                  platform="Flipkart"
-                  imageUrl="https://placehold.co/600x400.png"
-                />
-              </WithSuspense>
-            </div>
-            <div className="relative sm:col-span-2 lg:col-span-1" style={{animationDelay: '0.2s'}}>
-              <WithSuspense>
-                <LazyProductInfoCard
-                  title="Wireless Speaker Pro"
-                  currentPrice="₹799"
-                  originalPrice="₹1,199"
-                  discount="33%"
-                  platform="Myntra"
-                  imageUrl="https://placehold.co/600x400.png"
-                />
-              </WithSuspense>
-            </div>
+        {/* Personalized Recommendations */}
+        {visibleSections.hero && recommendations?.sections && (
+          <div className="space-y-8 xs:space-y-12 mb-8 xs:mb-12">
+            {recommendations.sections.map((section, index) => (
+              <div
+                key={section.type}
+                style={{ animationDelay: `${index * 0.1}s` }}
+                className="animate-fade-in"
+              >
+                <WithSuspense fallback={<CardSkeleton />}>
+                  <LazyRecommendationSection
+                    section={section}
+                    onNotInterested={markNotInterested}
+                    onAddToWishlist={handleAddToWishlist}
+                    onViewDetails={handleProductClick}
+                    onCompare={handleCompare}
+                    onViewMore={() => handleViewMore(section.type)}
+                    loading={recommendationsLoading}
+                  />
+                </WithSuspense>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Fallback for no recommendations */}
+        {visibleSections.hero && !recommendationsLoading && !recommendations?.sections?.length && (
+          <div className="glass-card p-8 text-center mb-8">
+            <p className="text-muted-foreground mb-4">
+              No personalized recommendations available yet. Start browsing to get personalized deals!
+            </p>
+            <button
+              onClick={() => router.push('/smart-deals')}
+              className="btn-primary"
+            >
+              Browse All Deals
+            </button>
           </div>
         )}
         
